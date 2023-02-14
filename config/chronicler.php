@@ -98,7 +98,7 @@ return [
                 ],
             ],
 
-            'transactional_event' => [
+            'transactional_eventable' => [
                 'tracking' => [
                     'tracker_id' => \Chronhub\Storm\Chronicler\TrackTransactionalStream::class,
                     'subscribers' => [],

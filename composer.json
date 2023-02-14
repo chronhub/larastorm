@@ -1,0 +1,50 @@
+{
+  "name": "chronhub/larastorm",
+  "description": "storm integration with laravel",
+  "keywords": [
+    "message", "stream", "cqrs", "aggregate", "ddd", "es", "laravel"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "steph bug",
+      "email": "chronhubgit@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "chronhub/storm": "dev-main",
+    "laravel/framework": "10.*",
+    "ext-pdo": "*",
+    "ext-posix": "*",
+    "ext-pcntl": "*"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.4",
+    "phpstan/phpstan":"^1.10",
+    "nunomaduro/larastan": "^2.4",
+    "orchestra/testbench": "8.*",
+    "phpspec/prophecy-phpunit": "dev-master",
+    "phpunit/phpunit": "^9.5",
+    "roave/security-advisories": "dev-latest",
+    "doctrine/dbal": "^3.5.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Chronhub\\Larastorm\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Chronhub\\Larastorm\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "pint": "vendor/bin/pint"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "dev"
+}

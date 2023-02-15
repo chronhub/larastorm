@@ -68,7 +68,7 @@ return [
                 'tracking' => [
                     'tracker_id' => \Chronhub\Storm\Chronicler\TrackTransactionalStream::class,
                     'subscribers' => [
-                        //'\Chronhub\Chronicler\Publisher\EventPublisherSubscriber::class',
+                        \Chronhub\Storm\Publisher\EventPublisherSubscriber::class,
                     ],
                 ],
                 'write_lock' => true,

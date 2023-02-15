@@ -12,6 +12,7 @@ use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
 use Chronhub\Storm\Serializer\DomainEventSerializer;
+use Chronhub\Storm\Publisher\EventPublisherSubscriber;
 use Chronhub\Storm\Chronicler\TrackTransactionalStream;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
@@ -47,7 +48,9 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
                         'store' => 'pgsql',
                         'tracking' => [
                             'tracker_id' => TrackTransactionalStream::class,
-                            'subscribers' => [],
+                            'subscribers' => [
+                                EventPublisherSubscriber::class,
+                            ],
                         ],
                         'write_lock' => true,
                         'strategy' => 'single',

@@ -40,7 +40,7 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             $loadMigration = config('chronicler.console.load_migration');
 
             if ($loadMigration === true) {
-                $this->loadMigrationsFrom(__DIR__.'/../database');
+                $this->loadMigrationsFrom(__DIR__.'/../../database');
             }
 
             $this->commands(config('chronicler.console.commands', []));

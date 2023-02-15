@@ -103,9 +103,6 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
 
     private function registerChroniclerProviders(): void
     {
-        // cause of Closure (e.g. octane), we need to bind chronicler providers
-
-        //todo should be conditional
         $this->app->singleton(
             InMemoryChroniclerProvider::class,
             fn (Application $app): InMemoryChroniclerProvider => new InMemoryChroniclerProvider(fn (): Container => $app)

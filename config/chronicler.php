@@ -11,7 +11,13 @@ return [
     |
     */
 
-    'event_serializer' => \Chronhub\Storm\Serializer\DomainEventSerializer::class,
+    'event_serializer' => [
+        'concrete' => \Chronhub\Storm\Serializer\DomainEventSerializer::class,
+        'normalizers' => [
+            \Symfony\Component\Serializer\Normalizer\UidNormalizer::class,
+            'serializer.normalizer.event_time',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -54,15 +60,15 @@ return [
          * Connection
          *
          * available pgsql and mysql with default mysql, mariadb, percona engines
-         * by now, there is no optimization for any connection (queries, tables, databases)
+         * by now, there is no optimization for any connection (queries/filter/scope, tables, databases)
          */
         'connection' => [
             'write' => [
-                'store' => env('DB_CONNECTION', 'pgsql'),
+                'store' => 'pgsql',
                 'tracking' => [
                     'tracker_id' => \Chronhub\Storm\Chronicler\TrackTransactionalStream::class,
                     'subscribers' => [
-                        '\Chronhub\Chronicler\Publisher\EventPublisherSubscriber::class',
+                        //'\Chronhub\Chronicler\Publisher\EventPublisherSubscriber::class',
                     ],
                 ],
                 'write_lock' => true,
@@ -71,7 +77,7 @@ return [
             ],
 
             'read' => [
-                'store' => env('DB_CONNECTION', 'pgsql'),
+                'store' => 'pgsql',
                 'is_transactional' => false,
                 'write_lock' => false,
                 'strategy' => 'single',
@@ -83,7 +89,9 @@ return [
          * In memory
          *
          * In memory driver keys are predefined
-         * If you need your own in memory instance, extend the manager
+         * If you need your own in memory instance
+         *      extend the manager
+         *      or make your own chronicler provider
          */
         'in_memory' => [
 

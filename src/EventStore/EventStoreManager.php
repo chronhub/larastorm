@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\EventStore;
 
 use Closure;
-use InvalidArgumentException;
 use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use function is_string;
 
 final class EventStoreManager implements ChroniclerManager
 {
-    /**
-     * @var Application
-     */
     private Application $app;
 
     /**
@@ -44,14 +41,14 @@ final class EventStoreManager implements ChroniclerManager
         return $this->chroniclers[$name] ?? $this->chroniclers[$name] = $this->resolveEventStore($name);
     }
 
-    public function extend(string $name, callable $callback): static
+    public function extend(string $name, callable $callback): self
     {
         $this->customCreators[$name] = $callback;
 
         return $this;
     }
 
-    public function shouldUse(string $driver, string|ChroniclerProvider $provider): static
+    public function shouldUse(string $driver, string|ChroniclerProvider $provider): self
     {
         $this->providers[$driver] = $provider;
 
@@ -60,12 +57,6 @@ final class EventStoreManager implements ChroniclerManager
         return $this;
     }
 
-    /**
-     * Set default driver
-     *
-     * @param  string  $driver
-     * @return self
-     */
     public function setDefaultDriver(string $driver): self
     {
         $this->app['config']['chronicler.defaults.provider'] = $driver;
@@ -73,11 +64,6 @@ final class EventStoreManager implements ChroniclerManager
         return $this;
     }
 
-    /**
-     * Get default driver
-     *
-     * @return string
-     */
     public function getDefaultDriver(): string
     {
         return $this->app['config']['chronicler.defaults.provider'];
@@ -115,13 +101,6 @@ final class EventStoreManager implements ChroniclerManager
         throw new InvalidArgumentException("Chronicler provider with name $name and driver $driver is not defined");
     }
 
-    /**
-     * Resolve custom chronicler
-     *
-     * @param  string  $name
-     * @param  array  $config
-     * @return Chronicler
-     */
     private function callCustomCreator(string $name, array $config): Chronicler
     {
         return $this->customCreators[$name]($this->app, $name, $config);

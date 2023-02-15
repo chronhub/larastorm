@@ -6,6 +6,7 @@ namespace Chronhub\Larastorm\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Container\Container;
+use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Serializer\ConvertStreamEvent;
 use Chronhub\Storm\Stream\DetermineStreamCategory;
@@ -58,6 +59,8 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         $this->app->singleton(ChroniclerManager::class, function (Application $app): ChroniclerManager {
             return new EventStoreManager(fn (): Container => $app);
         });
+
+        $this->app->alias(ChroniclerManager::class, Chronicle::SERVICE_ID);
     }
 
     public function provides(): array
@@ -67,6 +70,7 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             StreamCategory::class,
             StreamEventConverter::class,
             ChroniclerManager::class,
+            Chronicle::SERVICE_ID,
             InMemoryChroniclerProvider::class,
             ConnectionChroniclerProvider::class,
         ];

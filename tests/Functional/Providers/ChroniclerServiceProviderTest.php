@@ -6,6 +6,7 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Storm\Serializer\ConvertStreamEvent;
 use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
@@ -19,6 +20,7 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
+use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 
 final class ChroniclerServiceProviderTest extends OrchestraTestCase
@@ -88,7 +90,9 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             'console' => [
                 'load_migration' => true,
 
-                'commands' => [],
+                'commands' => [
+                    CreateEventStreamCommand::class,
+                ],
             ],
         ], config('chronicler'));
     }
@@ -109,6 +113,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
 
         $this->assertTrue($this->app->bound(ChroniclerManager::class));
         $this->assertInstanceOf(EventStoreManager::class, $this->app[ChroniclerManager::class]);
+        $this->assertTrue($this->app->bound(Chronicle::SERVICE_ID));
 
         $this->assertTrue($this->app->bound(InMemoryChroniclerProvider::class));
         $this->assertTrue($this->app->bound(ConnectionChroniclerProvider::class));
@@ -126,6 +131,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             StreamCategory::class,
             StreamEventConverter::class,
             ChroniclerManager::class,
+            Chronicle::SERVICE_ID,
             InMemoryChroniclerProvider::class,
             ConnectionChroniclerProvider::class,
         ], $provider->provides());

@@ -67,6 +67,8 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             StreamCategory::class,
             StreamEventConverter::class,
             ChroniclerManager::class,
+            InMemoryChroniclerProvider::class,
+            ConnectionChroniclerProvider::class,
         ];
     }
 

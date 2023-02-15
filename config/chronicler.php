@@ -36,7 +36,7 @@ return [
     |--------------------------------------------------------------------------
     |
     |   query loader: (optional : default cursor)
-    |       cursor: CursorQueryLoader (default if null or key "query_loader" is missing )
+    |       cursor: CursorQueryLoader
     |       lazy: LazyQueryLoader or lazy:1000 to configure chunkSize
     |       or your own string service id
     |
@@ -45,12 +45,13 @@ return [
     |       single_indexed: single stream persistence (only for mysql)
     |       per_aggregate: per aggregate stream persistence
     |
-    |   write_lock:
+    |   write_lock: (optional : default fake write lock)
     |       true: use default write lock depends on driver
     |       false: a fake write lock
+    |       string: your own service
     |
-    |   is_transactional:
-    |       only required when you need a standalone (not eventable so no stream tracker) chronicler instance
+    |   is_transactional: (only for connection)
+    |       required when you need a standalone/transactional (not eventable e.g. no stream tracker) chronicler instance
     |
     */
 
@@ -60,7 +61,6 @@ return [
          * Connection
          *
          * available pgsql and mysql with default mysql, mariadb, percona engines
-         * by now, there is no optimization for any connection (queries/filter/scope, tables, databases)
          */
         'connection' => [
             'write' => [

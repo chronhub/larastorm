@@ -16,10 +16,11 @@ use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
 use Chronhub\Storm\Contracts\Tracker\TransactionalStreamTracker;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use function is_bool;
 use function ucfirst;
 use function method_exists;
 
-final class EventStoreConnectionProvider extends AbstractChroniclerProvider
+final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
 {
     protected ContainerInterface|Container $container;
 
@@ -45,7 +46,7 @@ final class EventStoreConnectionProvider extends AbstractChroniclerProvider
 
     private function make(string $name, array $config): Chronicler
     {
-        [$streamTracker, $driver, $isTransactional] = $this->determineStorage($name, $config);
+        [$streamTracker, $driver, $isTransactional] = $this->determineStore($name, $config);
 
         $driverMethod = 'create'.ucfirst(Str::camel($driver.'Driver'));
 
@@ -92,17 +93,19 @@ final class EventStoreConnectionProvider extends AbstractChroniclerProvider
         return $streamTracker ? $this->decorateChronicler($chronicler, $streamTracker) : $chronicler;
     }
 
-    private function determineStorage(string $name, array $config): array
+    private function determineStore(string $name, array $config): array
     {
         $streamTracker = $this->resolveStreamTracker($config);
 
-        $isTransactional = $config['is_transactional'] ?? null;
-
-        if (null === $isTransactional && ! $streamTracker instanceof StreamTracker) {
-            throw new InvalidArgumentException("Unable to resolve chronicler name $name, missing is_transactional key in config");
+        if ($streamTracker instanceof StreamTracker) {
+            return [$streamTracker, $config['store'], $streamTracker instanceof TransactionalStreamTracker];
         }
 
-        $isTransactional = $streamTracker instanceof TransactionalStreamTracker;
+        $isTransactional = $config['is_transactional'] ?? null;
+
+        if (! is_bool($isTransactional)) {
+            throw new InvalidArgumentException("Key is_transactional is required and must be a boolean for chronicler name $name");
+        }
 
         return [$streamTracker, $config['store'], $isTransactional];
     }

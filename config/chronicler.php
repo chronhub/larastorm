@@ -125,6 +125,8 @@ return [
     'console' => [
         'load_migration' => true,
 
-        'commands' => [],
+        'commands' => [
+            \Chronhub\Larastorm\Support\Console\CreateEventStreamCommand::class,
+        ],
     ],
 ];

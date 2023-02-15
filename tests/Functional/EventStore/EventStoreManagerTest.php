@@ -567,7 +567,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            MessagerServiceProvider::class,
+            MessagerServiceProvider::class, // required for datetime normalizer
             ChroniclerServiceProvider::class,
         ];
     }

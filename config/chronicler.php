@@ -125,8 +125,6 @@ return [
     'console' => [
         'load_migration' => true,
 
-        'commands' => [
-            '\Chronhub\Chronicler\Support\Console\CreateEventStreamCommand::class',
-        ],
+        'commands' => [],
     ],
 ];

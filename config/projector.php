@@ -18,7 +18,7 @@ return [
     */
 
     'providers' => [
-        'eloquent' => '\Chronhub\Projector\Model\Projection::class',
+        'eloquent' => \Chronhub\Larastorm\Projection\Projection::class,
         'in_memory' => \Chronhub\Storm\Projector\Provider\InMemoryProjectionProvider::class,
     ],
 
@@ -27,7 +27,7 @@ return [
     | Projectors
     |--------------------------------------------------------------------------
     |
-    | Each projector is tied to an event store
+    | Each projector is bound to an event store
     |
     |       chronicler:     chronicler configuration keys or service registered in ioc
     |       options:        options key
@@ -43,14 +43,14 @@ return [
                 'chronicler' => ['connection', 'write'],
                 'options' => 'default',
                 'provider' => 'eloquent',
-                'scope' => '\Chronhub\Projector\Support\Scope\ConnectionQueryScope::class',
+                'scope' => \Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope::class,
             ],
 
             'emit' => [
                 'chronicler' => ['connection', 'read'],
                 'options' => 'default',
                 'provider' => 'eloquent',
-                'scope' => '\Chronhub\Projector\Support\Scope\ConnectionQueryScope::class',
+                'scope' => \Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope::class,
             ],
         ],
 
@@ -59,7 +59,7 @@ return [
                 'chronicler' => ['in_memory', 'standalone'],
                 'provider' => 'in_memory',
                 'options' => 'in_memory',
-                'scope' => '\Chronhub\Projector\Support\Scope\InMemoryQueryScope::class',
+                'scope' => \Chronhub\Storm\Projector\InMemoryProjectionQueryScope::class,
             ],
         ],
     ],
@@ -75,6 +75,9 @@ return [
 
     'options' => [
 
+        /**
+         * @see \Chronhub\Storm\Projector\Options\DefaultProjectorOption
+         */
         'default' => [],
 
         'lazy' => [
@@ -94,7 +97,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Console and commands
+    | Console
     |--------------------------------------------------------------------------
     |
     */

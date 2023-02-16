@@ -156,14 +156,16 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
     public function it_raise_exception_when_provider_driver_is_unknown(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Chronicler provider with name foo_bar and driver in_memory is not defined');
+        $this->expectExceptionMessage('Chronicler provider with name standalone and driver driver_not_set is not defined');
 
-        $this->app['config']->set('chronicler.providers.in_memory',
+        $this->manager->setDefaultDriver('driver_not_set');
+
+        $this->app['config']->set('chronicler.providers.driver_not_set',
             [
-                'foo_bar' => [],
+                'standalone' => [],
             ]);
 
-        $this->manager->create('foo_bar');
+        $this->manager->create('standalone');
     }
 
     protected function getPackageProviders($app): array

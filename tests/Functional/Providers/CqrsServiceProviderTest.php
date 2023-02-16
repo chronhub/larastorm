@@ -7,6 +7,7 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
 use Chronhub\Storm\Producer\LogicalProducer;
 use Chronhub\Storm\Routing\RoutingRegistrar;
+use Chronhub\Larastorm\Support\Facade\Report;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Storm\Contracts\Producer\ProducerUnity;
@@ -29,6 +30,9 @@ final class CqrsServiceProviderTest extends OrchestraTestCase
 
         $this->assertTrue($this->app->bound(ReporterManager::class));
         $this->assertInstanceOf(CqrsManager::class, $this->app[ReporterManager::class]);
+
+        $this->assertTrue($this->app->bound(Report::SERVICE_ID));
+        $this->assertEquals(Report::getFacadeRoot(), $this->app[ReporterManager::class]);
     }
 
     /**
@@ -42,6 +46,7 @@ final class CqrsServiceProviderTest extends OrchestraTestCase
             ProducerUnity::class,
             Registrar::class,
             ReporterManager::class,
+            Report::SERVICE_ID,
         ], $provider->provides());
     }
 

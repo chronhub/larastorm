@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
 use Chronhub\Storm\Producer\LogicalProducer;
 use Chronhub\Storm\Routing\RoutingRegistrar;
+use Chronhub\Larastorm\Support\Facade\Report;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Contracts\Producer\ProducerUnity;
@@ -31,7 +32,7 @@ class CqrsServiceProvider extends ServiceProvider implements DeferrableProvider
             fn (Application $app): ReporterManager => new CqrsManager(fn (): Application => $app)
         );
 
-        // todo facade
+        $this->app->alias(ReporterManager::class, Report::SERVICE_ID);
     }
 
     public function provides(): array
@@ -40,6 +41,7 @@ class CqrsServiceProvider extends ServiceProvider implements DeferrableProvider
             ProducerUnity::class,
             Registrar::class,
             ReporterManager::class,
+            Report::SERVICE_ID,
         ];
     }
 }

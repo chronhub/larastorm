@@ -41,6 +41,10 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             ],
             'defaults' => [
                 'provider' => 'connection',
+                'providers' => [
+                    'connection' => ConnectionChroniclerProvider::class,
+                    'in_memory' => InMemoryChroniclerProvider::class,
+                ],
             ],
             'providers' => [
                 'connection' => [
@@ -143,7 +147,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            MessagerServiceProvider::class, // require date time normalizer binding
+            MessagerServiceProvider::class,
             ChroniclerServiceProvider::class,
         ];
     }

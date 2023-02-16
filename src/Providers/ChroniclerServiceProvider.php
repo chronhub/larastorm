@@ -41,7 +41,7 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             $loadMigration = config('chronicler.console.load_migration');
 
             if ($loadMigration === true) {
-                $this->loadMigrationsFrom(__DIR__.'/../../database');
+                $this->loadMigrationsFrom(__DIR__.'/../../database/event_stream');
             }
 
             $this->commands(config('chronicler.console.commands', []));
@@ -54,10 +54,16 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         $this->mergeConfigFrom($this->repositoryPath, 'aggregate');
 
         $this->registerBindings();
-        $this->registerChroniclerProviders();
+        $this->registerChroniclerProvidersIfInConfiguration();
 
         $this->app->singleton(ChroniclerManager::class, function (Application $app): ChroniclerManager {
-            return new EventStoreManager(fn (): Container => $app);
+            $eventStoreManager = new EventStoreManager(fn (): Container => $app);
+
+            foreach (config('chronicler.defaults.providers', []) as $driver => $provider) {
+                $eventStoreManager->addProvider($driver, $provider);
+            }
+
+            return $eventStoreManager;
         });
 
         $this->app->alias(ChroniclerManager::class, Chronicle::SERVICE_ID);
@@ -94,29 +100,40 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             return new $concrete($contentSerializer, ...$normalizers);
         });
 
+        $this->app->bind(
+            EventLoader::class,
+            fn (Application $app): EventLoader => $app[StreamEventLoader::class]
+        );
+
         // todo move to config
 
         $this->app->singleton(
-            StreamCategory::class, fn (): StreamCategory => new DetermineStreamCategory()
+            StreamCategory::class,
+            fn (): StreamCategory => new DetermineStreamCategory()
         );
 
         $this->app->singleton(
-            StreamEventConverter::class, fn (Application $app): StreamEventConverter => $app[ConvertStreamEvent::class]
+            StreamEventConverter::class,
+            fn (Application $app): StreamEventConverter => $app[ConvertStreamEvent::class]
         );
-
-        $this->app->bind(EventLoader::class, fn (Application $app): EventLoader => $app[StreamEventLoader::class]);
     }
 
-    private function registerChroniclerProviders(): void
+    protected function registerChroniclerProvidersIfInConfiguration(): void
     {
-        $this->app->singleton(
-            InMemoryChroniclerProvider::class,
-            fn (Application $app): InMemoryChroniclerProvider => new InMemoryChroniclerProvider(fn (): Container => $app)
-        );
+        $providers = config('chronicler.defaults.providers', []);
 
-        $this->app->singleton(
-            ConnectionChroniclerProvider::class,
-            fn (Application $app): ChroniclerProvider => new ConnectionChroniclerProvider(fn () => $app, $app[EventStoreProviderFactory::class])
-        );
+        if (isset($providers['connection']) && $providers['connection'] === ConnectionChroniclerProvider::class) {
+            $this->app->singleton(
+                InMemoryChroniclerProvider::class,
+                fn (Application $app): InMemoryChroniclerProvider => new InMemoryChroniclerProvider(fn (): Container => $app)
+            );
+        }
+
+        if (isset($providers['in_memory']) && $providers['in_memory'] === InMemoryChroniclerProvider::class) {
+            $this->app->singleton(
+                ConnectionChroniclerProvider::class,
+                fn (Application $app): ChroniclerProvider => new ConnectionChroniclerProvider(fn () => $app, $app[EventStoreProviderFactory::class])
+            );
+        }
     }
 }

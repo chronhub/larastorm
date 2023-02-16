@@ -13,7 +13,6 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Chronhub\Storm\Contracts\Message\Header;
 use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
-use Chronhub\Larastorm\Support\MessageDecorator\EventId;
 use Chronhub\Larastorm\Support\MessageDecorator\EventTime;
 
 final class EventTimeTest extends ProphecyTestCase
@@ -52,11 +51,11 @@ final class EventTimeTest extends ProphecyTestCase
     /**
      * @test
      */
-    public function it_does_not_set_event_id_to_message_headers_if_already_exists(): void
+    public function it_does_not_set_event_time_to_message_headers_if_already_exists(): void
     {
         $pastEventTime = $this->now->sub(new DateInterval('PT1H'));
 
-        $messageDecorator = new EventId();
+        $messageDecorator = new EventTime($this->clock->reveal());
 
         $message = new Message(new stdClass(), [Header::EVENT_TIME => $pastEventTime]);
 

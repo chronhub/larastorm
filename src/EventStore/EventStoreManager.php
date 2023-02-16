@@ -57,6 +57,13 @@ final class EventStoreManager implements ChroniclerManager
         return $this;
     }
 
+    public function addProvider(string $driver, string|ChroniclerProvider $chroniclerProvider): self
+    {
+        $this->providers[$driver] = $chroniclerProvider;
+
+        return $this;
+    }
+
     public function setDefaultDriver(string $driver): self
     {
         $this->app['config']['chronicler.defaults.provider'] = $driver;

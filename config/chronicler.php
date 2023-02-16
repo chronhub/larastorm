@@ -21,18 +21,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Event store
+    | Providers
     |--------------------------------------------------------------------------
     |
     */
 
     'defaults' => [
         'provider' => 'connection',
+        'providers' => [
+            'connection' => \Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider::class,
+            'in_memory' => \Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider::class,
+        ],
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Chronicler providers
+    | Event Store
     |--------------------------------------------------------------------------
     |
     |   query loader: (optional : default cursor)
@@ -117,7 +121,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Migration and command
+    | Console
     |--------------------------------------------------------------------------
     |
     */

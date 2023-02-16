@@ -7,6 +7,7 @@ namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\EventStream;
+use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 
 final class EventStreamTest extends OrchestraTestCase
 {
@@ -20,9 +21,12 @@ final class EventStreamTest extends OrchestraTestCase
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(__DIR__.'/../../../database');
-
         $this->eventStream = new EventStream();
+    }
+
+    protected function getPackageProviders($app): array
+    {
+        return [ChroniclerServiceProvider::class];
     }
 
     /**
@@ -174,27 +178,6 @@ final class EventStreamTest extends OrchestraTestCase
      * @test
      */
     public function it_filter_by_categories(): void
-    {
-        $category = 'transaction';
-        $streamNames = ['add', 'subtract', 'divide'];
-
-        foreach ($streamNames as $streamName) {
-            $this->assertFalse($this->eventStream->hasRealStreamName($streamName));
-
-            $this->eventStream->createStream($streamName, $this->tableName, $category);
-
-            $this->assertTrue($this->eventStream->hasRealStreamName($streamName));
-        }
-
-        $expectedCategories = ['add', 'divide', 'subtract'];
-
-        $this->assertEquals($expectedCategories, $this->eventStream->filterByCategories(['transaction']));
-    }
-
-    /**
-     * @test
-     */
-    public function it_filter_by_categories_2(): void
     {
         $category = 'transaction';
         $streamNames = ['add', 'subtract', 'divide'];

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Chronhub\Storm\Contracts\Message\UniqueId;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
@@ -71,6 +72,8 @@ class MessagerServiceProvider extends ServiceProvider implements DeferrableProvi
             MessageAlias::class,
             fn (Application $app): MessageAlias => $app[config('messager.alias')]
         );
+
+        $this->app->singleton(UniqueId::class, config('messager.unique_id'));
     }
 
     public function provides(): array
@@ -80,6 +83,7 @@ class MessagerServiceProvider extends ServiceProvider implements DeferrableProvi
             'serializer.normalizer.event_time',
             MessageSerializer::class,
             MessageAlias::class,
+            UniqueId::class,
         ];
     }
 }

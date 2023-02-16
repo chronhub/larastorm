@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\UniqueId;
 
-use Stringable;
 use Symfony\Component\Uid\Uuid;
+use Chronhub\Storm\Contracts\Message\UniqueId;
 
-// need at least generate as contract
-final class UniqueId implements Stringable
+final class UniqueIdV4 implements UniqueId
 {
-    public static function create(): Uuid
-    {
-        return Uuid::v4();
-    }
-
     public function generate(): string
     {
-        return self::create()->jsonSerialize();
+        return Uuid::v4()->jsonSerialize();
     }
 
     public function __toString(): string

@@ -6,11 +6,12 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Message\MessageFactory;
+use Chronhub\Storm\Contracts\Message\UniqueId;
 use Chronhub\Storm\Message\AliasFromClassName;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\Support\UniqueId\UniqueId;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
 use Chronhub\Storm\Serializer\MessagingSerializer;
+use Chronhub\Larastorm\Support\UniqueId\UniqueIdV4;
 use Chronhub\Storm\Reporter\Subscribers\MakeMessage;
 use Chronhub\Larastorm\Support\MessageDecorator\EventId;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
@@ -30,7 +31,7 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
     {
         $this->assertEquals([
             'clock' => PointInTime::class,
-            'unique_id' => UniqueId::class,
+            'unique_id' => UniqueIdV4::class,
             'factory' => MessageFactory::class,
             'alias' => AliasFromClassName::class,
             'serializer' => [
@@ -67,6 +68,9 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
 
         $this->assertTrue($this->app->bound(MessageAlias::class));
         $this->assertInstanceOf(AliasFromClassName::class, $this->app[MessageAlias::class]);
+
+        $this->assertTrue($this->app->bound(UniqueId::class));
+        $this->assertInstanceOf(UniqueIdV4::class, $this->app[UniqueId::class]);
     }
 
     /**
@@ -81,6 +85,7 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
             'serializer.normalizer.event_time',
             MessageSerializer::class,
             MessageAlias::class,
+            UniqueId::class,
         ], $provider->provides());
     }
 

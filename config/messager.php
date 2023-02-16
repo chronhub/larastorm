@@ -9,8 +9,8 @@ return [
     | System Clock
     |--------------------------------------------------------------------------
     |
-    | Default use date time immutable and UTC Timezone
-    | note it does not use laravel env timezone configuration
+    | Default provide datetime immutable and UTC Timezone which is basically a requirement
+    | It use the monotonic clock to generate time instance
     |
     */
 
@@ -21,9 +21,15 @@ return [
     | Unique identifier
     |--------------------------------------------------------------------------
     |
+    | The default provided only generate string and should be replaced
+    | by extending the UniqueId interface to create instance
+    | @see \Chronhub\Storm\Contracts\Message\UniqueId
+    |
+    | You should also change the eventId in message decorator and adapt normalizers in serializer
+    | to feat the package used
     */
 
-    'unique_id' => \Chronhub\Larastorm\Support\UniqueId\UniqueId::class,
+    'unique_id' => \Chronhub\Larastorm\Support\UniqueId\UniqueIdV4::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -44,6 +50,10 @@ return [
     | Message alias
     |--------------------------------------------------------------------------
     |
+    | The default provided only check if event name is a valid class name
+    | two other types is provided:
+    |       - AliasFromInflector \Foo\Bar\RegisterCustomer to "register-customer"
+    |       - AliasFromMap  [your_service_name => FQCN, [...]]
     */
 
     'alias' => \Chronhub\Storm\Message\AliasFromClassName::class,
@@ -59,7 +69,7 @@ return [
         'concrete' => \Chronhub\Storm\Serializer\MessagingSerializer::class,
         'normalizers' => [
             \Symfony\Component\Serializer\Normalizer\UidNormalizer::class,
-            'serializer.normalizer.event_time', // bound and tied to system clock
+            'serializer.normalizer.event_time',
         ],
     ],
 

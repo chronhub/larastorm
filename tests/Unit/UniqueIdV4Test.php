@@ -8,24 +8,16 @@ use Stringable;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV4;
 use Chronhub\Larastorm\Tests\UnitTestCase;
-use Chronhub\Larastorm\Support\UniqueId\UniqueId;
+use Chronhub\Larastorm\Support\UniqueId\UniqueIdV4;
 
-final class UniqueIdTest extends UnitTestCase
+final class UniqueIdV4Test extends UnitTestCase
 {
-    /**
-     * @test
-     */
-    public function it_create_unique_id_instance(): void
-    {
-        $this->assertInstanceOf(UuidV4::class, UniqueId::create());
-    }
-
     /**
      * @test
      */
     public function it_generate_unique_id_as_string(): void
     {
-        $instance = new UniqueId();
+        $instance = new UniqueIdV4();
 
         $uuid = $instance->generate();
 
@@ -37,9 +29,9 @@ final class UniqueIdTest extends UnitTestCase
     /**
      * @test
      */
-    public function it_generate_unique_id_as_string_2(): void
+    public function it_cast_unique_id_to_string(): void
     {
-        $instance = new UniqueId();
+        $instance = new UniqueIdV4();
 
         $this->assertInstanceOf(Stringable::class, $instance);
 

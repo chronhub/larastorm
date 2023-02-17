@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Cqrs;
 
-use Closure;
 use Illuminate\Support\Arr;
 use Chronhub\Storm\Routing\Group;
 use Chronhub\Storm\Routing\FindRoute;
@@ -14,9 +13,9 @@ use Chronhub\Storm\Reporter\ReportEvent;
 use Chronhub\Storm\Reporter\ReportQuery;
 use Chronhub\Storm\Tracker\TrackMessage;
 use Chronhub\Storm\Reporter\ReportCommand;
+use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Storm\Contracts\Routing\Registrar;
-use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Message\ChainMessageDecorator;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
 use Chronhub\Storm\Contracts\Producer\ProducerUnity;
@@ -32,14 +31,17 @@ use function is_string;
 
 final class CqrsManager implements ReporterManager
 {
-    private Application $app;
+    private Container $container;
 
     private Registrar $registrar;
 
-    public function __construct(Closure $app)
+    private MessageProducerFactory $producerFactory;
+
+    public function __construct(callable $container)
     {
-        $this->app = $app();
-        $this->registrar = $this->app[Registrar::class];
+        $this->container = $container();
+        $this->registrar = $this->container[Registrar::class];
+        $this->producerFactory = new MessageProducerFactory($container);
     }
 
     public function create(string $type, string $name): Reporter
@@ -94,7 +96,7 @@ final class CqrsManager implements ReporterManager
         $tracker = $group->trackerId();
 
         if (is_string($tracker)) {
-            $tracker = $this->app[$tracker];
+            $tracker = $this->container[$tracker];
         }
 
         return new $concrete($tracker ?? new TrackMessage());
@@ -109,7 +111,7 @@ final class CqrsManager implements ReporterManager
 
         return $this->resolveServices([
             new NameReporterService($reporterServiceId),
-            $this->app['config']->get('messager.subscribers', []),
+            $this->container['config']->get('messager.subscribers', []),
             $group->messageSubscribers(),
             $this->chainMessageDecorators($group),
             $this->makeRouteSubscriber($group),
@@ -118,11 +120,11 @@ final class CqrsManager implements ReporterManager
 
     private function makeRouteSubscriber(Group $group): MessageSubscriber
     {
-        $routeLocator = new FindRoute($group, $this->app[MessageAlias::class], $this->app);
+        $routeLocator = new FindRoute($group, $this->container[MessageAlias::class], $this->container);
 
-        $messageProducer = (new ProducerFactory($this->app))($group);
+        $messageProducer = ($this->producerFactory)($group);
 
-        return new HandleRoute($routeLocator, $messageProducer, $this->app[ProducerUnity::class]);
+        return new HandleRoute($routeLocator, $messageProducer, $this->container[ProducerUnity::class]);
     }
 
     private function chainMessageDecorators(Group $group): MessageSubscriber
@@ -131,7 +133,7 @@ final class CqrsManager implements ReporterManager
 
         $messageDecorators = [
             new ProducerMessageDecorator($strategy),
-            $this->app['config']->get('messager.decorators', []),
+            $this->container['config']->get('messager.decorators', []),
             $group->messageDecorators(),
         ];
 
@@ -149,7 +151,7 @@ final class CqrsManager implements ReporterManager
     private function resolveServices(array ...$services): array
     {
         return array_map(function ($service) {
-            return is_string($service) ? $this->app[$service] : $service;
+            return is_string($service) ? $this->container[$service] : $service;
         }, Arr::flatten($services));
     }
 }

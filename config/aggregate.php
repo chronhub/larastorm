@@ -15,12 +15,11 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Event Decorators
+        | Stream event Decorators
         |--------------------------------------------------------------------------
         |
         | if false, you must provide decorators in next event decorators
         | Decorate domain event/ aggregate changed for each AR
-        | merge with messager and aggregate decorators
         |
         */
 
@@ -52,12 +51,14 @@ return [
                  * Chronicler use by your aggregate repository
                  *
                  * provide a service id or array member
-                 * with name and provider key from chronicler config
+                 * with driver and name key from chronicler config
                  */
-                'chronicler' => ['write', 'connection'],
+                'chronicler' => ['connection', 'write'],
 
                 /**
-                 * It must match the chronicler producer strategy
+                 * It must match the chronicler stream persistence
+                 *      single stream producer => single stream persistence
+                 *      one stream per aggregate producer => per aggregate stream persistence
                  */
                 'strategy' => 'single',
 
@@ -66,7 +67,7 @@ return [
                  * an array with your aggregate root class and his subclasses
                  */
                 'aggregate_type' => [
-                    'root' => 'AG class name',
+                    'root' => 'aggregate root class name',
                     'lineage' => [],
                 ],
 
@@ -81,7 +82,7 @@ return [
 
                     /**
                      *  Unique Cache tag name per stream name
-                     *  null tag will provide a default tag like {identity-my_stream_name}
+                     *  null tag will provide a default tag like {identity-aggregate_root_base_name}
                      */
                     'tag' => null,
 
@@ -97,50 +98,6 @@ return [
                  * merge with event decorators above
                  */
                 'event_decorators' => [],
-
-                /**
-                 * Aggregate snapshot
-                 *
-                 * array can also be removed instead of using false
-                 */
-                'snapshot' => [
-                    /**
-                     * Enable snapshot
-                     */
-                    'use_snapshot' => false,
-
-                    /**
-                     * Snapshot stream name
-                     *
-                     * determine your own snapshot stream name
-                     * nullable stream name will provide by default {my_stream_name_snapshot}
-                     */
-                    'stream_name' => null,
-
-                    /**
-                     * Snapshot store service id
-                     *
-                     * must be a service registered in ioc
-                     *
-                     * @see '\Chronhub\Snapshot\Store\SnapshotStore'
-                     */
-                    'store' => 'snapshot.store.service.id',
-
-                    /**
-                     * Snapshot Aggregate Repository
-                     */
-                    'repository' => 'snapshot',
-
-                    /**
-                     * Persist snapshot every x events
-                     */
-                    'persist_every_x_events' => 1000,
-
-                    /**
-                     * Projector name would be used to take snapshot
-                     */
-                    'projector' => 'emit',
-                ],
             ],
         ],
     ],

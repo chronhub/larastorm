@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Projector;
 
+use PHPUnit\Framework\TestCase;
+use Illuminate\Contracts\Container\Container;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
+use Chronhub\Storm\Contracts\Projector\ProjectorManager;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
@@ -55,9 +58,7 @@ final class InMemoryProvideProjectorServiceManagerTest extends OrchestraTestCase
      */
     public function it_raise_exception_if_projector_driver_is_not_defined(): void
     {
-        $this->app['config']->set('projector.projectors.foo', [
-            'testing' => [],
-        ]);
+        $this->app['config']->set('projector.projectors.foo', ['testing' => []]);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Projector configuration with name testing is not defined');
@@ -65,6 +66,53 @@ final class InMemoryProvideProjectorServiceManagerTest extends OrchestraTestCase
         $this->serviceManager->setDefaultDriver('foo');
 
         $this->serviceManager->create('testing');
+    }
+
+    /**
+     * @test
+     */
+    public function it_raise_exception_if_projection_provider_key_is_not_defined(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Projector provider key is not defined');
+
+        $this->assertEquals('in_memory', $this->app['config']->get('projector.projectors.in_memory.testing.provider'));
+
+        $this->app['config']->set('projector.projectors.in_memory.testing.provider', null);
+
+        $this->assertNull($this->app['config']->get('projector.projectors.in_memory.testing.provider'));
+
+        $this->serviceManager->setDefaultDriver('in_memory');
+
+        $this->serviceManager->create('testing');
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_extend_manager(): void
+    {
+        $config = ['any_value'];
+
+        $this->app['config']->set('projector.projectors.in_memory.foo', $config);
+
+        $instance = $this->createMock(ProjectorManager::class);
+
+        $this->serviceManager->extend(
+            'foo',
+            function (Container $container, string $name, array $projectorConfig) use ($instance, $config): ProjectorManager {
+                TestCase::assertEquals($container, $this->app);
+                TestCase::assertEquals('foo', $name);
+                TestCase::assertEquals($projectorConfig, $config);
+
+                return $instance;
+            });
+
+        $this->serviceManager->setDefaultDriver('in_memory');
+
+        $projectorManager = $this->serviceManager->create('foo');
+
+        $this->assertSame($instance, $projectorManager);
     }
 
     protected function getPackageProviders($app): array

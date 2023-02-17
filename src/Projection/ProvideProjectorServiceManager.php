@@ -4,26 +4,25 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Projection;
 
-use Closure;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Larastorm\EventStore\EventStoreResolver;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
 use Chronhub\Storm\Contracts\Projector\ProjectorOption;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use function ucfirst;
 use function is_array;
 use function is_string;
-use function method_exists;
 
 final class ProvideProjectorServiceManager implements ProjectorServiceManager
 {
-    private Container $app;
+    private Container $container;
+
+    private EventStoreResolver $eventStoreResolver;
 
     /**
      * @var array<string, ProjectorManager>
@@ -35,9 +34,10 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
      */
     private array $customCreators = [];
 
-    public function __construct(Closure $app)
+    public function __construct(callable $container)
     {
-        $this->app = $app();
+        $this->container = $container();
+        $this->eventStoreResolver = new EventStoreResolver($container);
     }
 
     public function create(string $name): ProjectorManager
@@ -54,21 +54,21 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
 
     public function setDefaultDriver(string $driver): self
     {
-        $this->app['config']['projector.defaults.projector'] = $driver;
+        $this->container['config']['projector.defaults.projector'] = $driver;
 
         return $this;
     }
 
     public function getDefaultDriver(): string
     {
-        return $this->app['config']['projector.defaults.projector'];
+        return $this->container['config']['projector.defaults.projector'];
     }
 
     private function resolve(string $name): ProjectorManager
     {
         $driver = $this->getDefaultDriver();
 
-        $config = $this->app['config']["projector.projectors.$driver.$name"];
+        $config = $this->container['config']["projector.projectors.$driver.$name"];
 
         if (empty($config)) {
             throw new InvalidArgumentException("Projector configuration with name $name is not defined");
@@ -89,78 +89,57 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
          */
         $driverMethod = 'create'.ucfirst(Str::camel($driver.'Manager'));
 
-        if (! method_exists($this, $driverMethod)) {
-            throw new InvalidArgumentException("Projector driver $driver is not define");
-        }
-
         return $this->{$driverMethod}($config);
     }
 
     private function createConnectionManager(array $config): ProjectorManager
     {
-        $chronicler = $this->determineChronicler($config);
+        $chronicler = $this->eventStoreResolver->resolve($config['chronicler']);
 
         return new ConnectionProjectorManager(
             $chronicler,
             $chronicler->getEventStreamProvider(),
             $this->determineProjectionProvider($config['provider'] ?? null),
-            $this->app[$config['scope']],
-            $this->app[SystemClock::class],
+            $this->container[$config['scope']],
+            $this->container[SystemClock::class],
             $this->determineProjectorOptions($config['options']),
         );
     }
 
     private function createInMemoryManager(array $config): ProjectorManager
     {
-        $chronicler = $this->determineChronicler($config);
+        $chronicler = $this->eventStoreResolver->resolve($config['chronicler']);
 
         return new InMemoryProjectorManager(
             $chronicler,
             $chronicler->getEventStreamProvider(),
             $this->determineProjectionProvider($config['provider'] ?? null),
-            $this->app[$config['scope']],
-            $this->app[SystemClock::class],
+            $this->container[$config['scope']],
+            $this->container[SystemClock::class],
             $this->determineProjectorOptions($config['options']),
         );
     }
 
-    private function determineChronicler(array $config): Chronicler
-    {
-        $chronicler = $config['chronicler'];
-
-        if (is_string($chronicler) && $this->app->bound($chronicler)) {
-            return $this->app[$chronicler];
-        }
-
-        if (is_array($chronicler)) {
-            [$driver, $name] = $chronicler;
-
-            return $this->app[ChroniclerManager::class]->setDefaultDriver($driver)->create($name);
-        }
-
-        throw new InvalidArgumentException('Event store from projector configuration is not defined');
-    }
-
     private function determineProjectionProvider(?string $providerKey): ProjectionProvider
     {
-        $projectionProvider = $this->app['config']["projector.providers.$providerKey"] ?? null;
+        $projectionProvider = $this->container['config']["projector.providers.$providerKey"] ?? null;
 
         if (! is_string($projectionProvider)) {
             throw new InvalidArgumentException('Projector provider key is not defined');
         }
 
-        return $this->app[$projectionProvider];
+        return $this->container[$projectionProvider];
     }
 
     protected function determineProjectorOptions(?string $optionKey): array|ProjectorOption
     {
-        $options = $this->app['config']["projector.options.$optionKey"] ?? [];
+        $options = $this->container['config']["projector.options.$optionKey"] ?? [];
 
-        return is_array($options) ? $options : $this->app[$options];
+        return is_array($options) ? $options : $this->container[$options];
     }
 
     private function callCustomCreator(string $name, array $config): ProjectorManager
     {
-        return $this->customCreators[$name]($this->app, $name, $config);
+        return $this->customCreators[$name]($this->container, $name, $config);
     }
 }

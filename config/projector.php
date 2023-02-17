@@ -7,7 +7,7 @@ use Chronhub\Storm\Contracts\Projector\ProjectorOption;
 return [
 
     'defaults' => [
-        'factory' => 'connection',
+        'projector' => 'connection',
     ],
 
     /*
@@ -69,15 +69,15 @@ return [
     | Projector options
     |--------------------------------------------------------------------------
     |
-    | Options can be an array or a string service class/id implementing option contract
+    | Options can be an array or a string service class/id implementing projector option contract
+    |       a class or service id is immutable
+    |       array will return a default projection where options can be mutated
     |
+    | @see \Chronhub\Storm\Projector\Options\DefaultProjectorOption
     */
 
     'options' => [
 
-        /**
-         * @see \Chronhub\Storm\Projector\Options\DefaultProjectorOption
-         */
         'default' => [],
 
         'lazy' => [

@@ -7,7 +7,6 @@ namespace Chronhub\Larastorm\Projection;
 use Illuminate\Database\QueryException;
 use Chronhub\Storm\Contracts\Projector\Store;
 use Chronhub\Storm\Projector\ProjectionStatus;
-use Chronhub\Storm\Projector\Exceptions\ProjectionFailed;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 
 final class ConnectionStore implements Store
@@ -17,7 +16,7 @@ final class ConnectionStore implements Store
     }
 
     /**
-     * @throws ProjectionFailed
+     * @throws ConnectionProjectionFailed
      */
     public function create(): bool
     {

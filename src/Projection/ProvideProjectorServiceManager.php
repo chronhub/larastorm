@@ -9,8 +9,6 @@ use Illuminate\Support\Str;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
-use Chronhub\Storm\Projector\ProjectorManagerFactory;
-use Chronhub\Storm\Projector\InMemoryProjectorFactory;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
 use Chronhub\Storm\Contracts\Projector\ProjectorOption;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
@@ -33,14 +31,9 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
     private array $projectors = [];
 
     /**
-     * @var array<string, Closure>
+     * @var array<string, callable>
      */
     private array $customCreators = [];
-
-    /**
-     * @var array<string, string|ProjectorManagerFactory>
-     */
-    private array $factories = [];
 
     public function __construct(Closure $app)
     {
@@ -59,25 +52,16 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
         return $this;
     }
 
-    public function shouldUse(string $driver, string|callable $factory): ProjectorServiceManager
-    {
-        $this->factories[$driver] = $factory;
-
-        $this->setDefaultDriver($driver);
-
-        return $this;
-    }
-
     public function setDefaultDriver(string $driver): self
     {
-        $this->app['config']['projector.defaults.factory'] = $driver;
+        $this->app['config']['projector.defaults.projector'] = $driver;
 
         return $this;
     }
 
     public function getDefaultDriver(): string
     {
-        return $this->app['config']['projector.defaults.factory'];
+        return $this->app['config']['projector.defaults.projector'];
     }
 
     private function resolve(string $name): ProjectorManager
@@ -86,8 +70,8 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
 
         $config = $this->app['config']["projector.projectors.$driver.$name"];
 
-        if ($config === null) {
-            throw new InvalidArgumentException("Projector configuration $name is not defined");
+        if (empty($config)) {
+            throw new InvalidArgumentException("Projector configuration with name $name is not defined");
         }
 
         if (isset($this->customCreators[$name])) {
@@ -99,71 +83,45 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
 
     private function createProjectorManager(string $driver, array $config): ProjectorManager
     {
-        $factory = $this->callFactory($driver, $config);
-
         /**
          * @covers createConnectionManager
          * @covers createInMemoryManager
          */
         $driverMethod = 'create'.ucfirst(Str::camel($driver.'Manager'));
 
-        if (method_exists($this, $driverMethod)) {
-            return $this->{$driverMethod}($factory);
+        if (! method_exists($this, $driverMethod)) {
+            throw new InvalidArgumentException("Projector driver $driver is not define");
         }
 
-        throw new InvalidArgumentException("Projector service manager $driver is not defined");
+        return $this->{$driverMethod}($config);
     }
 
-    private function createConnectionManager(ProjectorManagerFactory $managerFactory): ProjectorManager
+    private function createConnectionManager(array $config): ProjectorManager
     {
-        return new ConnectionProjectorManager($managerFactory);
-    }
-
-    private function createInMemoryManager(ProjectorManagerFactory $managerFactory): ProjectorManager
-    {
-        return new InMemoryProjectorManager($managerFactory);
-    }
-
-    private function createConnectionFactory(...$args): ProjectorManagerFactory
-    {
-        return new ConnectionProjectorFactory(...$args);
-    }
-
-    private function createInMemoryFactory(...$args): ProjectorManagerFactory
-    {
-        return new InMemoryProjectorFactory(...$args);
-    }
-
-    private function callFactory(string $driver, array $config): ProjectorManagerFactory
-    {
-        $factory = $this->factories[$driver] ?? null;
-
-        if ($factory instanceof ProjectorManagerFactory) {
-            return $factory;
-        }
-
         $chronicler = $this->determineChronicler($config);
 
-        $args = [
+        return new ConnectionProjectorManager(
             $chronicler,
             $chronicler->getEventStreamProvider(),
             $this->determineProjectionProvider($config['provider'] ?? null),
             $this->app[$config['scope']],
             $this->app[SystemClock::class],
             $this->determineProjectorOptions($config['options']),
-        ];
+        );
+    }
 
-        /**
-         * @covers createConnectionFactory
-         * @covers createInMemoryFactory
-         */
-        $driverMethod = 'create'.ucfirst(Str::camel($driver.'Factory'));
+    private function createInMemoryManager(array $config): ProjectorManager
+    {
+        $chronicler = $this->determineChronicler($config);
 
-        if (method_exists($this, $driverMethod)) {
-            return $this->factories[$driver] = $this->{$driverMethod}(...$args);
-        }
-
-        throw new InvalidArgumentException("Projector manager factory $driver is not defined");
+        return new InMemoryProjectorManager(
+            $chronicler,
+            $chronicler->getEventStreamProvider(),
+            $this->determineProjectionProvider($config['provider'] ?? null),
+            $this->app[$config['scope']],
+            $this->app[SystemClock::class],
+            $this->determineProjectorOptions($config['options']),
+        );
     }
 
     private function determineChronicler(array $config): Chronicler
@@ -180,7 +138,7 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
             return $this->app[ChroniclerManager::class]->setDefaultDriver($driver)->create($name);
         }
 
-        throw new InvalidArgumentException('Event store from projector is not defined');
+        throw new InvalidArgumentException('Event store from projector configuration is not defined');
     }
 
     private function determineProjectionProvider(?string $providerKey): ProjectionProvider

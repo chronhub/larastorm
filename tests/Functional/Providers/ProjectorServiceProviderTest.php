@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chronhub\Larastorm\Tests\Functional\Projector;
+namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use Chronhub\Larastorm\Projection\Projection;
 use Chronhub\Larastorm\Support\Facade\Project;
@@ -25,7 +25,7 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
     {
         $this->assertEquals([
             'defaults' => [
-                'factory' => 'connection',
+                'projector' => 'connection',
             ],
             'providers' => [
                 'eloquent' => Projection::class,

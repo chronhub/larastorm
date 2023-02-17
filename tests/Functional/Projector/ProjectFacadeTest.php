@@ -46,12 +46,12 @@ final class ProjectFacadeTest extends OrchestraTestCase
         Project::setDefaultDriver('foo');
 
         $this->assertEquals('foo', Project::getDefaultDriver());
-        $this->assertEquals('foo', config('projector.defaults.factory'));
+        $this->assertEquals('foo', config('projector.defaults.projector'));
 
         Project::setDefaultDriver('bar');
 
         $this->assertEquals('bar', Project::getDefaultDriver());
-        $this->assertEquals('bar', config('projector.defaults.factory'));
+        $this->assertEquals('bar', config('projector.defaults.projector'));
     }
 
     /**

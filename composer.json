@@ -20,7 +20,7 @@
     "ext-pcntl": "*"
   },
   "require-dev": {
-    "laravel/pint": "^1.4",
+    "laravel/pint": "^1.5",
     "phpstan/phpstan":"^1.10",
     "nunomaduro/larastan": "^2.4",
     "orchestra/testbench": "8.*",

@@ -15,8 +15,6 @@ final class SingleStreamPersistence implements StreamPersistence
 {
     /**
      * Index name
-     *
-     * @var string
      */
     private string $indexQuery = 'ix_query_aggregate';
 

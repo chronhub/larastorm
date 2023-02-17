@@ -17,28 +17,19 @@ final class MessageJob
 
     /**
      * The number of times the job may be attempted.
-     *
-     * @var int
      */
     public int $tries = 1;
 
     /**
      * The maximum number of unhandled exceptions to allow before failing
-     *
-     * @var int
      */
     public int $maxExceptions = 3;
 
     /**
      * The number of seconds the job can run before timing out
-     *
-     * @var int
      */
     public int $timeout = 30;
 
-    /**
-     * @var int|null
-     */
     public null|int $backoff = null;
 
     public function __construct(public readonly array $payload)
@@ -61,8 +52,6 @@ final class MessageJob
 
     /**
      * Display message name
-     *
-     * @return string
      */
     public function displayName(): string
     {

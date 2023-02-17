@@ -19,10 +19,6 @@ final class StreamEventLoader implements EventLoader
     }
 
     /**
-     * @param  iterable  $streamEvents
-     * @param  StreamName  $streamName
-     * @return Generator
-     *
      * @throws StreamNotFound
      * @throws ConnectionQueryFailure
      */

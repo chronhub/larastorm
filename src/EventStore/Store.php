@@ -22,8 +22,6 @@ abstract class Store implements ChroniclerConnection
 {
     /**
      * Determine if we create a new stream, or we update one
-     *
-     * @var bool
      */
     protected bool $isCreation = false;
 

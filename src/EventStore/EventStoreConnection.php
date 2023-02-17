@@ -92,9 +92,6 @@ abstract class EventStoreConnection implements ChroniclerConnection, ChroniclerD
     /**
      * Handle query exception depends on connection driver
      *
-     * @param  QueryException  $exception
-     * @param  StreamName  $streamName
-     * @return void
      *
      * @throws StreamNotFound when stream not found on update
      * @throws StreamAlreadyExists when stream already exist on creation

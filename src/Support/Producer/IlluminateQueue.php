@@ -15,14 +15,14 @@ final readonly class IlluminateQueue implements MessageQueue
 {
     public function __construct(public QueueingDispatcher $queueingDispatcher,
                                 public MessageSerializer $messageSerializer,
-                                public ?array $routeQueueOptions = null)
+                                public ?array $groupQueueOptions = null)
     {
     }
 
     public function toQueue(Message $message): void
     {
-        if (is_array($this->routeQueueOptions) && count($this->routeQueueOptions) > 0 && $message->hasNot('queue')) {
-            $message = $message->withHeader('queue', $this->routeQueueOptions);
+        if (is_array($this->groupQueueOptions) && count($this->groupQueueOptions) > 0 && $message->hasNot('queue')) {
+            $message = $message->withHeader('queue', $this->groupQueueOptions);
         }
 
         $payload = $this->messageSerializer->serializeMessage($message);

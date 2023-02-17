@@ -21,7 +21,6 @@ use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use function ucfirst;
 use function is_array;
 use function is_string;
-use function is_callable;
 use function method_exists;
 
 final class ProvideProjectorServiceManager implements ProjectorServiceManager
@@ -139,10 +138,6 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
     {
         $factory = $this->factories[$driver] ?? null;
 
-        if (is_callable($factory)) {
-            throw new \InvalidArgumentException('callable projector factory not supported right now');
-        }
-
         if ($factory instanceof ProjectorManagerFactory) {
             return $factory;
         }
@@ -179,9 +174,13 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
             return $this->app[$chronicler];
         }
 
-        [$driver, $name] = $chronicler;
+        if (is_array($chronicler)) {
+            [$driver, $name] = $chronicler;
 
-        return $this->app[ChroniclerManager::class]->setDefaultDriver($driver)->create($name);
+            return $this->app[ChroniclerManager::class]->setDefaultDriver($driver)->create($name);
+        }
+
+        throw new InvalidArgumentException('Event store from projector is not defined');
     }
 
     private function determineProjectionProvider(?string $providerKey): ProjectionProvider

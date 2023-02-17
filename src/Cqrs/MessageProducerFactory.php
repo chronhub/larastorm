@@ -6,21 +6,21 @@ namespace Chronhub\Larastorm\Cqrs;
 
 use Chronhub\Storm\Routing\Group;
 use Chronhub\Storm\Producer\ProduceMessage;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
-use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Contracts\Producer\ProducerUnity;
 use Chronhub\Storm\Contracts\Producer\MessageProducer;
 use Chronhub\Larastorm\Support\Producer\IlluminateQueue;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 use function is_string;
 
-class ProducerFactory
+class MessageProducerFactory
 {
-    private Application $app;
+    private Container $container;
 
-    public function __construct(Application $app)
+    public function __construct(callable $app)
     {
-        $this->app = $app;
+        $this->container = $app();
     }
 
     public function __invoke(Group $group): MessageProducer
@@ -28,15 +28,15 @@ class ProducerFactory
         $producerId = $group->producerServiceId();
 
         if (is_string($producerId)) {
-            return $this->app[$producerId];
+            return $this->container[$producerId];
         }
 
         $messageQueue = new IlluminateQueue(
-            $this->app[QueueingDispatcher::class],
-            $this->app[MessageSerializer::class],
+            $this->container[QueueingDispatcher::class],
+            $this->container[MessageSerializer::class],
             $group->queue()
         );
 
-        return new ProduceMessage($this->app[ProducerUnity::class], $messageQueue);
+        return new ProduceMessage($this->container[ProducerUnity::class], $messageQueue);
     }
 }

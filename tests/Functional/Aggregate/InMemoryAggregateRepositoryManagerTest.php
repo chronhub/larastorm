@@ -67,8 +67,8 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
 
         $this->assertEquals(AggregateRepository::class, $aggregateRepository::class);
         $this->assertInstanceOf(AggregateRepository::class, $aggregateRepository);
-        $this->assertEquals(SingleStreamPerAggregate::class, $aggregateRepository->producer::class);
-        $this->assertEquals(NullAggregateCache::class, $aggregateRepository->cache::class);
+        $this->assertEquals(SingleStreamPerAggregate::class, $aggregateRepository->streamProducer::class);
+        $this->assertEquals(NullAggregateCache::class, $aggregateRepository->aggregateCache::class);
         $this->assertEquals(StandaloneInMemoryChronicler::class, $aggregateRepository->chronicler::class);
 
         $aggregateType = ReflectionProperty::getProperty($aggregateRepository, 'aggregateType');
@@ -106,15 +106,15 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $aggregateRepository = $this->repositoryManager->create('transaction');
 
         $this->assertInstanceOf(AggregateRepository::class, $aggregateRepository);
-        $this->assertInstanceOf(AggregateTaggedCache::class, $aggregateRepository->cache);
+        $this->assertInstanceOf(AggregateTaggedCache::class, $aggregateRepository->aggregateCache);
 
-        $size = ReflectionProperty::getProperty($aggregateRepository->cache, 'limit');
+        $size = ReflectionProperty::getProperty($aggregateRepository->aggregateCache, 'limit');
         $this->assertEquals(2000, $size);
 
-        $tag = ReflectionProperty::getProperty($aggregateRepository->cache, 'cacheTag');
+        $tag = ReflectionProperty::getProperty($aggregateRepository->aggregateCache, 'cacheTag');
         $this->assertEquals('my_tag', $tag);
 
-        $cacheDriver = ReflectionProperty::getProperty($aggregateRepository->cache, 'cache');
+        $cacheDriver = ReflectionProperty::getProperty($aggregateRepository->aggregateCache, 'cache');
         $this->assertInstanceOf(Repository::class, $cacheDriver);
         $this->assertInstanceOf(RedisStore::class, $cacheDriver->getStore());
     }
@@ -139,7 +139,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $aggregateRepository = $this->repositoryManager->create('transaction');
 
         $this->assertInstanceOf(AggregateRepository::class, $aggregateRepository);
-        $this->assertEquals(OneStreamPerAggregate::class, $aggregateRepository->producer::class);
+        $this->assertEquals(OneStreamPerAggregate::class, $aggregateRepository->streamProducer::class);
     }
 
     /**

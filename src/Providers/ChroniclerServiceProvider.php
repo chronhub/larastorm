@@ -17,6 +17,7 @@ use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Storm\Contracts\Serializer\ContentSerializer;
 use Chronhub\Larastorm\EventStore\Loader\StreamEventLoader;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
+use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Larastorm\EventStore\EventStoreProviderFactory;
 use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
@@ -24,6 +25,7 @@ use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader as EventLoader;
+use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 use function array_map;
 
 class ChroniclerServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -67,6 +69,10 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         });
 
         $this->app->alias(ChroniclerManager::class, Chronicle::SERVICE_ID);
+
+        $this->app->singleton(RepositoryManager::class, function (Application $app): RepositoryManager {
+            return new AggregateRepositoryManager(fn () => $app);
+        });
     }
 
     public function provides(): array
@@ -77,6 +83,7 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             StreamEventConverter::class,
             ChroniclerManager::class,
             Chronicle::SERVICE_ID,
+            RepositoryManager::class,
             InMemoryChroniclerProvider::class,
             ConnectionChroniclerProvider::class,
         ];

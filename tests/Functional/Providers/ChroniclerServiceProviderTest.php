@@ -18,11 +18,13 @@ use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
+use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
+use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 
 final class ChroniclerServiceProviderTest extends OrchestraTestCase
 {
@@ -122,6 +124,9 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
         $this->assertInstanceOf(EventStoreManager::class, $this->app[ChroniclerManager::class]);
         $this->assertTrue($this->app->bound(Chronicle::SERVICE_ID));
 
+        $this->assertTrue($this->app->bound(RepositoryManager::class));
+        $this->assertInstanceOf(AggregateRepositoryManager::class, $this->app[RepositoryManager::class]);
+
         $this->assertTrue($this->app->bound(InMemoryChroniclerProvider::class));
         $this->assertTrue($this->app->bound(ConnectionChroniclerProvider::class));
     }
@@ -139,6 +144,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             StreamEventConverter::class,
             ChroniclerManager::class,
             Chronicle::SERVICE_ID,
+            RepositoryManager::class,
             InMemoryChroniclerProvider::class,
             ConnectionChroniclerProvider::class,
         ], $provider->provides());

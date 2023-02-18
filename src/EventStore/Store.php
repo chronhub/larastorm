@@ -63,11 +63,13 @@ abstract class Store implements ChroniclerConnection
 
         $indexName = $this->streamPersistence->indexName($tableName);
 
-        if (is_string($indexName)) {
-            $raw = "`$tableName` USE INDEX($indexName)";
-
-            return $this->connection->query()->fromRaw($raw);
-        }
+        //fixMe index failed at least for pgsql
+        // comment out when resolved
+//        if (is_string($indexName)) {
+//            $raw = "`$tableName` USE INDEX($indexName)";
+//
+//            return $this->connection->query()->fromRaw($raw);
+//        }
 
         return $this->connection->table($tableName);
     }

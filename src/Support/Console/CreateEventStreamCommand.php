@@ -28,13 +28,13 @@ final class CreateEventStreamCommand extends Command
         if ($chronicler->hasStream($streamName)) {
             $this->error("Stream $streamName already exists");
 
-            return 1;
+            return self::FAILURE;
         }
 
         $chronicler->firstCommit(new Stream($streamName));
 
         $this->info("Stream $streamName created");
 
-        return 0;
+        return self::SUCCESS;
     }
 }

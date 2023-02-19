@@ -6,9 +6,11 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Message\MessageFactory;
+use Chronhub\Larastorm\Support\Facade\Clock;
 use Chronhub\Storm\Contracts\Message\UniqueId;
 use Chronhub\Storm\Message\AliasFromClassName;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
 use Chronhub\Storm\Serializer\MessagingSerializer;
 use Chronhub\Larastorm\Support\UniqueId\UniqueIdV4;
@@ -57,6 +59,10 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
      */
     public function it_assert_bindings(): void
     {
+        $this->assertTrue($this->app->bound(SystemClock::class));
+        $this->assertTrue($this->app->bound(Clock::SERVICE_ID));
+        $this->assertInstanceOf(PointInTime::class, $this->app[SystemClock::class]);
+
         $this->assertTrue($this->app->bound(Factory::class));
         $this->assertInstanceOf(MessageFactory::class, $this->app[Factory::class]);
 
@@ -81,6 +87,8 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
         $provider = $this->app->getProvider(MessagerServiceProvider::class);
 
         $this->assertEquals([
+            SystemClock::class,
+            Clock::SERVICE_ID,
             Factory::class,
             'serializer.normalizer.event_time',
             MessageSerializer::class,

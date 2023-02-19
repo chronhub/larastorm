@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Chronhub\Larastorm\Support\Facade\Clock;
 use Chronhub\Storm\Contracts\Message\UniqueId;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Illuminate\Contracts\Foundation\Application;
@@ -37,6 +38,8 @@ class MessagerServiceProvider extends ServiceProvider implements DeferrableProvi
             SystemClock::class,
             fn (Application $app): SystemClock => $app[config('messager.clock')]
         );
+
+        $this->app->alias(SystemClock::class, Clock::SERVICE_ID);
 
         $this->app->singleton(
             Factory::class,
@@ -79,6 +82,8 @@ class MessagerServiceProvider extends ServiceProvider implements DeferrableProvi
     public function provides(): array
     {
         return [
+            SystemClock::class,
+            Clock::SERVICE_ID,
             Factory::class,
             'serializer.normalizer.event_time',
             MessageSerializer::class,

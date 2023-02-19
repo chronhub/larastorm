@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Schema;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
-use Chronhub\Larastorm\EventStore\Persistence\SingleStreamPersistence;
+use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
+use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 
-final class SingleStreamPersistenceTest extends OrchestraTestCase
+final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
 {
     use ProphecyTrait;
 
@@ -41,19 +42,6 @@ final class SingleStreamPersistenceTest extends OrchestraTestCase
         $tableName = $streamPersistence->tableName(new StreamName($streamName));
 
         $this->assertEquals($expectedTableName, $tableName);
-        $this->assertEquals('ix_query_aggregate', $streamPersistence->indexName($tableName));
-    }
-
-    /**
-     * @test
-     */
-    public function it_return_query_index(): void
-    {
-        $streamPersistence = $this->newInstance();
-
-        $tableName = $streamPersistence->tableName(new StreamName('foo'));
-
-        $this->assertEquals('ix_query_aggregate', $streamPersistence->indexName($tableName));
     }
 
     /**
@@ -65,7 +53,8 @@ final class SingleStreamPersistenceTest extends OrchestraTestCase
 
         $streamPersistence = $this->newInstance();
 
-        $this->assertNull($streamPersistence->up($tableName));
+        // todo test callback constraints
+        $this->assertIsCallable($streamPersistence->up($tableName));
 
         $this->assertTrue(Schema::hasTable($tableName));
 
@@ -88,8 +77,9 @@ final class SingleStreamPersistenceTest extends OrchestraTestCase
 
         $indexes = $doctrine->listTableIndexes($tableName);
 
-        $this->assertArrayHasKey($tableName.'_event_id_unique', $indexes);
-        $this->assertArrayHasKey($tableName.'_ix_unique_event', $indexes);
+        $this->assertArrayHasKey('_foo_bar_event_id_unique', $indexes);
+        $this->assertArrayHasKey('_foo_bar_aggregate_type_aggregate_id_no_index', $indexes);
+        $this->assertArrayHasKey('_foo_bar_aggregate_type_aggregate_id_aggregate_version_unique', $indexes);
     }
 
     /**
@@ -113,9 +103,13 @@ final class SingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals($convertedEvent, $this->newInstance($this->eventConverter->reveal())->serializeEvent($event));
     }
 
-    private function newInstance(?StreamEventConverter $eventConverter = null): SingleStreamPersistence
+    private function newInstance(?StreamEventConverter $eventConverter = null): PgsqlSingleStreamPersistence
     {
-        return new SingleStreamPersistence($eventConverter ?? $this->eventConverter->reveal());
+        $instance = new PgsqlSingleStreamPersistence($eventConverter ?? $this->eventConverter->reveal());
+
+        $this->assertNotInstanceOf(StreamPersistenceWithQueryHint::class, $instance);
+
+        return $instance;
     }
 
     public function provideStreamName(): Generator

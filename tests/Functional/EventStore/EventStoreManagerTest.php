@@ -28,6 +28,7 @@ use Chronhub\Larastorm\EventStore\StoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\PerAggregateStreamPersistence;
 
 final class EventStoreManagerTest extends OrchestraTestCase
@@ -58,7 +59,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -85,7 +86,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -138,7 +139,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 ],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -175,7 +176,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
             'is_transactional' => false,
         ]);
@@ -204,7 +205,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
             'is_transactional' => true,
         ]);
@@ -236,7 +237,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -265,7 +266,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -296,7 +297,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -319,7 +320,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => $writeLockForConfig,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -351,7 +352,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => $writeLockForConfig,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -386,7 +387,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => null,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -406,12 +407,10 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'store' => $storeDriver,
             'tracking' => [
                 'tracker_id' => TrackTransactionalStream::class,
-                'subscribers' => [
-                    //'\Chronhub\Chronicler\Publisher\EventPublisherSubscriber::class',
-                ],
+                'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'per_aggregate',
+            'strategy' => PerAggregateStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -442,7 +441,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
         ]);
 
         $this->assertNull(config('chronicler.providers.connection.write.query_loader'));
@@ -475,7 +474,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'per_aggregate',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'lazy',
         ]);
 
@@ -508,7 +507,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'per_aggregate',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'lazy:10',
         ]);
 
@@ -543,7 +542,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => PgsqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 

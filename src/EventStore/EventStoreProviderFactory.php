@@ -12,15 +12,13 @@ use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Larastorm\EventStore\WriteLock\WriteLockFactory;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
 use Chronhub\Larastorm\EventStore\Loader\StreamEventLoaderFactory;
-use Chronhub\Larastorm\EventStore\Persistence\StreamPersistenceFactory;
 
 class EventStoreProviderFactory
 {
     protected Container $container;
 
     public function __construct(protected readonly WriteLockFactory $writeLockFactory,
-                                protected readonly StreamEventLoaderFactory $streamEventLoaderFactory,
-                                protected readonly StreamPersistenceFactory $streamPersistenceFactory)
+                                protected readonly StreamEventLoaderFactory $streamEventLoaderFactory)
     {
     }
 
@@ -31,7 +29,7 @@ class EventStoreProviderFactory
     {
         $args = [
             $connection,
-            ($this->streamPersistenceFactory)($name, $connection, $config['strategy'] ?? null),
+            $this->container[$config['strategy']],
             ($this->streamEventLoaderFactory)($config['query_loader'] ?? null),
             $this->determineEventStreamProvider(),
             $this->container[StreamCategory::class],

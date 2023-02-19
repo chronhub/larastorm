@@ -15,8 +15,9 @@ use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
+use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoaderConnection;
-use function is_string;
+use function is_callable;
 
 abstract class Store implements ChroniclerConnection
 {
@@ -61,15 +62,13 @@ abstract class Store implements ChroniclerConnection
     {
         $tableName = $this->streamPersistence->tableName($streamName);
 
-        $indexName = $this->streamPersistence->indexName($tableName);
+        if ($this->streamPersistence instanceof StreamPersistenceWithQueryHint) {
+            $indexName = $this->streamPersistence->indexName($tableName);
 
-        //fixMe index failed at least for pgsql
-        // comment out when resolved
-//        if (is_string($indexName)) {
-//            $raw = "`$tableName` USE INDEX($indexName)";
-//
-//            return $this->connection->query()->fromRaw($raw);
-//        }
+            $raw = "`$tableName` USE INDEX($indexName)";
+
+            return $this->connection->query()->fromRaw($raw);
+        }
 
         return $this->connection->table($tableName);
     }
@@ -90,7 +89,11 @@ abstract class Store implements ChroniclerConnection
         $tableName = $this->streamPersistence->tableName($streamName);
 
         try {
-            $this->streamPersistence->up($tableName);
+            $callback = $this->streamPersistence->up($tableName);
+
+            if (is_callable($callback)) {
+                $callback($this->connection);
+            }
         } catch (QueryException $exception) {
             $this->connection->getSchemaBuilder()->drop($tableName);
 

@@ -23,7 +23,7 @@ class StreamPersistenceFactory
         }
 
         return match (true) {
-            $persistenceKey === 'single' => $this->container[SingleStreamPersistence::class],
+            $persistenceKey === 'single' => $this->container[PgsqlSingleStreamPersistence::class],
             //$persistenceKey === 'single_indexed' => $this->app[IndexedSingleStreamPersistence::class],
             $persistenceKey === 'per_aggregate' => $this->container[PerAggregateStreamPersistence::class],
             is_string($persistenceKey) => $this->container[$persistenceKey],

@@ -23,8 +23,9 @@ final class ReadEventStoreDatabaseTest extends ProphecyTestCase
     public function it_retrieve_all_stream_events_with_single_stream_strategy(string $direction): void
     {
         $tableName = 'read_customer';
+
         $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
-        $this->streamPersistence->indexName($tableName)->willReturn(null)->shouldBeCalledOnce();
+
         $builder = $this->prophesize(Builder::class);
         $this->connection->table($tableName)->willReturn($builder)->shouldBeCalledOnce();
 
@@ -51,8 +52,9 @@ final class ReadEventStoreDatabaseTest extends ProphecyTestCase
     public function it_retrieve_all_stream_events_with_one_stream_per_aggregate_strategy(string $direction): void
     {
         $tableName = 'read_customer';
+
         $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
-        $this->streamPersistence->indexName($tableName)->willReturn(null)->shouldBeCalledOnce();
+
         $builder = $this->prophesize(Builder::class);
         $this->connection->table($tableName)->willReturn($builder)->shouldBeCalledOnce();
 
@@ -79,7 +81,7 @@ final class ReadEventStoreDatabaseTest extends ProphecyTestCase
     {
         $tableName = 'read_customer';
         $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
-        $this->streamPersistence->indexName($tableName)->willReturn(null)->shouldBeCalledOnce();
+
         $builder = $this->prophesize(Builder::class);
         $this->connection->table($tableName)->willReturn($builder)->shouldBeCalledOnce();
 
@@ -147,32 +149,10 @@ final class ReadEventStoreDatabaseTest extends ProphecyTestCase
     {
         $tableName = 'read_customer';
         $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
-        $this->streamPersistence->indexName($tableName)->willReturn(null)->shouldBeCalledOnce();
 
         $builder = $this->prophesize(Builder::class);
 
         $this->connection->table($tableName)->willReturn($builder->reveal())->shouldBeCalledOnce();
-
-        $queryBuilder = $this->eventStore()->getBuilderforRead($this->streamName);
-
-        $this->assertSame($builder->reveal(), $queryBuilder);
-    }
-
-    /**
-     * @test
-     */
-    public function it_assert_read_query_builder_with_index(): void
-    {
-        $this->markTestSkipped('bug in using index');
-
-        $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
-        $this->streamPersistence->indexName($tableName)->willReturn('some_index')->shouldBeCalledOnce();
-
-        $builder = $this->prophesize(Builder::class);
-
-        $this->connection->query()->willReturn($builder->reveal())->shouldBeCalledOnce();
-        $builder->fromRaw("`$tableName` USE INDEX(some_index)")->willReturn($builder->reveal())->shouldBeCalledOnce();
 
         $queryBuilder = $this->eventStore()->getBuilderforRead($this->streamName);
 

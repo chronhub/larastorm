@@ -24,6 +24,7 @@ use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
+use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 
 final class ChroniclerServiceProviderTest extends OrchestraTestCase
@@ -59,7 +60,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
                             ],
                         ],
                         'write_lock' => true,
-                        'strategy' => 'single',
+                        'strategy' => PgsqlSingleStreamPersistence::class,
                         'query_loader' => 'cursor',
                     ],
 
@@ -67,7 +68,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
                         'store' => 'pgsql',
                         'is_transactional' => false,
                         'write_lock' => false,
-                        'strategy' => 'single',
+                        'strategy' => PgsqlSingleStreamPersistence::class,
                         'query_loader' => 'cursor',
                     ],
                 ],

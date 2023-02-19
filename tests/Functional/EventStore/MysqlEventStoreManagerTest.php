@@ -27,7 +27,7 @@ use Chronhub\Larastorm\EventStore\StoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Larastorm\EventStore\MysqlTransactionalEventStore;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
-use Chronhub\Larastorm\EventStore\Persistence\SingleStreamPersistence;
+use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 
 final class MysqlEventStoreManagerTest extends OrchestraTestCase
 {
@@ -55,7 +55,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => MysqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -81,7 +81,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(MysqlWriteLock::class, $writeLock::class);
 
         $streamPersistence = ReflectionProperty::getProperty($concreteEventStore, 'streamPersistence');
-        $this->assertEquals(SingleStreamPersistence::class, $streamPersistence::class);
+        $this->assertEquals(MysqlSingleStreamPersistence::class, $streamPersistence::class);
 
         $eventLoader = ReflectionProperty::getProperty($concreteEventStore, 'eventLoader');
         $this->assertEquals(CursorQueryLoader::class, $eventLoader::class);
@@ -106,7 +106,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => MysqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
         ]);
 
@@ -137,7 +137,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => MysqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
             'is_transactional' => false,
         ]);
@@ -165,7 +165,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
                 'subscribers' => [],
             ],
             'write_lock' => true,
-            'strategy' => 'single',
+            'strategy' => MysqlSingleStreamPersistence::class,
             'query_loader' => 'cursor',
             'is_transactional' => true,
         ]);

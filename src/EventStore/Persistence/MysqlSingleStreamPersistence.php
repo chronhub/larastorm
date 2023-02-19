@@ -8,10 +8,10 @@ use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Support\Facades\Schema;
 use Chronhub\Storm\Reporter\DomainEvent;
 use Illuminate\Database\Schema\Blueprint;
-use Chronhub\Storm\Contracts\Stream\StreamPersistence;
 use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
+use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 
-final class SingleStreamPersistence implements StreamPersistence
+final class MysqlSingleStreamPersistence implements StreamPersistenceWithQueryHint
 {
     /**
      * Index name
@@ -57,7 +57,7 @@ final class SingleStreamPersistence implements StreamPersistence
         return true;
     }
 
-    public function indexName(string $tableName): ?string
+    public function indexName(string $tableName): string
     {
         return $this->indexQuery;
     }

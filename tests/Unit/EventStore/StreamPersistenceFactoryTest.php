@@ -12,8 +12,8 @@ use Chronhub\Storm\Contracts\Stream\StreamPersistence;
 use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Illuminate\Contracts\Container\Container as ContainerContract;
-use Chronhub\Larastorm\EventStore\Persistence\SingleStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\StreamPersistenceFactory;
+use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\PerAggregateStreamPersistence;
 
 final class StreamPersistenceFactoryTest extends ProphecyTestCase
@@ -40,7 +40,7 @@ final class StreamPersistenceFactoryTest extends ProphecyTestCase
 
         $instance = $factory('write', $this->connection->reveal(), 'single');
 
-        $this->assertInstanceOf(SingleStreamPersistence::class, $instance);
+        $this->assertInstanceOf(PgsqlSingleStreamPersistence::class, $instance);
     }
 
     /**

@@ -76,7 +76,7 @@ return [
                     ],
                 ],
                 'write_lock' => true,
-                'strategy' => 'single',
+                'strategy' => \Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence::class,
                 'query_loader' => 'cursor',
             ],
 
@@ -84,7 +84,7 @@ return [
                 'store' => 'pgsql',
                 'is_transactional' => false,
                 'write_lock' => false,
-                'strategy' => 'single',
+                'strategy' => \Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence::class,
                 'query_loader' => 'cursor',
             ],
         ],

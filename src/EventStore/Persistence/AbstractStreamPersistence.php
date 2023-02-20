@@ -38,7 +38,7 @@ abstract class AbstractStreamPersistence implements StreamPersistence
             'created_at' => $data['headers'][Header::EVENT_TIME],
         ];
 
-        if ($this->isAutoIncremented()) {
+        if (! $this->isAutoIncremented()) {
             $normalized['no'] = $data['headers'][EventHeader::AGGREGATE_VERSION];
         }
 

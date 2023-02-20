@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Persistence;
 
-use stdClass;
 use Chronhub\Storm\Stream\StreamName;
 use Chronhub\Storm\Reporter\DomainEvent;
 use Chronhub\Storm\Contracts\Message\Header;
@@ -43,14 +42,5 @@ abstract class AbstractStreamPersistence implements StreamPersistence
         }
 
         return $normalized;
-    }
-
-    public function toDomainEvent(iterable|stdClass $payload): DomainEvent
-    {
-        if ($payload instanceof stdClass) {
-            $payload = (array) $payload;
-        }
-
-        return $this->serializer->unserializeContent($payload)->current();
     }
 }

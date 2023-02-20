@@ -8,7 +8,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Illuminate\Contracts\Foundation\Application;
-use Chronhub\Storm\Serializer\ConvertStreamEvent;
 use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
@@ -19,7 +18,6 @@ use Chronhub\Larastorm\EventStore\Loader\StreamEventLoader;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Larastorm\EventStore\EventStoreProviderFactory;
-use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -80,7 +78,6 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         return [
             StreamEventSerializer::class,
             StreamCategory::class,
-            StreamEventConverter::class,
             ChroniclerManager::class,
             Chronicle::SERVICE_ID,
             RepositoryManager::class,
@@ -117,11 +114,6 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         $this->app->singleton(
             StreamCategory::class,
             fn (): StreamCategory => new DetermineStreamCategory()
-        );
-
-        $this->app->singleton(
-            StreamEventConverter::class,
-            fn (Application $app): StreamEventConverter => $app[ConvertStreamEvent::class]
         );
     }
 

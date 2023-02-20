@@ -7,7 +7,6 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
-use Chronhub\Storm\Serializer\ConvertStreamEvent;
 use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
@@ -19,7 +18,6 @@ use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
-use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
@@ -115,9 +113,6 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
         $this->assertTrue($this->app->bound(StreamEventSerializer::class));
         $this->assertInstanceOf(DomainEventSerializer::class, $this->app[StreamEventSerializer::class]);
 
-        $this->assertTrue($this->app->bound(StreamEventConverter::class));
-        $this->assertInstanceOf(ConvertStreamEvent::class, $this->app[StreamEventConverter::class]);
-
         $this->assertTrue($this->app->bound(StreamCategory::class));
         $this->assertInstanceOf(DetermineStreamCategory::class, $this->app[StreamCategory::class]);
 
@@ -142,7 +137,6 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
         $this->assertEquals([
             StreamEventSerializer::class,
             StreamCategory::class,
-            StreamEventConverter::class,
             ChroniclerManager::class,
             Chronicle::SERVICE_ID,
             RepositoryManager::class,

@@ -4,28 +4,16 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Persistence;
 
-use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Support\Facades\Schema;
-use Chronhub\Storm\Reporter\DomainEvent;
 use Illuminate\Database\Schema\Blueprint;
-use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 
-final class MysqlSingleStreamPersistence implements StreamPersistenceWithQueryHint
+final class MysqlSingleStreamPersistence extends AbstractStreamPersistence implements StreamPersistenceWithQueryHint
 {
     /**
      * Index name
      */
     private string $indexQuery = 'ix_query_aggregate';
-
-    public function __construct(private readonly StreamEventConverter $convertEvent)
-    {
-    }
-
-    public function tableName(StreamName $streamName): string
-    {
-        return '_'.$streamName->name;
-    }
 
     public function up(string $tableName): ?callable
     {
@@ -45,11 +33,6 @@ final class MysqlSingleStreamPersistence implements StreamPersistenceWithQueryHi
         });
 
         return null;
-    }
-
-    public function serializeEvent(DomainEvent $event): array
-    {
-        return $this->convertEvent->toArray($event, true);
     }
 
     public function isAutoIncremented(): bool

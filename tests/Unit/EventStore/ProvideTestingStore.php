@@ -48,8 +48,8 @@ trait ProvideTestingStore
             'content' => ['foo' => 'bar'],
         ];
 
-        $this->streamPersistence->serializeEvent($streamsEvents[0])->willReturn($eventAsArray)->shouldBeCalledTimes(2);
-        $this->streamPersistence->serializeEvent($streamsEvents[1])->willReturn($eventAsArray)->shouldBeCalledTimes(2);
+        $this->streamPersistence->serialize($streamsEvents[0])->willReturn($eventAsArray)->shouldBeCalledTimes(2);
+        $this->streamPersistence->serialize($streamsEvents[1])->willReturn($eventAsArray)->shouldBeCalledTimes(2);
 
         $events = $this->eventStore()->getStreamEventsSerialized($streamsEvents);
 

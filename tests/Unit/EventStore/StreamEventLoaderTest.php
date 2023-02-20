@@ -14,17 +14,17 @@ use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Larastorm\EventStore\Loader\StreamEventLoader;
-use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
+use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
 final class StreamEventLoaderTest extends ProphecyTestCase
 {
-    private StreamEventConverter|ObjectProphecy $eventConverter;
+    private StreamEventSerializer|ObjectProphecy $serializer;
 
     private StreamName $streamName;
 
     protected function setUp(): void
     {
-        $this->eventConverter = $this->prophesize(StreamEventConverter::class);
+        $this->serializer = $this->prophesize(StreamEventSerializer::class);
         $this->streamName = new StreamName('customer');
     }
 
@@ -41,15 +41,13 @@ final class StreamEventLoaderTest extends ProphecyTestCase
         $streamEvents = new Collection([$event]);
 
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
-        $this->eventConverter->toDomainEvent($event)->willReturn($expectedEvent)->shouldBeCalledOnce();
+        $this->serializer->unserializeContent((array) $event)->willYield([$expectedEvent])->shouldBeCalledOnce();
 
-        $eventLoader = new StreamEventLoader($this->eventConverter->reveal());
+        $eventLoader = new StreamEventLoader($this->serializer->reveal());
 
         $generator = $eventLoader($streamEvents, $this->streamName);
 
-        foreach ($generator as $domainEvent) {
-            $this->assertEquals($expectedEvent, $domainEvent);
-        }
+        $this->assertEquals($generator->current(), $expectedEvent);
     }
 
     /**
@@ -59,9 +57,9 @@ final class StreamEventLoaderTest extends ProphecyTestCase
     {
         $this->expectException(StreamNotFound::class);
 
-        $this->eventConverter->toDomainEvent([])->shouldNotBeCalled();
+        $this->serializer->unserializeContent([])->willYield([])->shouldNotBeCalled();
 
-        $eventLoader = new StreamEventLoader($this->eventConverter->reveal());
+        $eventLoader = new StreamEventLoader($this->serializer->reveal());
 
         $eventLoader(new Collection([]), $this->streamName)->current();
     }
@@ -84,13 +82,13 @@ final class StreamEventLoaderTest extends ProphecyTestCase
 
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
 
-        $this->eventConverter->toDomainEvent($event)->willReturn($expectedEvent)->shouldBeCalledTimes(2);
+        $this->serializer->unserializeContent((array) $event)->willYield([$expectedEvent])->shouldBeCalledTimes(2);
 
-        $this->eventConverter->toDomainEvent($event)
+        $this->serializer->unserializeContent((array) $event)
             ->willThrow($queryException)
             ->shouldBeCalledOnce();
 
-        $eventLoader = new StreamEventLoader($this->eventConverter->reveal());
+        $eventLoader = new StreamEventLoader($this->serializer->reveal());
 
         $eventLoader($streamEvents, $this->streamName)->current();
     }
@@ -113,10 +111,10 @@ final class StreamEventLoaderTest extends ProphecyTestCase
 
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
 
-        $this->eventConverter->toDomainEvent($event)->willReturn($expectedEvent)->shouldBeCalledTimes(2);
-        $this->eventConverter->toDomainEvent($event)->willThrow($queryException)->shouldBeCalledOnce();
+        $this->serializer->unserializeContent((array) $event)->willReturn($expectedEvent)->shouldBeCalledTimes(2);
+        $this->serializer->unserializeContent((array) $event)->willThrow($queryException)->shouldBeCalledOnce();
 
-        $eventLoader = new StreamEventLoader($this->eventConverter->reveal());
+        $eventLoader = new StreamEventLoader($this->serializer->reveal());
 
         $eventLoader($streamEvents, $this->streamName)->current();
     }

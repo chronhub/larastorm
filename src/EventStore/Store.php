@@ -78,7 +78,7 @@ abstract class Store implements ChroniclerConnection
         $events = [];
 
         foreach ($streamEvents as $streamEvent) {
-            $events[] = $this->streamPersistence->serializeEvent($streamEvent);
+            $events[] = $this->streamPersistence->serialize($streamEvent);
         }
 
         return $events;

@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Loader;
 
+use stdClass;
 use Generator;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\QueryException;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
-use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
+use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader as EventLoader;
 
 final class StreamEventLoader implements EventLoader
 {
-    public function __construct(private readonly StreamEventConverter $eventConverter)
+    public function __construct(private readonly StreamEventSerializer $serializer)
     {
     }
 
@@ -28,7 +29,11 @@ final class StreamEventLoader implements EventLoader
             $count = 0;
 
             foreach ($streamEvents as $streamEvent) {
-                yield $this->eventConverter->toDomainEvent($streamEvent);
+                if ($streamEvent instanceof stdClass) {
+                    $streamEvent = (array) $streamEvent;
+                }
+
+                yield $this->serializer->unserializeContent($streamEvent)->current();
 
                 $count++;
             }

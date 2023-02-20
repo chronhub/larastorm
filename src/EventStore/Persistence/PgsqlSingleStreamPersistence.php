@@ -5,24 +5,11 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\EventStore\Persistence;
 
 use Illuminate\Database\Connection;
-use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Support\Facades\Schema;
-use Chronhub\Storm\Reporter\DomainEvent;
 use Illuminate\Database\Schema\Blueprint;
-use Chronhub\Storm\Contracts\Stream\StreamPersistence;
-use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
 
-final class PgsqlSingleStreamPersistence implements StreamPersistence
+final class PgsqlSingleStreamPersistence extends AbstractStreamPersistence
 {
-    public function __construct(private readonly StreamEventConverter $convertEvent)
-    {
-    }
-
-    public function tableName(StreamName $streamName): string
-    {
-        return '_'.$streamName->name;
-    }
-
     public function up(string $tableName): ?callable
     {
         Schema::create($tableName, function (Blueprint $table): void {
@@ -53,11 +40,6 @@ final class PgsqlSingleStreamPersistence implements StreamPersistence
                 'ALTER TABLE '.$tableName.' ADD CONSTRAINT aggregate_id_not_null CHECK ( (headers->\'__aggregate_id\') is not null )'
             );
         };
-    }
-
-    public function serializeEvent(DomainEvent $event): array
-    {
-        return $this->convertEvent->toArray($event, true);
     }
 
     public function isAutoIncremented(): bool

@@ -189,7 +189,7 @@ final class WriteEventStoreDatabaseTest extends ProphecyTestCase
         $streamEvents = iterator_to_array($this->provideStreamEvents());
 
         $this->streamPersistence
-            ->serializeEvent(Argument::type(SomeEvent::class))
+            ->serialize(Argument::type(SomeEvent::class))
             ->willReturn(['headers' => 'foo', 'content' => 'bar'])
             ->shouldBeCalledTimes(4);
 
@@ -223,7 +223,7 @@ final class WriteEventStoreDatabaseTest extends ProphecyTestCase
         $this->writeLock->releaseLock($tableName)->shouldNotBeCalled();
 
         $this->streamPersistence
-            ->serializeEvent(Argument::type(SomeEvent::class))
+            ->serialize(Argument::type(SomeEvent::class))
             ->willReturn([])
             ->shouldBeCalledTimes(4);
 
@@ -254,7 +254,7 @@ final class WriteEventStoreDatabaseTest extends ProphecyTestCase
         $streamEvents = iterator_to_array($this->provideStreamEvents());
 
         $this->streamPersistence
-            ->serializeEvent(Argument::type(SomeEvent::class))
+            ->serialize(Argument::type(SomeEvent::class))
             ->willReturn(['headers' => 'foo', 'content' => 'bar'])
             ->shouldBeCalledTimes(4);
 
@@ -277,7 +277,7 @@ final class WriteEventStoreDatabaseTest extends ProphecyTestCase
         $this->writeLock->acquireLock($tableName)->shouldNotBeCalled();
         $this->writeLock->releaseLock($tableName)->shouldNotBeCalled();
 
-        $this->streamPersistence->serializeEvent(Argument::type('string'))->shouldNotBeCalled();
+        $this->streamPersistence->serialize(Argument::type('object'))->shouldNotBeCalled();
 
         $eventStore = $this->eventStore(null);
 

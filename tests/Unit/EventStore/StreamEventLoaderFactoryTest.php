@@ -10,7 +10,7 @@ use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Larastorm\EventStore\Loader\LazyQueryLoader;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
-use Chronhub\Storm\Contracts\Serializer\StreamEventConverter;
+use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\Loader\StreamEventLoaderFactory;
 use Illuminate\Contracts\Container\Container as ContainerContract;
 
@@ -55,9 +55,10 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
      */
     public function it_return_lazy_query_loader_instance_with_chunk_size_defined(int $chunkSize): void
     {
+        // checkMe
         $this->container->bind(
-            StreamEventConverter::class,
-            fn (): StreamEventConverter => $this->prophesize(StreamEventConverter::class)->reveal()
+            StreamEventSerializer::class,
+            fn (): StreamEventSerializer => $this->prophesize(StreamEventSerializer::class)->reveal()
         );
 
         $factory = new StreamEventLoaderFactory($this->container);

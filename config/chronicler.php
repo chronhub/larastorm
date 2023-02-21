@@ -45,9 +45,8 @@ return [
     |       or your own string service id
     |
     |   strategy: (required)
-    |       single: single stream persistence
-    |       single_indexed: single stream persistence (only for mysql)
-    |       per_aggregate: per aggregate stream persistence
+    |       available pgsql and mysql stream persistence
+    |       or your own service id
     |
     |   write_lock: (optional : default fake write lock)
     |       true: use default write lock depends on driver

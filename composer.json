@@ -28,7 +28,8 @@
     "phpspec/prophecy-phpunit": "dev-master",
     "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-latest",
-    "doctrine/dbal": "^3.5.1"
+    "doctrine/dbal": "^3.5.1",
+    "rector/rector": "dev-main"
   },
   "autoload": {
     "psr-4": {
@@ -42,7 +43,11 @@
   },
   "scripts": {
     "test": "vendor/bin/phpunit",
-    "pint": "vendor/bin/pint"
+    "pint": "vendor/bin/pint",
+    "rector-init": "vendor/bin/rector init",
+    "rector-dry": "vendor/bin/rector process --dry-run",
+    "rector-process": "vendor/bin/rector process"
+
   },
   "config": {
     "sort-packages": true

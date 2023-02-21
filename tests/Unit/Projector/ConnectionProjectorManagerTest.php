@@ -211,7 +211,7 @@ final class ConnectionProjectorManagerTest extends ProphecyTestCase
 
         $manager = $this->newProjectorManager(new DefaultProjectorOption());
 
-        $streamNames = $manager->filterNamesOf('balance', 'foo', 'bar');
+        $streamNames = $manager->filterNamesByAscendantOrder('balance', 'foo', 'bar');
 
         $this->assertEquals(['balance'], $streamNames);
     }

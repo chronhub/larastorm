@@ -11,7 +11,7 @@ use Chronhub\Larastorm\Support\Facade\Chronicle;
 
 final class CreateEventStreamCommand extends Command
 {
-    protected $signature = 'larastorm:create-stream
+    protected $signature = 'stream:create
                                 {stream : stream name}
                                 {chronicler : chronicler name}';
 

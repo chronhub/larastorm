@@ -38,7 +38,7 @@ final class CreateEventStreamCommandTest extends OrchestraTestCase
         $this->assertFalse($this->eventStore->hasStream($streamName));
 
         $this->artisan(
-            'larastorm:create-stream', ['stream' => $streamName->name, 'chronicler' => 'standalone']
+            'stream:create', ['stream' => $streamName->name, 'chronicler' => 'standalone']
         )->run();
 
         $this->assertTrue($this->eventStore->hasStream($streamName));
@@ -54,7 +54,7 @@ final class CreateEventStreamCommandTest extends OrchestraTestCase
         $this->assertFalse($this->eventStore->hasStream($streamName));
 
         $this->artisan(
-            'larastorm:create-stream', ['stream' => $streamName->name, 'chronicler' => 'standalone']
+            'stream:create', ['stream' => $streamName->name, 'chronicler' => 'standalone']
         )
             ->expectsOutput('Stream foo created')
             ->run();
@@ -62,7 +62,7 @@ final class CreateEventStreamCommandTest extends OrchestraTestCase
         $this->assertTrue($this->eventStore->hasStream($streamName));
 
         $this->artisan(
-            'larastorm:create-stream', ['stream' => $streamName->name, 'chronicler' => 'standalone']
+            'stream:create', ['stream' => $streamName->name, 'chronicler' => 'standalone']
         )
             ->expectsOutput('Stream foo already exists')
             ->run();

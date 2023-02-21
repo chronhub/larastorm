@@ -11,7 +11,7 @@ use function str_starts_with;
 
 class StreamEventLoaderFactory
 {
-    public function __construct(protected Container $container)
+    public function __construct(protected readonly Container $container)
     {
     }
 

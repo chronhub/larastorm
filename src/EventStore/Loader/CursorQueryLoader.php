@@ -10,9 +10,9 @@ use Illuminate\Database\Query\Builder;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoaderConnection;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader as EventLoader;
 
-final class CursorQueryLoader implements StreamEventLoaderConnection
+final readonly class CursorQueryLoader implements StreamEventLoaderConnection
 {
-    public function __construct(private readonly EventLoader $eventLoader)
+    public function __construct(private EventLoader $eventLoader)
     {
     }
 

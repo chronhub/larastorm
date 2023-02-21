@@ -11,9 +11,9 @@ use Chronhub\Storm\Contracts\Aggregate\AggregateType as Type;
 use function is_a;
 use function is_string;
 
-final class AggregateTypeFactory
+final readonly class AggregateTypeFactory
 {
-    private readonly Container $container;
+    private Container $container;
 
     public function __construct(callable $container)
     {

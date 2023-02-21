@@ -10,10 +10,10 @@ use Illuminate\Database\Query\Builder;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoaderConnection;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader as EventLoader;
 
-final class LazyQueryLoader implements StreamEventLoaderConnection
+final readonly class LazyQueryLoader implements StreamEventLoaderConnection
 {
-    public function __construct(private readonly EventLoader $eventLoader,
-                                public readonly int $chunkSize = 5000)
+    public function __construct(private EventLoader $eventLoader,
+                                public int          $chunkSize = 5000)
     {
     }
 

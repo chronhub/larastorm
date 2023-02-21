@@ -13,9 +13,9 @@ use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader as EventLoader;
 
-final class StreamEventLoader implements EventLoader
+final readonly class StreamEventLoader implements EventLoader
 {
-    public function __construct(private readonly StreamEventSerializer $serializer)
+    public function __construct(private StreamEventSerializer $serializer)
     {
     }
 

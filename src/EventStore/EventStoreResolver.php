@@ -9,9 +9,9 @@ use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use function is_string;
 
-final class EventStoreResolver
+final readonly class EventStoreResolver
 {
-    private readonly Container $container;
+    private Container $container;
 
     public function __construct(callable $container)
     {

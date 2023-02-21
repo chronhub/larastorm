@@ -17,9 +17,9 @@ class ConnectionProjectionQueryScope implements ProjectionQueryScope
         {
             private int $currentPosition = 0;
 
-            public function setCurrentPosition(int $position): void
+            public function setCurrentPosition(int $streamPosition): void
             {
-                $this->currentPosition = $position;
+                $this->currentPosition = $streamPosition;
             }
 
             public function apply(): callable

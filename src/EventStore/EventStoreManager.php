@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\EventStore;
 
 use Closure;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
@@ -22,7 +23,7 @@ final class EventStoreManager implements ChroniclerManager
     private array $chroniclers = [];
 
     /**
-     * @var array<string, callable>
+     * @var array<string, callable(Container, string, array): Chronicler>
      */
     private array $customCreators = [];
 
@@ -41,6 +42,9 @@ final class EventStoreManager implements ChroniclerManager
         return $this->chroniclers[$name] ?? $this->chroniclers[$name] = $this->resolveEventStore($name);
     }
 
+    /**
+     * @param  callable(Container, string, array): Chronicler  $callback
+     */
     public function extend(string $name, callable $callback): self
     {
         $this->customCreators[$name] = $callback;

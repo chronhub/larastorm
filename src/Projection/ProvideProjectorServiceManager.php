@@ -30,7 +30,7 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
     private array $projectors = [];
 
     /**
-     * @var array<string, callable>
+     * @var array<string, callable(Container, string, array): ProjectorManager>
      */
     private array $customCreators = [];
 
@@ -45,6 +45,9 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
         return $this->projectors[$name] ?? $this->projectors[$name] = $this->resolve($name);
     }
 
+    /**
+     * @param  callable(Container, string, array): ProjectorManager  $callback
+     */
     public function extend(string $name, callable $callback): ProjectorServiceManager
     {
         $this->customCreators[$name] = $callback;

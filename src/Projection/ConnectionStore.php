@@ -9,9 +9,9 @@ use Chronhub\Storm\Contracts\Projector\Store;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 
-final class ConnectionStore implements Store
+final readonly class ConnectionStore implements Store
 {
-    public function __construct(private readonly Store $store)
+    public function __construct(private Store $store)
     {
     }
 

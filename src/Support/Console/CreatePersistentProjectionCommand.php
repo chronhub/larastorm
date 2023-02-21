@@ -35,7 +35,7 @@ abstract class CreatePersistentProjectionCommand extends Command implements Sign
             $readModel = $this->laravel[$readModel];
         }
 
-        $queryFilter = $queryFilter ?? $projector->queryScope()->fromIncludedPosition();
+        $queryFilter ??= $projector->queryScope()->fromIncludedPosition();
 
         if ($readModel instanceof ReadModel) {
             return $projector

@@ -22,7 +22,7 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
 {
     private Container $container;
 
-    private EventStoreResolver $eventStoreResolver;
+    private readonly EventStoreResolver $eventStoreResolver;
 
     /**
      * @var array<string, ProjectorManager>

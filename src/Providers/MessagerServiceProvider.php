@@ -47,12 +47,10 @@ class MessagerServiceProvider extends ServiceProvider implements DeferrableProvi
         );
 
         if (in_array('serializer.normalizer.event_time', config('messager.serializer.normalizers'))) {
-            $this->app->singleton('serializer.normalizer.event_time', function (Application $app): NormalizerInterface {
-                return new DateTimeNormalizer([
-                    DateTimeNormalizer::FORMAT_KEY => $app[SystemClock::class]->getFormat(),
-                    DateTimeNormalizer::TIMEZONE_KEY => 'UTC',
-                ]);
-            });
+            $this->app->singleton('serializer.normalizer.event_time', fn (Application $app): NormalizerInterface => new DateTimeNormalizer([
+                DateTimeNormalizer::FORMAT_KEY => $app[SystemClock::class]->getFormat(),
+                DateTimeNormalizer::TIMEZONE_KEY => 'UTC',
+            ]));
         }
 
         $this->app->singleton(MessageSerializer::class, function (Application $app): MessageSerializer {

@@ -21,9 +21,7 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
     protected function setUp(): void
     {
         $this->container = Container::getInstance();
-        $this->container->bind(StreamEventLoader::class, function () {
-            return $this->prophesize(StreamEventLoader::class)->reveal();
-        });
+        $this->container->bind(StreamEventLoader::class, fn () => $this->prophesize(StreamEventLoader::class)->reveal());
     }
 
     /**

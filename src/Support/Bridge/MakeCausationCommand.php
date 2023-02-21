@@ -77,14 +77,9 @@ final class MakeCausationCommand implements MessageSubscriber, StreamSubscriber
 
         return new class($eventId, $eventType) implements MessageDecorator
         {
-            private string $eventId;
-
-            private string $eventType;
-
-            public function __construct(string $eventId, string $eventType)
+            public function __construct(private readonly string $eventId,
+                                        private readonly string $eventType)
             {
-                $this->eventId = $eventId;
-                $this->eventType = $eventType;
             }
 
             public function decorate(Message $message): Message

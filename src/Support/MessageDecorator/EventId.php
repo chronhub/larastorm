@@ -9,7 +9,7 @@ use Chronhub\Storm\Contracts\Message\Header;
 use Chronhub\Storm\Contracts\Message\UniqueId;
 use Chronhub\Storm\Contracts\Message\MessageDecorator;
 
-final class EventId implements MessageDecorator
+final readonly class EventId implements MessageDecorator
 {
     public function __construct(private readonly UniqueId $uniqueId)
     {

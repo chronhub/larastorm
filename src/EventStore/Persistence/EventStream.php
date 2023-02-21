@@ -49,9 +49,7 @@ final class EventStream extends Model implements EventStreamProvider, EventStrea
             ->whereIn(
                 'real_stream_name',
                 array_map(
-                    static function (string|StreamName $streamName): string {
-                        return $streamName instanceof StreamName ? $streamName->name : $streamName;
-                    },
+                    static fn (string|StreamName $streamName): string => $streamName instanceof StreamName ? $streamName->name : $streamName,
                     $streamNames)
             )
             ->orderBy('real_stream_name')

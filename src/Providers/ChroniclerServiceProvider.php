@@ -68,9 +68,10 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
 
         $this->app->alias(ChroniclerManager::class, Chronicle::SERVICE_ID);
 
-        $this->app->singleton(RepositoryManager::class, function (Application $app): RepositoryManager {
-            return new AggregateRepositoryManager(fn () => $app);
-        });
+        $this->app->singleton(
+            RepositoryManager::class,
+            fn (Application $app): RepositoryManager => new AggregateRepositoryManager(fn () => $app)
+        );
     }
 
     public function provides(): array

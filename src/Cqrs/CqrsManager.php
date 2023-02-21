@@ -29,7 +29,7 @@ use Chronhub\Larastorm\Support\MessageDecorator\DecorateMessage;
 use function array_map;
 use function is_string;
 
-final class CqrsManager implements ReporterManager
+final readonly class CqrsManager implements ReporterManager
 {
     private Container $container;
 
@@ -150,8 +150,9 @@ final class CqrsManager implements ReporterManager
      */
     private function resolveServices(array ...$services): array
     {
-        return array_map(function ($service) {
-            return is_string($service) ? $this->container[$service] : $service;
-        }, Arr::flatten($services));
+        return array_map(
+            fn($service) => is_string($service) ? $this->container[$service] : $service,
+            Arr::flatten($services)
+        );
     }
 }

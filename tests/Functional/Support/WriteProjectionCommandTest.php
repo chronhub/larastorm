@@ -35,9 +35,9 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
         $commands = Artisan::all();
         $this->assertArrayHasKey('projector:write', $commands);
 
-        $this->app->singleton('es.in_memory', function (): Chronicler {
-            return Chronicle::setDefaultDriver('in_memory')->create('standalone');
-        });
+        $this->app->singleton('es.in_memory',
+            fn (): Chronicler => Chronicle::setDefaultDriver('in_memory')->create('standalone')
+        );
 
         $this->app['config']->set('projector.projectors.in_memory.testing', [
             'chronicler' => 'es.in_memory',

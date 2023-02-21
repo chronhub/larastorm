@@ -20,9 +20,10 @@
     "ext-pcntl": "*"
   },
   "require-dev": {
-    "laravel/pint": "^1.5",
+    "laravel/pint": "^1.6",
     "phpstan/phpstan":"^1.10",
     "nunomaduro/larastan": "^2.4",
+    "jangregor/phpstan-prophecy": "^1.0",
     "orchestra/testbench": "8.*",
     "phpspec/prophecy-phpunit": "dev-master",
     "phpunit/phpunit": "^9.5",

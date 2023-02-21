@@ -22,6 +22,9 @@ abstract class AbstractStreamPersistence implements StreamPersistence
         return '_'.$streamName->name;
     }
 
+    /**
+     * @return array{"event_id": string, "event_type": string, "aggregate_id": string, "aggregate_type": string, "aggregate_version": int, "headers": string, "content": string, "created_at": string, "no"?: int}
+     */
     public function serialize(DomainEvent $event): array
     {
         $data = $this->serializer->serializeEvent($event);

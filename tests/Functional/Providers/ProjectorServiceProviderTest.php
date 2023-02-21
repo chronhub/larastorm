@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
+use Illuminate\Support\Facades\Artisan;
 use Chronhub\Larastorm\Projection\Projection;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Projector\ProjectorOption;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Projector\InMemoryProjectionQueryScope;
+use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
 use Chronhub\Storm\Projector\Options\InMemoryProjectorOption;
+use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
 use Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope;
 use Chronhub\Larastorm\Projection\ProvideProjectorServiceManager;
@@ -72,11 +75,8 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
             'console' => [
                 'load_migrations' => true,
                 'commands' => [
-                    //                    ReadProjectionCommand::class,
-                    //                    WriteProjectionCommand::class,
-                    //                    ProjectAllStreamCommand::class,
-                    //                    ProjectCategoryStreamCommand::class,
-                    //                    ProjectMessageNameCommand::class,
+                    ReadProjectionCommand::class,
+                    WriteProjectionCommand::class,
                 ],
             ],
         ], $this->app['config']['projector']);
@@ -103,6 +103,17 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
             ProjectorServiceManager::class,
             Project::SERVICE_ID,
         ], $serviceProvider->provides());
+    }
+
+    /**
+     * @test
+     */
+    public function it_assert_console_commands_registered(): void
+    {
+        $commands = Artisan::all();
+
+        $this->assertArrayHasKey('projector:write', $commands);
+        $this->assertArrayHasKey('projector:read', $commands);
     }
 
     protected function getPackageProviders($app): array

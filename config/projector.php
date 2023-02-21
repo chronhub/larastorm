@@ -106,6 +106,9 @@ return [
 
         'load_migrations' => true,
 
-        'commands' => [],
+        'commands' => [
+            \Chronhub\Larastorm\Support\Console\ReadProjectionCommand::class,
+            \Chronhub\Larastorm\Support\Console\WriteProjectionCommand::class,
+        ],
     ],
 ];

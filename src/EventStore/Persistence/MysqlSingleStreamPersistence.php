@@ -10,10 +10,7 @@ use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 
 final class MysqlSingleStreamPersistence extends AbstractStreamPersistence implements StreamPersistenceWithQueryHint
 {
-    /**
-     * Index name
-     */
-    private string $indexQuery = 'ix_query_aggregate';
+    final public const QUERY_INDEX = 'ix_query_aggregate';
 
     public function up(string $tableName): ?callable
     {
@@ -29,7 +26,7 @@ final class MysqlSingleStreamPersistence extends AbstractStreamPersistence imple
             $table->timestampTz('created_at', 6);
 
             $table->unique(['aggregate_type', 'aggregate_id', 'aggregate_version'], $tableName.'_ix_unique_event');
-            $table->index(['aggregate_type', 'aggregate_id', 'no'], $tableName.'_'.$this->indexQuery);
+            $table->index(['aggregate_type', 'aggregate_id', 'no'], $tableName.'_'.self::QUERY_INDEX);
         });
 
         return null;
@@ -42,6 +39,6 @@ final class MysqlSingleStreamPersistence extends AbstractStreamPersistence imple
 
     public function indexName(string $tableName): string
     {
-        return $this->indexQuery;
+        return $tableName.'_'.self::QUERY_INDEX;
     }
 }

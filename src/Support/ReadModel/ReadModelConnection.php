@@ -11,7 +11,6 @@ use Chronhub\Storm\Projector\ReadModel\InteractWithStack;
 abstract class ReadModelConnection implements ReadModel
 {
     use InteractWithStack;
-    use InteractWithBuilder;
 
     public function __construct(protected readonly Connection $connection)
     {

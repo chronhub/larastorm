@@ -10,11 +10,14 @@ use Chronhub\Storm\Reporter\DomainEvent;
 trait InteractWithBuilder
 {
     /**
-     * Write query with a given callback
+     * @param  callable(Builder, string, DomainEvent): void  $callback
      *
-     * eg: $this->readModel()->stack(
+     * @example $this->readModel()->stack(
      *          'query', function(Builder $query, string $key, DomainEvent $event): void{
-     *              $query->insert[*];
+     *              $query->insert[
+     *                  $key => $event->aggregateId()->toString(),
+     *                  'email' => $event->customerEmail()->value
+     *              ];
      *      ), $event);
      */
     protected function query(callable $callback, ?DomainEvent $event = null): void

@@ -24,9 +24,7 @@ final class ListMessagerSubscribersCommand extends Command
     {
         [$reporterService, $messageListeners] = $this->collectListenersOrderedByPriority();
 
-        $rows = [];
-
-        $rows[] = [new TableCell($reporterService, ['colspan' => 4, 'rowspan' => 1, 'style' => null])];
+        $rows = [[new TableCell($reporterService, ['colspan' => 4, 'rowspan' => 1, 'style' => null])]];
 
         foreach ($messageListeners as $listener) {
             $rows[] = [

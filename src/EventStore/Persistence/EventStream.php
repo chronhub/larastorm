@@ -12,14 +12,8 @@ use function array_map;
 
 final class EventStream extends Model implements EventStreamProvider, EventStreamModel
 {
-    /**
-     * @var bool
-     */
     public $timestamps = false;
 
-    /**
-     * @var string
-     */
     protected $table = 'event_streams';
 
     /**

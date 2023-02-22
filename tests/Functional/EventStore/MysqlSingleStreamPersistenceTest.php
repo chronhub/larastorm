@@ -20,10 +20,10 @@ use Chronhub\Storm\Serializer\DomainEventSerializer;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
-use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
+use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 use function array_keys;
 
-final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
+final class MysqlSingleStreamPersistenceTest extends OrchestraTestCase
 {
     use ProphecyTrait;
 
@@ -45,7 +45,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
     {
         $expectedTableName = '_'.$streamName;
 
-        $streamPersistence = $this->newInstance();
+        $streamPersistence = $this->newStreamPersistence();
 
         $tableName = $streamPersistence->tableName(new StreamName($streamName));
 
@@ -55,13 +55,25 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
     /**
      * @test
      */
+    public function it_return_query_index(): void
+    {
+        $this->assertEquals('ix_query_aggregate', MysqlSingleStreamPersistence::QUERY_INDEX);
+
+        $streamPersistence = $this->newStreamPersistence();
+
+        $this->assertEquals('_foo_bar_ix_query_aggregate', $streamPersistence->indexName('_foo_bar'));
+    }
+
+    /**
+     * @test
+     */
     public function it_up_stream_table(): void
     {
         $tableName = '_'.'foo_bar';
 
-        $streamPersistence = $this->newInstance();
+        $streamPersistence = $this->newStreamPersistence();
 
-        $this->assertIsCallable($streamPersistence->up($tableName));
+        $this->assertNull($streamPersistence->up($tableName));
 
         $this->assertTrue(Schema::hasTable($tableName));
 
@@ -85,8 +97,8 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
         $indexes = $doctrine->listTableIndexes($tableName);
 
         $this->assertArrayHasKey('_foo_bar_event_id_unique', $indexes);
-        $this->assertArrayHasKey('_foo_bar_aggregate_type_aggregate_id_no_index', $indexes);
-        $this->assertArrayHasKey('_foo_bar_aggregate_type_aggregate_id_aggregate_version_unique', $indexes);
+        $this->assertArrayHasKey('_foo_bar_ix_unique_event', $indexes);
+        $this->assertArrayHasKey($streamPersistence->indexName($tableName), $indexes);
     }
 
     /**
@@ -96,7 +108,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
     {
         $streamSerializer = new DomainEventSerializer(null);
 
-        $streamPersistence = $this->newInstance($streamSerializer);
+        $streamPersistence = $this->newStreamPersistence($streamSerializer);
 
         $headers = [
             Header::EVENT_ID => Uuid::v4()->jsonSerialize(),
@@ -138,14 +150,14 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
      */
     public function it_assert_is_auto_incremented(): void
     {
-        $this->assertTrue($this->newInstance()->isAutoIncremented());
+        $this->assertTrue($this->newStreamPersistence()->isAutoIncremented());
     }
 
-    private function newInstance(?StreamEventSerializer $serializer = null): PgsqlSingleStreamPersistence
+    private function newStreamPersistence(?StreamEventSerializer $serializer = null): MysqlSingleStreamPersistence
     {
-        $instance = new PgsqlSingleStreamPersistence($serializer ?? $this->serializer->reveal());
+        $instance = new MysqlSingleStreamPersistence($serializer ?? $this->serializer->reveal());
 
-        $this->assertNotInstanceOf(StreamPersistenceWithQueryHint::class, $instance);
+        $this->assertInstanceOf(StreamPersistenceWithQueryHint::class, $instance);
 
         return $instance;
     }

@@ -5,14 +5,23 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
 use Generator;
+use Symfony\Component\Uid\Uuid;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Stream\StreamName;
 use Prophecy\Prophecy\ObjectProphecy;
 use Illuminate\Support\Facades\Schema;
+use Chronhub\Storm\Contracts\Message\Header;
+use Chronhub\Storm\Serializer\JsonSerializer;
+use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Message\EventHeader;
+use Chronhub\Storm\Serializer\DomainEventSerializer;
+use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 use Chronhub\Larastorm\EventStore\Persistence\PerAggregateStreamPersistence;
+use function array_keys;
 
 final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
 {
@@ -79,6 +88,54 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
         $indexes = $doctrine->listTableIndexes($tableName);
 
         $this->assertArrayHasKey($tableName.'_aggregate_version_unique', $indexes);
+    }
+
+    /**
+     * @test
+     */
+    public function it_serialize_domain_event_with_no(): void
+    {
+        $streamSerializer = new DomainEventSerializer(null);
+
+        $streamPersistence = $this->newInstance($streamSerializer);
+
+        $headers = [
+            Header::EVENT_ID => Uuid::v4()->jsonSerialize(),
+            Header::EVENT_TYPE => SomeEvent::class,
+            Header::EVENT_TIME => (new PointInTime())->now()->format(PointInTime::DATE_TIME_FORMAT),
+            EventHeader::AGGREGATE_VERSION => 1,
+            EventHeader::AGGREGATE_ID => Uuid::v4()->jsonSerialize(),
+            EventHeader::AGGREGATE_ID_TYPE => 'some_aggregate_type',
+            EventHeader::AGGREGATE_TYPE => AggregateRootStub::class,
+        ];
+
+        $content = ['email' => 'chronhubgit@gmail.com'];
+        $someEvent = (new SomeEvent($content))->withHeaders($headers);
+
+        $serializedEvent = $streamPersistence->serialize($someEvent);
+
+        $this->assertEquals([
+            'event_id',
+            'event_type',
+            'aggregate_id',
+            'aggregate_type',
+            'aggregate_version',
+            'headers',
+            'content',
+            'created_at',
+            'no',
+        ], array_keys($serializedEvent));
+
+        $this->assertArrayHasKey('no', $serializedEvent);
+        $this->assertEquals(1, $serializedEvent['no']);
+
+        $jsonSerializer = new JsonSerializer();
+
+        $this->assertIsString($serializedEvent['headers']);
+        $this->assertEquals($jsonSerializer->encode($headers), $serializedEvent['headers']);
+
+        $this->assertIsString($serializedEvent['content']);
+        $this->assertEquals($jsonSerializer->encode($content), $serializedEvent['content']);
     }
 
     /**

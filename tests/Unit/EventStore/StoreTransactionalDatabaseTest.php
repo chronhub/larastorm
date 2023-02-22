@@ -18,7 +18,7 @@ use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Larastorm\EventStore\StoreTransactionalDatabase;
 use Chronhub\Storm\Chronicler\Exceptions\TransactionNotStarted;
 use Chronhub\Storm\Chronicler\Exceptions\TransactionAlreadyStarted;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoaderConnection;
+use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 
 final class StoreTransactionalDatabaseTest extends ProphecyTestCase
 {

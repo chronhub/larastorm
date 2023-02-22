@@ -21,7 +21,7 @@ use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Larastorm\EventStore\StoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\WriteLock\WriteLockFactory;
 use Chronhub\Larastorm\EventStore\Loader\StreamEventLoaderFactory;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoaderConnection;
+use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 
 final class EventStoreProviderFactoryTest extends ProphecyTestCase
 {

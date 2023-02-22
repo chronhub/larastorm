@@ -7,7 +7,7 @@ namespace Chronhub\Larastorm\EventStore\Loader;
 use Generator;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoaderConnection;
+use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader as EventLoader;
 
 final readonly class LazyQueryLoader implements StreamEventLoaderConnection

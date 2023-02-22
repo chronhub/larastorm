@@ -16,7 +16,7 @@ use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoaderConnection;
+use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use function is_callable;
 
 abstract class Store implements ChroniclerConnection

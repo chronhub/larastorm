@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\EventStore\Loader;
 
 use Illuminate\Contracts\Container\Container;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoaderConnection;
+use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use function explode;
 use function str_starts_with;
 

@@ -16,7 +16,7 @@ use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamPersistence;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoaderConnection;
+use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 
 trait ProvideTestingStore
 {

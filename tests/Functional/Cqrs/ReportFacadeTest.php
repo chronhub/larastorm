@@ -116,7 +116,7 @@ final class ReportFacadeTest extends OrchestraTestCase
      */
     public function it_fix_facade_service_id(): void
     {
-        $this->assertEquals('reporter.manager', Report::SERVICE_ID);
+        $this->assertEquals('cqrs.manager', Report::SERVICE_ID);
     }
 
     protected function getPackageProviders($app): array

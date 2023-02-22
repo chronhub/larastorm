@@ -15,7 +15,7 @@ use Chronhub\Storm\Contracts\Reporter\Reporter;
  */
 final class Report extends Facade
 {
-    public const SERVICE_ID = 'reporter.manager';
+    public const SERVICE_ID = 'cqrs.manager';
 
     protected static function getFacadeAccessor(): string
     {

@@ -16,7 +16,7 @@ use function pcntl_async_signals;
 
 abstract class CreatePersistentProjectionCommand extends Command implements SignalableCommandInterface
 {
-    protected ProjectorBuilder|PersistentProjector $projector;
+    protected null|ProjectorBuilder|PersistentProjector $projector = null;
 
     protected bool $dispatchSignal = false;
 
@@ -35,17 +35,13 @@ abstract class CreatePersistentProjectionCommand extends Command implements Sign
             $readModel = $this->laravel[$readModel];
         }
 
-        $queryFilter ??= $projector->queryScope()->fromIncludedPosition();
+        $projection = $readModel instanceof ReadModel
+            ? $projector->projectReadModel($streamName, $readModel, $options)
+            : $projector->projectProjection($streamName, $options);
 
-        if ($readModel instanceof ReadModel) {
-            return $projector
-                ->projectReadModel($streamName, $readModel, $options)
-                ->withQueryFilter($queryFilter);
-        }
-
-        return $projector
-            ->projectProjection($streamName, $options)
-            ->withQueryFilter($queryFilter);
+        return $projection->withQueryFilter(
+            $queryFilter ?? $projector->queryScope()->fromIncludedPosition()
+        );
     }
 
     public function getSubscribedSignals(): array

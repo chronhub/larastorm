@@ -56,6 +56,41 @@ final class ConnectionProjectionQueryScopeTest extends ProphecyTestCase
         $query->apply()($this->builder->reveal());
     }
 
+    /**
+     * @test
+     *
+     * @dataProvider provideInvalidPosition
+     */
+    public function it_raise_exception_when_current_position_is_less_or_equals_than_zero_with_limit(int $invalidPosition): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Position must be greater than 0, current is '.$invalidPosition);
+
+        $scope = new ConnectionProjectionQueryScope();
+
+        $query = $scope->fromIncludedPositionWithLimit();
+        $query->setCurrentPosition($invalidPosition);
+
+        $query->apply()($this->builder->reveal());
+    }
+
+    /**
+     * @test
+     */
+    public function it_filter_query_with_limit(): void
+    {
+        $this->builder->where('no', '>=', 20)->willReturn($this->builder)->shouldBeCalledOnce();
+        $this->builder->orderBy('no')->willReturn($this->builder)->shouldBeCalledOnce();
+        $this->builder->limit(100)->willReturn($this->builder)->shouldBeCalledOnce();
+
+        $scope = new ConnectionProjectionQueryScope();
+
+        $query = $scope->fromIncludedPositionWithLimit(100);
+        $query->setCurrentPosition(20);
+
+        $query->apply()($this->builder->reveal());
+    }
+
     public function provideInvalidPosition(): Generator
     {
         yield [0];

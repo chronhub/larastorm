@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Console;
 
+use Closure;
 use Illuminate\Console\Command;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Storm\Contracts\Projector\ReadModel;
@@ -23,7 +24,7 @@ abstract class CreatePersistentProjectionCommand extends Command implements Sign
     protected function project(string $streamName,
                                null|string|ReadModel $readModel,
                                array $options = [],
-                               ?ProjectionQueryFilter $queryFilter = null): ProjectorBuilder
+                               null|ProjectionQueryFilter|Closure $queryFilter = null): ProjectorBuilder
     {
         if ($this->shouldDispatchSignal()) {
             pcntl_async_signals(true);
@@ -38,6 +39,10 @@ abstract class CreatePersistentProjectionCommand extends Command implements Sign
         $projection = $readModel instanceof ReadModel
             ? $projector->projectReadModel($streamName, $readModel, $options)
             : $projector->projectProjection($streamName, $options);
+
+        if ($queryFilter instanceof Closure) {
+            $queryFilter = $queryFilter($projector);
+        }
 
         return $projection->withQueryFilter(
             $queryFilter ?? $projector->queryScope()->fromIncludedPosition()

@@ -70,8 +70,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Options can be an array or a string service class/id implementing projector option contract
-    |       a class or service id is immutable
-    |       array will return a default projection where options can be mutated
+    | not that a class or service id is immutable
     |
     | @see \Chronhub\Storm\Projector\Options\DefaultProjectorOption
     */

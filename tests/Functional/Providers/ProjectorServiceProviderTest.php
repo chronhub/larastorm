@@ -61,12 +61,12 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
             'options' => [
                 'default' => [],
                 'lazy' => [
-                    ProjectorOption::UPDATE_LOCK_THRESHOLD => 500000,
-                    ProjectorOption::SLEEP_BEFORE_UPDATE_LOCK => 100000,
-                    ProjectorOption::PERSIST_BLOCK_SIZE => 1000,
-                    ProjectorOption::LOCK_TIMEOUT_MS => 10000,
-                    ProjectorOption::DISPATCH_SIGNAL => true,
-                    ProjectorOption::RETRIES_MS => '50, 1000, 50',
+                    ProjectorOption::SIGNAL => true,
+                    ProjectorOption::LOCKOUT => 500000,
+                    ProjectorOption::SLEEP => 100000,
+                    ProjectorOption::BLOCK_SIZE => 1000,
+                    ProjectorOption::TIMEOUT => 10000,
+                    ProjectorOption::RETRIES => '50, 1000, 50',
                     ProjectorOption::DETECTION_WINDOWS => null,
                 ],
                 'in_memory' => InMemoryProjectorOption::class,

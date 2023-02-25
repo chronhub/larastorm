@@ -97,23 +97,22 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
 
     private function createConnectionManager(array $config): ProjectorManager
     {
-        $chronicler = $this->eventStoreResolver->resolve($config['chronicler']);
-
-        return new ConnectionProjectorManager(
-            $chronicler,
-            $chronicler->getEventStreamProvider(),
-            $this->determineProjectionProvider($config['provider'] ?? null),
-            $this->container[$config['scope']],
-            $this->container[SystemClock::class],
-            $this->determineProjectorOptions($config['options']),
-        );
+        return $this->createProjectorManagerInstance(ConnectionProjectorManager::class, $config);
     }
 
     private function createInMemoryManager(array $config): ProjectorManager
     {
+        return $this->createProjectorManagerInstance(InMemoryProjectorManager::class, $config);
+    }
+
+    /**
+     * @param  class-string  $manager
+     */
+    private function createProjectorManagerInstance(string $manager, array $config): ProjectorManager
+    {
         $chronicler = $this->eventStoreResolver->resolve($config['chronicler']);
 
-        return new InMemoryProjectorManager(
+        return new $manager(
             $chronicler,
             $chronicler->getEventStreamProvider(),
             $this->determineProjectionProvider($config['provider'] ?? null),
@@ -134,7 +133,7 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
         return $this->container[$projectionProvider];
     }
 
-    protected function determineProjectorOptions(?string $optionKey): array|ProjectorOption
+    private function determineProjectorOptions(?string $optionKey): array|ProjectorOption
     {
         $options = $this->container['config']["projector.options.$optionKey"] ?? [];
 

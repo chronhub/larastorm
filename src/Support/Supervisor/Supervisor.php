@@ -144,4 +144,8 @@ class Supervisor
             throw new RuntimeException('There is already a supervisor running.');
         }
     }
+
+    public function __destruct()
+    {
+    }
 }

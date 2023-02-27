@@ -19,13 +19,13 @@ use function usleep;
  */
 class Supervisor
 {
+    public string $signature = 'projector:supervisor-start';
+
     protected bool $firstCheck = false;
 
     protected bool $isWorking = false;
 
     protected Collection $processes;
-
-    public string $signature = 'projector:supervisor-start';
 
     public function __construct(private readonly Collection $commands,
                                 public readonly string $namespace = 'project')

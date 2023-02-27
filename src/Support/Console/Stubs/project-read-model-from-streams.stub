@@ -1,0 +1,68 @@
+<?php
+
+declare(strict_types=1);
+
+namespace $$NAMESPACE$$;
+
+use Closure;
+use Illuminate\Console\Command;
+use Chronhub\Storm\Reporter\DomainEvent;
+use Chronhub\Larastorm\Support\Facade\Project;
+use Chronhub\Storm\Contracts\Projector\Projector;
+use Chronhub\Storm\Contracts\Projector\ReadModelProjectorCaster;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
+use function pcntl_async_signals;
+
+class $$CLASS_NAME$$ extends Command implements SignalableCommandInterface
+{
+    protected Projector $projection;
+
+    protected $signature = 'project:read-model-$$COMMAND_SUFFIX$$
+                            { --name=default    : projector name }
+                            { --signal=1        : dispatch signal }
+                            { --keep-running=1  : run in background }';
+
+    public function handle(): int
+    {
+        if ($this->option('signal') === '1') {
+            pcntl_async_signals(true);
+        }
+
+        $projector = Project::create($this->option('name'));
+
+        $readModel = $this->laravel['$$READ_MODEL_SERVICE$$'];
+
+        $this->projection = $projector->projectReadModel('$$PROJECTION_NAME$$', $readModel);
+
+        $this->projection
+            ->initialize(fn (): array => ['count' => 0])
+            ->fromStreams($$STREAM_NAMES$$)
+            ->whenAny($this->eventHandlers())
+            ->withQueryFilter($projector->queryScope()->fromIncludedPosition())
+            ->run($this->option('keep-running') === '1');
+
+        return self::SUCCESS;
+    }
+
+    public function eventHandlers(): Closure
+    {
+        return function (DomainEvent $event, array $state): array {
+            /** @var ReadModelProjectorCaster $this */
+            $state['count']++;
+
+            return $state;
+        };
+    }
+
+    public function getSubscribedSignals(): array
+    {
+        return [SIGINT];
+    }
+
+    public function handleSignal(int $signal): void
+    {
+        $this->line('Stopping projection $$PROJECTION_NAME$$ ...');
+
+        $this->projection->stop();
+    }
+}

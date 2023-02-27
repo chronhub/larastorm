@@ -124,15 +124,15 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
 
         if (isset($providers['connection']) && $providers['connection'] === ConnectionChroniclerProvider::class) {
             $this->app->singleton(
-                InMemoryChroniclerProvider::class,
-                fn (Application $app): InMemoryChroniclerProvider => new InMemoryChroniclerProvider(fn (): Container => $app)
+                ConnectionChroniclerProvider::class,
+                fn (Application $app): ChroniclerProvider => new ConnectionChroniclerProvider(fn () => $app, $app[EventStoreProviderFactory::class])
             );
         }
 
         if (isset($providers['in_memory']) && $providers['in_memory'] === InMemoryChroniclerProvider::class) {
             $this->app->singleton(
-                ConnectionChroniclerProvider::class,
-                fn (Application $app): ChroniclerProvider => new ConnectionChroniclerProvider(fn () => $app, $app[EventStoreProviderFactory::class])
+                InMemoryChroniclerProvider::class,
+                fn (Application $app): ChroniclerProvider => new InMemoryChroniclerProvider(fn () => $app)
             );
         }
     }

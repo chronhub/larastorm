@@ -9,6 +9,7 @@ use RuntimeException;
 use Illuminate\Support\Collection;
 use Symfony\Component\Process\Process;
 use function sleep;
+use function usleep;
 
 /**
  * Dummy supervisor to monitor multiple projections.
@@ -56,6 +57,11 @@ class Supervisor
                 }
             }
         );
+
+        // help check with output to display final status
+        while ($this->atLeastOneRunning()) {
+            usleep(100);
+        }
 
         $this->isWorking = false;
     }

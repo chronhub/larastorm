@@ -20,6 +20,7 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
@@ -34,10 +35,9 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
     {
         $this->assertEquals([
             'event_serializer' => [
-                'concrete' => DomainEventSerializer::class,
                 'normalizers' => [
                     UidNormalizer::class,
-                    'serializer.normalizer.event_time',
+                    'serializer.normalizer.event_time.utc',
                 ],
             ],
             'defaults' => [
@@ -120,6 +120,9 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
         $this->assertInstanceOf(EventStoreManager::class, $this->app[ChroniclerManager::class]);
         $this->assertTrue($this->app->bound(Chronicle::SERVICE_ID));
 
+        $this->assertTrue($this->app->bound('serializer.normalizer.event_time.utc'));
+        $this->assertInstanceOf(DateTimeNormalizer::class, $this->app['serializer.normalizer.event_time.utc']);
+
         $this->assertTrue($this->app->bound(RepositoryManager::class));
         $this->assertInstanceOf(AggregateRepositoryManager::class, $this->app[RepositoryManager::class]);
 
@@ -142,6 +145,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             RepositoryManager::class,
             InMemoryChroniclerProvider::class,
             ConnectionChroniclerProvider::class,
+            'serializer.normalizer.event_time.utc',
         ], $provider->provides());
     }
 

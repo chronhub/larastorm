@@ -16,7 +16,7 @@ use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Storm\Serializer\SerializeToJson;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Message\EventHeader;
-use Chronhub\Storm\Serializer\DomainEventSerializer;
+use Chronhub\Storm\Serializer\JsonSerializerFactory;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
@@ -95,7 +95,8 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
      */
     public function it_serialize_domain_event_with_no(): void
     {
-        $streamSerializer = new DomainEventSerializer(null);
+        $factory = new JsonSerializerFactory();
+        $streamSerializer = $factory->createForStream();
 
         $streamPersistence = $this->newInstance($streamSerializer);
 

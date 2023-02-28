@@ -16,7 +16,7 @@ use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Storm\Serializer\SerializeToJson;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Message\EventHeader;
-use Chronhub\Storm\Serializer\DomainEventSerializer;
+use Chronhub\Storm\Serializer\JsonSerializerFactory;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
@@ -94,7 +94,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
      */
     public function it_serialize_domain_event(): void
     {
-        $streamSerializer = new DomainEventSerializer(null);
+        $streamSerializer = (new JsonSerializerFactory())->createForStream();
 
         $streamPersistence = $this->newInstance($streamSerializer);
 

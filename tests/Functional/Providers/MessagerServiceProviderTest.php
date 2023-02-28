@@ -37,10 +37,9 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
             'factory' => MessageFactory::class,
             'alias' => AliasFromClassName::class,
             'serializer' => [
-                'concrete' => MessagingSerializer::class,
                 'normalizers' => [
                     UidNormalizer::class,
-                    'serializer.normalizer.event_time',
+                    'serializer.normalizer.event_time.utc',
                 ],
             ],
             'decorators' => [
@@ -66,8 +65,8 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
         $this->assertTrue($this->app->bound(Factory::class));
         $this->assertInstanceOf(MessageFactory::class, $this->app[Factory::class]);
 
-        $this->assertTrue($this->app->bound('serializer.normalizer.event_time'));
-        $this->assertInstanceOf(DateTimeNormalizer::class, $this->app['serializer.normalizer.event_time']);
+        $this->assertTrue($this->app->bound('serializer.normalizer.event_time.utc'));
+        $this->assertInstanceOf(DateTimeNormalizer::class, $this->app['serializer.normalizer.event_time.utc']);
 
         $this->assertTrue($this->app->bound(MessageSerializer::class));
         $this->assertInstanceOf(MessagingSerializer::class, $this->app[MessageSerializer::class]);
@@ -90,7 +89,7 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
             SystemClock::class,
             Clock::SERVICE_ID,
             Factory::class,
-            'serializer.normalizer.event_time',
+            'serializer.normalizer.event_time.utc',
             MessageSerializer::class,
             MessageAlias::class,
             UniqueId::class,

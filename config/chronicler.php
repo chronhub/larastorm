@@ -12,10 +12,9 @@ return [
     */
 
     'event_serializer' => [
-        'concrete' => \Chronhub\Storm\Serializer\DomainEventSerializer::class,
         'normalizers' => [
             \Symfony\Component\Serializer\Normalizer\UidNormalizer::class,
-            'serializer.normalizer.event_time',
+            'serializer.normalizer.event_time.utc',
         ],
     ],
 

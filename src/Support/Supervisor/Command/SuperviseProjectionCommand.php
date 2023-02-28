@@ -56,9 +56,12 @@ class SuperviseProjectionCommand extends Command implements SignalableCommandInt
 
     protected function usingOutput(): ?Closure
     {
-        return $this->option('output') === '1'
-            ? function ($type, $line) {
-                $this->output->write($line);
-            } : null;
+        if ($this->option('output') !== '1') {
+            return null;
+        }
+
+        return function ($type, $line): void {
+            $this->output->write($line);
+        };
     }
 }

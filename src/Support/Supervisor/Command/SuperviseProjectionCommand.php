@@ -13,13 +13,13 @@ use function pcntl_async_signals;
 
 class SuperviseProjectionCommand extends Command implements SignalableCommandInterface
 {
-    final public const MIN_CHECK = 10;
+    final public const MIN_CHECK_EVERY = 10;
 
     protected $signature = 'projector:supervisor-start
                             { --output=1 : enable output }
                             { --check-every=30 : check projection status every x seconds, min is 10 }';
 
-    private Supervisor $supervisor;
+    protected Supervisor $supervisor;
 
     public function handle(Supervisor $supervisor): void
     {
@@ -49,7 +49,7 @@ class SuperviseProjectionCommand extends Command implements SignalableCommandInt
         while ($this->supervisor->atLeastOneRunning()) {
             $this->supervisor->check(
                 $this->usingOutput(),
-                max((int) $this->option('check-every'), self::MIN_CHECK)
+                max((int) $this->option('check-every'), self::MIN_CHECK_EVERY)
             );
         }
     }

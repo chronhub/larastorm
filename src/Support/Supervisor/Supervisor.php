@@ -6,6 +6,7 @@ namespace Chronhub\Larastorm\Support\Supervisor;
 
 use Closure;
 use RuntimeException;
+use InvalidArgumentException;
 use Illuminate\Support\Collection;
 use Symfony\Component\Process\Process;
 use function sleep;
@@ -15,23 +16,32 @@ use function usleep;
  * Dummy supervisor to monitor multiple projections.
  * Only meant for dev and rad
  *
+ * we should be able to fetch real status (resetting, delete, deleteInc) from the projector manager
+ * but, we have to considered the type of projector (read model or persistent projection) as we can not
+ * restart automatically
+ *
+ * deleteIncl can be restarted but put here an option
+ * delete only should stop the projector only
+ * reset RM should restart itself
+ * reset a non RM should stop the projector
+ *
  * @todo extends with projector manager
  */
 class Supervisor
 {
     public string $signature = 'projector:supervisor-start';
 
-    protected bool $firstCheck = false;
+    protected bool $firstCheck = true;
 
     protected bool $isWorking = false;
 
     protected Collection $processes;
 
-    public function __construct(private readonly Collection $commands,
+    public function __construct(protected readonly Collection $commands,
                                 public readonly string $namespace = 'project')
     {
         if ($this->commands->isEmpty()) {
-            throw new RuntimeException('No commands given.');
+            throw new InvalidArgumentException('No commands given.');
         }
 
         $this->assertUniqueSupervisor();
@@ -72,7 +82,7 @@ class Supervisor
             return;
         }
 
-        if ($this->firstCheck) {
+        if (! $this->firstCheck) {
             sleep($timeout);
         }
 
@@ -85,7 +95,7 @@ class Supervisor
                     $output->__invoke(Process::OUT, "Projection $name is $line. ".PHP_EOL);
                 });
 
-        $this->firstCheck = true;
+        $this->firstCheck = false;
     }
 
     public function atLeastOneRunning(): bool
@@ -97,7 +107,12 @@ class Supervisor
 
     public function isSupervisorRunning(): bool
     {
-        return $this->countSupervisorProcess() === 1;
+        return $this->countMasterProcess() === 1;
+    }
+
+    public function isWorking(): bool
+    {
+        return $this->isWorking;
     }
 
     public function getNames(): array
@@ -129,7 +144,7 @@ class Supervisor
         return new SupervisorProcess($process);
     }
 
-    protected function countSupervisorProcess(): int
+    protected function countMasterProcess(): int
     {
         $command = 'ps aux | grep '.$this->signature.' | grep -v grep | wc -l';
 
@@ -140,7 +155,7 @@ class Supervisor
 
     protected function assertUniqueSupervisor(): void
     {
-        if ($this->countSupervisorProcess() > 1) {
+        if ($this->countMasterProcess() > 1) {
             throw new RuntimeException('There is already a supervisor running.');
         }
     }

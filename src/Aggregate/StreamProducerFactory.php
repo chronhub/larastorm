@@ -12,7 +12,7 @@ use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 
 final class StreamProducerFactory
 {
-    public function __invoke(string $streamName, ?string $strategy): StreamProducer
+    public function createStreamProducer(string $streamName, ?string $strategy): StreamProducer
     {
         $streamName = new StreamName($streamName);
 

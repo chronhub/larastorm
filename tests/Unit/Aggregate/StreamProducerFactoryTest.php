@@ -20,7 +20,7 @@ final class StreamProducerFactoryTest extends UnitTestCase
     {
         $factory = new StreamProducerFactory();
 
-        $streamProducer = $factory('some_stream_name', 'single');
+        $streamProducer = $factory->createStreamProducer('some_stream_name', 'single');
 
         $this->assertInstanceOf(SingleStreamPerAggregate::class, $streamProducer);
 
@@ -36,7 +36,7 @@ final class StreamProducerFactoryTest extends UnitTestCase
     {
         $factory = new StreamProducerFactory();
 
-        $streamProducer = $factory('some_stream_name', 'per_aggregate');
+        $streamProducer = $factory->createStreamProducer('some_stream_name', 'per_aggregate');
 
         $this->assertInstanceOf(OneStreamPerAggregate::class, $streamProducer);
 
@@ -55,6 +55,6 @@ final class StreamProducerFactoryTest extends UnitTestCase
 
         $factory = new StreamProducerFactory();
 
-        $factory('some_stream_name', 'nope');
+        $factory->createStreamProducer('some_stream_name', 'nope');
     }
 }

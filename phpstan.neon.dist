@@ -1,6 +1,6 @@
 includes:
     - ./vendor/nunomaduro/larastan/extension.neon
-    - vendor/jangregor/phpstan-prophecy/extension.neon
+    - ./vendor/jangregor/phpstan-prophecy/extension.neon
 
 parameters:
 

@@ -28,7 +28,7 @@ final class AggregateTypeFactoryTest extends UnitTestCase
     {
         $factory = new AggregateTypeFactory(fn () => $this->container);
 
-        $aggregateType = $factory(AggregateRootStub::class);
+        $aggregateType = $factory->createType(AggregateRootStub::class);
 
         $this->assertInstanceOf(AggregateType::class, $aggregateType);
 
@@ -46,7 +46,7 @@ final class AggregateTypeFactoryTest extends UnitTestCase
 
         $factory = new AggregateTypeFactory(fn () => $this->container);
 
-        $aggregateType = $factory('aggregate_type.service');
+        $aggregateType = $factory->createType('aggregate_type.service');
 
         $this->assertInstanceOf(AggregateType::class, $aggregateType);
 
@@ -60,7 +60,7 @@ final class AggregateTypeFactoryTest extends UnitTestCase
     {
         $factory = new AggregateTypeFactory(fn () => $this->container);
 
-        $aggregateType = $factory([
+        $aggregateType = $factory->createType([
             'root' => AggregateRootStub::class,
             'lineage' => [
                 AggregateRootChildStub::class,

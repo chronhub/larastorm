@@ -23,7 +23,7 @@ final readonly class AggregateTypeFactory
     /**
      * @param string|array{"root": class-string, "lineage": array{class-string}} $aggregateType
      */
-    public function __invoke(string|array $aggregateType): Type
+    public function createType(string|array $aggregateType): Type
     {
         if (is_string($aggregateType)) {
             if (is_a($aggregateType, AggregateRoot::class, true)) {

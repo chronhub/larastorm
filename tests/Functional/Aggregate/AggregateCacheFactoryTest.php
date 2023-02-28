@@ -23,7 +23,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
     {
         $factory = new AggregateCacheFactory();
 
-        $aggregateCache = $factory(AggregateRootStub::class, ['size' => 10]);
+        $aggregateCache = $factory->createCache(AggregateRootStub::class, ['size' => 10]);
 
         $this->assertInstanceOf(AggregateTaggedCache::class, $aggregateCache);
 
@@ -38,7 +38,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
     {
         $factory = new AggregateCacheFactory();
 
-        $aggregateCache = $factory(AggregateRootStub::class, [
+        $aggregateCache = $factory->createCache(AggregateRootStub::class, [
             'size' => 1000,
             'tag' => 'my_tag',
         ]);
@@ -58,7 +58,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
 
         $factory = new AggregateCacheFactory();
 
-        $factory(AggregateRootStub::class, [
+        $factory->createCache(AggregateRootStub::class, [
             'size' => 1,
             'driver' => 'redis',
         ]);
@@ -73,7 +73,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
     {
         $factory = new AggregateCacheFactory();
 
-        $aggregateCache = $factory(AggregateRootStub::class, $cacheConfig);
+        $aggregateCache = $factory->createCache(AggregateRootStub::class, $cacheConfig);
 
         $this->assertEquals(NullAggregateCache::class, $aggregateCache::class);
     }
@@ -89,7 +89,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
         $factory = new AggregateCacheFactory();
 
         /** @phpstan-ignore-next-line  */
-        $factory('foo', []);
+        $factory->createCache('foo', []);
     }
 
     public function provideValuesForNullAggregateCache(): Generator

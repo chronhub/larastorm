@@ -19,7 +19,7 @@ final class AggregateCacheFactory
      *
      * @throws InvalidArgumentException when string aggregate root is not a valid class name
      */
-    public function __invoke(string $aggregateRoot, array $cacheConfig): AggregateCache
+    public function createCache(string $aggregateRoot, array $cacheConfig): AggregateCache
     {
         if (! class_exists($aggregateRoot)) {
             throw new InvalidArgumentException('String aggregate root must be a valid class name');

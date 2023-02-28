@@ -95,12 +95,12 @@ final class AggregateRepositoryManager implements Manager
 
     private function createGenericRepositoryDriver(string $streamName, array $config): Repository
     {
-        $aggregateType = ($this->aggregateTypeFactory)($config['aggregate_type']);
+        $aggregateType = $this->aggregateTypeFactory->createType($config['aggregate_type']);
 
         return new AggregateRepository(
             $this->eventStoreResolver->resolve($config['chronicler']),
-            ($this->streamProducerFactory)($streamName, $config['strategy'] ?? null),
-            ($this->aggregateCacheFactory)($aggregateType->current(), $config['cache'] ?? []),
+            $this->streamProducerFactory->createStreamProducer($streamName, $config['strategy'] ?? null),
+            $this->aggregateCacheFactory->createCache($aggregateType->current(), $config['cache'] ?? []),
             $aggregateType,
             $this->makeEventDecorators($config['event_decorators'] ?? [])
         );

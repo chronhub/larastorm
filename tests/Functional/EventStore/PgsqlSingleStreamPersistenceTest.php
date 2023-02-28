@@ -12,8 +12,8 @@ use Chronhub\Storm\Stream\StreamName;
 use Prophecy\Prophecy\ObjectProphecy;
 use Illuminate\Support\Facades\Schema;
 use Chronhub\Storm\Contracts\Message\Header;
-use Chronhub\Storm\Serializer\JsonSerializer;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
+use Chronhub\Storm\Serializer\SerializeToJson;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Message\EventHeader;
 use Chronhub\Storm\Serializer\DomainEventSerializer;
@@ -124,7 +124,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
             'created_at',
         ], array_keys($serializedEvent));
 
-        $jsonSerializer = new JsonSerializer();
+        $jsonSerializer = new SerializeToJson();
 
         $this->assertIsString($serializedEvent['headers']);
         $this->assertEquals($jsonSerializer->encode($headers), $serializedEvent['headers']);

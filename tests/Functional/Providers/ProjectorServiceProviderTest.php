@@ -18,6 +18,11 @@ use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
 use Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope;
 use Chronhub\Larastorm\Projection\ProvideProjectorServiceManager;
 use Chronhub\Storm\Projector\Provider\InMemoryProjectionProvider;
+use Chronhub\Larastorm\Support\Console\Generator\MakeQueryProjectionCommand;
+use Chronhub\Larastorm\Support\Supervisor\Command\SuperviseProjectionCommand;
+use Chronhub\Larastorm\Support\Console\Generator\MakeReadModelProjectionCommand;
+use Chronhub\Larastorm\Support\Console\Generator\MakePersistentProjectionCommand;
+use Chronhub\Larastorm\Support\Supervisor\Command\CheckSupervisedProjectionStatusCommand;
 
 final class ProjectorServiceProviderTest extends OrchestraTestCase
 {
@@ -77,6 +82,11 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
                 'commands' => [
                     ReadProjectionCommand::class,
                     WriteProjectionCommand::class,
+                    MakePersistentProjectionCommand::class,
+                    MakeReadModelProjectionCommand::class,
+                    MakeQueryProjectionCommand::class,
+                    SuperviseProjectionCommand::class,
+                    CheckSupervisedProjectionStatusCommand::class,
                 ],
             ],
         ], $this->app['config']['projector']);

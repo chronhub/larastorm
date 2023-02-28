@@ -9,6 +9,7 @@ use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
+use Chronhub\Storm\Serializer\ProjectorJsonSerializer;
 use Chronhub\Storm\Contracts\Projector\ProjectorOption;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
@@ -118,6 +119,7 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
             $this->determineProjectionProvider($config['provider'] ?? null),
             $this->container[$config['scope']],
             $this->container[SystemClock::class],
+            new ProjectorJsonSerializer(),
             $this->determineProjectorOptions($config['options']),
         );
     }

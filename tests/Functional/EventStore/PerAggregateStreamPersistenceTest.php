@@ -12,8 +12,8 @@ use Chronhub\Storm\Stream\StreamName;
 use Prophecy\Prophecy\ObjectProphecy;
 use Illuminate\Support\Facades\Schema;
 use Chronhub\Storm\Contracts\Message\Header;
-use Chronhub\Storm\Serializer\JsonSerializer;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
+use Chronhub\Storm\Serializer\SerializeToJson;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Message\EventHeader;
 use Chronhub\Storm\Serializer\DomainEventSerializer;
@@ -129,7 +129,7 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
         $this->assertArrayHasKey('no', $serializedEvent);
         $this->assertEquals(1, $serializedEvent['no']);
 
-        $jsonSerializer = new JsonSerializer();
+        $jsonSerializer = new SerializeToJson();
 
         $this->assertIsString($serializedEvent['headers']);
         $this->assertEquals($jsonSerializer->encode($headers), $serializedEvent['headers']);

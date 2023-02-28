@@ -13,8 +13,9 @@ use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Larastorm\Tests\Double\SomeCommand;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Larastorm\Support\Bridge\HandleTransactionalCommand;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalEventableChronicler;
@@ -138,6 +139,7 @@ final class HandleTransactionalCommandTest extends ProphecyTestCase
         yield [$this->prophesize(Chronicler::class)->reveal()];
         yield [$this->prophesize(ChroniclerDecorator::class)->reveal()];
         yield [$this->prophesize(ChroniclerConnection::class)->reveal()];
+        yield [$this->prophesize(ChroniclerDB::class)->reveal()];
         yield [$this->prophesize(TransactionalChronicler::class)->reveal()];
     }
 }

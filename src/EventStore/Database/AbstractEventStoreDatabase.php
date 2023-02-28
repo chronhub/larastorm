@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Chronhub\Larastorm\EventStore;
+namespace Chronhub\Larastorm\EventStore\Database;
 
 use Illuminate\Database\Connection;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\QueryException;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
 use Chronhub\Storm\Contracts\Stream\StreamPersistence;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use function is_callable;
 
-abstract class Store implements ChroniclerConnection
+abstract class AbstractEventStoreDatabase implements ChroniclerDB
 {
     /**
      * Determine if we create a new stream, or we update one
@@ -113,8 +113,6 @@ abstract class Store implements ChroniclerConnection
     {
         $tableName = $this->streamPersistence->tableName($streamName);
 
-        // checkMe query exception should be raised on duplicate
-        // todo assert in fn test
         $result = $this->eventStreamProvider->createStream(
             $streamName->name,
             $tableName,

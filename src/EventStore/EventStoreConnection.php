@@ -10,29 +10,33 @@ use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\QueryException;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Storm\Chronicler\Exceptions\StreamAlreadyExists;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 
 abstract class EventStoreConnection implements ChroniclerConnection, ChroniclerDecorator
 {
-    public function __construct(protected readonly ChroniclerConnection|TransactionalChronicler $chronicler)
+    public function __construct(protected readonly ChroniclerDB|TransactionalChronicler $chronicler)
     {
         if ($this->chronicler instanceof ChroniclerDecorator) {
-            throw new InvalidArgumentException('Chronicler Connection must not be a decorator');
+            throw new InvalidArgumentException('Chronicle given can not be a decorator: '.$this->chronicler::class);
         }
     }
 
     public function firstCommit(Stream $stream): void
     {
         try {
+            /**
+             * @throws QueryException
+             */
             $this->chronicler->firstCommit($stream);
         } catch (QueryException $exception) {
             $this->handleException($exception, $stream->name());
@@ -42,6 +46,9 @@ abstract class EventStoreConnection implements ChroniclerConnection, ChroniclerD
     public function amend(Stream $stream): void
     {
         try {
+            /**
+             * @throws QueryException
+             */
             $this->chronicler->amend($stream);
         } catch (QueryException $exception) {
             $this->handleException($exception, $stream->name());

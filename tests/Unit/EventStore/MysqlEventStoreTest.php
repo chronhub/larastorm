@@ -14,7 +14,7 @@ use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Storm\Chronicler\Exceptions\StreamAlreadyExists;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
 use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 
 final class MysqlEventStoreTest extends ProphecyTestCase

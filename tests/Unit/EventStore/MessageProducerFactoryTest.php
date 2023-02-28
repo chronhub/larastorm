@@ -42,7 +42,7 @@ final class MessageProducerFactoryTest extends ProphecyTestCase
 
         $factory = new MessageProducerFactory(fn () => $container);
 
-        $this->assertSame($instance, $factory($group));
+        $this->assertSame($instance, $factory->createMessageProducer($group));
     }
 
     /**
@@ -82,7 +82,7 @@ final class MessageProducerFactoryTest extends ProphecyTestCase
 
         $factory = new MessageProducerFactory(fn () => $container);
 
-        $messageProducer = $factory($group);
+        $messageProducer = $factory->createMessageProducer($group);
 
         $this->assertEquals(ProduceMessage::class, $messageProducer::class);
 
@@ -132,7 +132,7 @@ final class MessageProducerFactoryTest extends ProphecyTestCase
 
         $factory = new MessageProducerFactory(fn () => $container);
 
-        $messageProducer = $factory($group);
+        $messageProducer = $factory->createMessageProducer($group);
 
         $this->assertEquals(ProduceMessage::class, $messageProducer::class);
 

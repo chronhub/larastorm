@@ -18,11 +18,11 @@ use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Storm\Contracts\Serializer\ContentSerializer;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
-use Chronhub\Larastorm\EventStore\EventStoreDatabaseFactory;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 use function array_map;
 

@@ -9,7 +9,6 @@ use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Storm\Chronicler\EventChronicler;
 use Chronhub\Storm\Contracts\Tracker\Listener;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\EventStore\StoreDatabase;
 use Illuminate\Container\EntryNotFoundException;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
@@ -24,10 +23,11 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
-use Chronhub\Larastorm\EventStore\StoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseDatabase;
+use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\PerAggregateStreamPersistence;
 
@@ -102,7 +102,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(ChroniclerDecorator::class, $decoratorEventStore);
 
         $concreteEventStore = $decoratorEventStore->innerChronicler();
-        $this->assertInstanceOf(StoreDatabase::class, $concreteEventStore);
+        $this->assertInstanceOf(EventStoreDatabaseDatabase::class, $concreteEventStore);
     }
 
     /**
@@ -188,7 +188,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertNotInstanceOf(TransactionalChronicler::class, $eventStore);
         $this->assertNotInstanceOf(EventableChronicler::class, $eventStore);
         $this->assertInstanceOf(ChroniclerDecorator::class, $eventStore);
-        $this->assertEquals(StoreDatabase::class, $eventStore->innerChronicler()::class);
+        $this->assertEquals(EventStoreDatabaseDatabase::class, $eventStore->innerChronicler()::class);
     }
 
     /**
@@ -217,7 +217,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(TransactionalChronicler::class, $eventStore);
         $this->assertNotInstanceOf(EventableChronicler::class, $eventStore);
         $this->assertInstanceOf(ChroniclerDecorator::class, $eventStore);
-        $this->assertEquals(StoreTransactionalDatabase::class, $eventStore->innerChronicler()::class);
+        $this->assertEquals(EventStoreTransactionalDatabase::class, $eventStore->innerChronicler()::class);
     }
 
     /**
@@ -228,7 +228,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     public function it_raise_exception_when_missing_is_transactional_key_in_config_to_return_standalone_instance(string $storeDriver): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Key is_transactional is required and must be a boolean for chronicler name write');
+        $this->expectExceptionMessage('Config key is_transactional is required when no stream tracker is provided for chronicler name write');
 
         $this->app['config']->set('chronicler.providers.connection.write', [
             'store' => $storeDriver,

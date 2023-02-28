@@ -12,20 +12,20 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
 use Chronhub\Larastorm\Tests\Stubs\EventStoreConnectionStub;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
 
 class EventStoreConnectionTest extends ProphecyTestCase
 {
-    private ObjectProphecy|ChroniclerConnection $chronicler;
+    private ObjectProphecy|ChroniclerDB $chronicler;
 
     private Stream $stream;
 
     protected function setUp(): void
     {
-        $this->chronicler = $this->prophesize(ChroniclerConnection::class);
+        $this->chronicler = $this->prophesize(ChroniclerDB::class);
         $this->stream = new Stream(new StreamName('customer'));
     }
 

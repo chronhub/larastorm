@@ -15,10 +15,10 @@ use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamPersistence;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
-use Chronhub\Larastorm\EventStore\StoreTransactionalDatabase;
 use Chronhub\Storm\Chronicler\Exceptions\TransactionNotStarted;
 use Chronhub\Storm\Chronicler\Exceptions\TransactionAlreadyStarted;
 use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
+use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 
 final class StoreTransactionalDatabaseTest extends ProphecyTestCase
 {
@@ -161,9 +161,9 @@ final class StoreTransactionalDatabaseTest extends ProphecyTestCase
         yield [false];
     }
 
-    private function eventStore(): StoreTransactionalDatabase
+    private function eventStore(): EventStoreTransactionalDatabase
     {
-        return new StoreTransactionalDatabase(
+        return new EventStoreTransactionalDatabase(
             $this->connection->reveal(),
             $this->prophesize(StreamPersistence::class)->reveal(),
             $this->prophesize(StreamEventLoaderConnection::class)->reveal(),

@@ -8,7 +8,6 @@ use Illuminate\Database\Connection;
 use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Storm\Chronicler\EventChronicler;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\EventStore\StoreDatabase;
 use Chronhub\Larastorm\EventStore\PgsqlEventStore;
 use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
@@ -23,10 +22,11 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
-use Chronhub\Larastorm\EventStore\StoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Larastorm\EventStore\PgsqlTransactionalEventStore;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseDatabase;
+use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 
 final class PgsqlEventStoreManagerTest extends OrchestraTestCase
@@ -71,7 +71,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(PgsqlTransactionalEventStore::class, $decoratorEventStore);
 
         $concreteEventStore = $decoratorEventStore->innerChronicler();
-        $this->assertInstanceOf(StoreTransactionalDatabase::class, $concreteEventStore);
+        $this->assertInstanceOf(EventStoreTransactionalDatabase::class, $concreteEventStore);
 
         /** @var Connection $connection */
         $connection = ReflectionProperty::getProperty($concreteEventStore, 'connection');
@@ -122,7 +122,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(PgsqlEventStore::class, $decoratorEventStore);
 
         $concreteEventStore = $decoratorEventStore->innerChronicler();
-        $this->assertInstanceOf(StoreDatabase::class, $concreteEventStore);
+        $this->assertInstanceOf(EventStoreDatabaseDatabase::class, $concreteEventStore);
     }
 
     /**
@@ -150,7 +150,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertNotInstanceOf(EventableChronicler::class, $eventStore);
         $this->assertEquals(PgsqlEventStore::class, $eventStore::class);
         $this->assertInstanceOf(ChroniclerDecorator::class, $eventStore);
-        $this->assertEquals(StoreDatabase::class, $eventStore->innerChronicler()::class);
+        $this->assertEquals(EventStoreDatabaseDatabase::class, $eventStore->innerChronicler()::class);
     }
 
     /**
@@ -179,7 +179,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
 
         $this->assertEquals(PgsqlTransactionalEventStore::class, $eventStore::class);
         $this->assertInstanceOf(ChroniclerDecorator::class, $eventStore);
-        $this->assertEquals(StoreTransactionalDatabase::class, $eventStore->innerChronicler()::class);
+        $this->assertEquals(EventStoreTransactionalDatabase::class, $eventStore->innerChronicler()::class);
     }
 
     protected function getPackageProviders($app): array

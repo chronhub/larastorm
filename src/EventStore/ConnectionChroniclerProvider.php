@@ -11,11 +11,13 @@ use Psr\Container\ContainerInterface;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Tracker\StreamTracker;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
 use Chronhub\Storm\Chronicler\AbstractChroniclerProvider;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
 use Chronhub\Storm\Contracts\Tracker\TransactionalStreamTracker;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 use function is_bool;
 use function ucfirst;
 use function method_exists;
@@ -25,17 +27,17 @@ final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
     protected ContainerInterface|Container $container;
 
     public function __construct(Closure $container,
-                                private readonly EventStoreDatabaseFactory $providerFactory)
+                                private readonly EventStoreDatabaseFactory $storeDatabaseFactory)
     {
         parent::__construct($container);
 
         /** @phpstan-ignore-next-line  */
-        $this->providerFactory->setContainer($this->container);
+        $this->storeDatabaseFactory->setContainer($this->container);
     }
 
     public function resolve(string $name, array $config): Chronicler
     {
-        $chronicler = $this->make($name, $config);
+        $chronicler = $this->createEventStore($name, $config);
 
         if ($chronicler instanceof EventableChronicler) {
             $this->attachStreamSubscribers($chronicler, $config['tracking']['subscribers'] ?? []);
@@ -44,7 +46,7 @@ final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
         return $chronicler;
     }
 
-    private function make(string $name, array $config): Chronicler
+    private function createEventStore(string $name, array $config): Chronicler
     {
         [$streamTracker, $driver, $isTransactional] = $this->determineStore($name, $config);
 
@@ -68,9 +70,11 @@ final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
         /** @var Connection $connection */
         $connection = $this->container['db']->connection('pgsql');
 
-        $standalone = $this->providerFactory->createStore($connection, $config, $isTransactional);
+        $standalone = $this->createStandaloneStore($connection, $config, $isTransactional);
 
-        $chronicler = $isTransactional ? new PgsqlTransactionalEventStore($standalone) : new PgsqlEventStore($standalone);
+        $chronicler = $isTransactional
+            ? new PgsqlTransactionalEventStore($standalone)
+            : new PgsqlEventStore($standalone);
 
         return $streamTracker ? $this->decorateChronicler($chronicler, $streamTracker) : $chronicler;
     }
@@ -82,7 +86,7 @@ final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
         /** @var Connection $connection */
         $connection = $this->container['db']->connection('mysql');
 
-        $standalone = $this->providerFactory->createStore($connection, $config, $isTransactional);
+        $standalone = $this->createStandaloneStore($connection, $config, $isTransactional);
 
         $chronicler = $isTransactional
             ? new MysqlTransactionalEventStore($standalone)
@@ -91,6 +95,10 @@ final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
         return $streamTracker ? $this->decorateChronicler($chronicler, $streamTracker) : $chronicler;
     }
 
+    /**
+     * @param  array{store: string, is_transactional: bool|null}  $config
+     * @return array{StreamTracker|null, string, bool}
+     */
     private function determineStore(string $name, array $config): array
     {
         $streamTracker = $this->resolveStreamTracker($config);
@@ -102,9 +110,25 @@ final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
         $isTransactional = $config['is_transactional'] ?? null;
 
         if (! is_bool($isTransactional)) {
-            throw new InvalidArgumentException("Key is_transactional is required and must be a boolean for chronicler name $name");
+            throw new InvalidArgumentException(
+                "Config key is_transactional is required when no stream tracker is provided for chronicler name $name"
+            );
         }
 
         return [$streamTracker, $config['store'], $isTransactional];
+    }
+
+    /**
+     * @param  array{strategy: string, query_loader: string|null, write_lock: bool|null}  $config
+     */
+    protected function createStandaloneStore(Connection $connection, array $config, bool $isTransactional): ChroniclerDB
+    {
+        return $this->storeDatabaseFactory->createStore(
+            $connection,
+            $config['strategy'],
+            $config['query_loader'] ?? null,
+            $config['write_lock'] ?? false,
+            $isTransactional
+        );
     }
 }

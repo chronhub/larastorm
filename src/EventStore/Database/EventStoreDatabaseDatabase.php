@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chronhub\Larastorm\EventStore;
+namespace Chronhub\Larastorm\EventStore\Database;
 
 use Generator;
 use Chronhub\Storm\Stream\Stream;
@@ -15,7 +15,7 @@ use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 use function count;
 use function array_map;
 
-class StoreDatabase extends Store
+class EventStoreDatabaseDatabase extends AbstractEventStoreDatabase
 {
     /**
      * @throws QueryException

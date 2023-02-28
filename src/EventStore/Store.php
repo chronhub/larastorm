@@ -84,6 +84,9 @@ abstract class Store implements ChroniclerConnection
         return $events;
     }
 
+    /**
+     * @throws QueryException
+     */
     protected function upStreamTable(StreamName $streamName): void
     {
         $tableName = $this->streamPersistence->tableName($streamName);
@@ -103,6 +106,9 @@ abstract class Store implements ChroniclerConnection
         }
     }
 
+    /**
+     * @throws QueryException
+     */
     protected function createEventStream(StreamName $streamName): void
     {
         $tableName = $this->streamPersistence->tableName($streamName);

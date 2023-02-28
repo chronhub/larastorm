@@ -12,8 +12,8 @@ final class CreateEventStreamsTable extends Migration
     {
         Schema::create('event_streams', static function (Blueprint $table): void {
             $table->bigInteger('id', true);
-            $table->string('real_stream_name', 250)->unique();
-            $table->char('stream_name', 150);
+            $table->string('real_stream_name', 150)->unique();
+            $table->string('stream_name', 150);
             $table->string('category', 60)->nullable();
 
             $table->index('category');

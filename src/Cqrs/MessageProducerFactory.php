@@ -23,7 +23,7 @@ class MessageProducerFactory
         $this->container = $app();
     }
 
-    public function __invoke(Group $group): MessageProducer
+    public function createMessageProducer(Group $group): MessageProducer
     {
         $producerId = $group->producerServiceId();
 

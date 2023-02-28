@@ -9,8 +9,8 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Support\LazyCollection;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
-use Chronhub\Larastorm\EventStore\Loader\StreamEventLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
 final class CursorQueryLoaderTest extends ProphecyTestCase
@@ -28,7 +28,7 @@ final class CursorQueryLoaderTest extends ProphecyTestCase
         $serializer = $this->prophesize(StreamEventSerializer::class);
         $serializer->unserializeContent(['some' => 'payload'])->willYield([$someEvent])->shouldBeCalledOnce();
 
-        $eventLoader = new StreamEventLoader($serializer->reveal());
+        $eventLoader = new EventLoader($serializer->reveal());
 
         $cursorEventLoader = new CursorQueryLoader($eventLoader);
 

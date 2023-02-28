@@ -12,17 +12,17 @@ use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
+use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Storm\Contracts\Serializer\ContentSerializer;
-use Chronhub\Larastorm\EventStore\Loader\StreamEventLoader;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
-use Chronhub\Larastorm\EventStore\EventStoreProviderFactory;
+use Chronhub\Larastorm\EventStore\EventStoreDatabaseFactory;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader as EventLoader;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 use function array_map;
 
@@ -106,8 +106,8 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         });
 
         $this->app->bind(
-            EventLoader::class,
-            fn (Application $app): EventLoader => $app[StreamEventLoader::class]
+            StreamEventLoader::class,
+            fn (Application $app): EventLoader => $app[EventLoader::class]
         );
 
         // todo move to config
@@ -125,7 +125,7 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         if (isset($providers['connection']) && $providers['connection'] === ConnectionChroniclerProvider::class) {
             $this->app->singleton(
                 ConnectionChroniclerProvider::class,
-                fn (Application $app): ChroniclerProvider => new ConnectionChroniclerProvider(fn () => $app, $app[EventStoreProviderFactory::class])
+                fn (Application $app): ChroniclerProvider => new ConnectionChroniclerProvider(fn () => $app, $app[EventStoreDatabaseFactory::class])
             );
         }
 

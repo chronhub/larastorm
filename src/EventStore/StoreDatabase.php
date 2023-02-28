@@ -17,6 +17,9 @@ use function array_map;
 
 class StoreDatabase extends Store
 {
+    /**
+     * @throws QueryException
+     */
     public function firstCommit(Stream $stream): void
     {
         $this->isCreation = true;
@@ -30,6 +33,9 @@ class StoreDatabase extends Store
         $this->amend($stream);
     }
 
+    /**
+     * @throws QueryException
+     */
     public function amend(Stream $stream): void
     {
         $this->isCreation = false;
@@ -53,6 +59,9 @@ class StoreDatabase extends Store
         }
     }
 
+    /**
+     * @throws QueryException
+     */
     public function delete(StreamName $streamName): void
     {
         try {

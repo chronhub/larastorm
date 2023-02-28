@@ -25,7 +25,7 @@ final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
     protected ContainerInterface|Container $container;
 
     public function __construct(Closure $container,
-                                private readonly EventStoreProviderFactory $providerFactory)
+                                private readonly EventStoreDatabaseFactory $providerFactory)
     {
         parent::__construct($container);
 
@@ -55,36 +55,34 @@ final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
          * @covers createPgsqlDriver
          */
         if (method_exists($this, $driverMethod)) {
-            return $this->{$driverMethod}($name, $config, $isTransactional, $streamTracker);
+            return $this->{$driverMethod}($config, $isTransactional, $streamTracker);
         }
 
         throw new InvalidArgumentException("Connection $name with provider $driver is not defined.");
     }
 
-    private function createPgsqlDriver(string $name,
-                                       array $config,
+    private function createPgsqlDriver(array $config,
                                        bool $isTransactional,
                                        ?StreamTracker $streamTracker): ChroniclerConnection|EventableChronicler
     {
         /** @var Connection $connection */
         $connection = $this->container['db']->connection('pgsql');
 
-        $standalone = ($this->providerFactory)($connection, $name, $config, $isTransactional);
+        $standalone = $this->providerFactory->createStore($connection, $config, $isTransactional);
 
         $chronicler = $isTransactional ? new PgsqlTransactionalEventStore($standalone) : new PgsqlEventStore($standalone);
 
         return $streamTracker ? $this->decorateChronicler($chronicler, $streamTracker) : $chronicler;
     }
 
-    private function createMysqlDriver(string $name,
-                                       array $config,
+    private function createMysqlDriver(array $config,
                                        bool $isTransactional,
                                        ?StreamTracker $streamTracker): ChroniclerConnection|EventableChronicler
     {
         /** @var Connection $connection */
         $connection = $this->container['db']->connection('mysql');
 
-        $standalone = ($this->providerFactory)($connection, $name, $config, $isTransactional);
+        $standalone = $this->providerFactory->createStore($connection, $config, $isTransactional);
 
         $chronicler = $isTransactional
             ? new MysqlTransactionalEventStore($standalone)

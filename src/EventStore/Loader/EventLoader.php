@@ -10,10 +10,10 @@ use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\QueryException;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
+use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader as EventLoader;
 
-final readonly class StreamEventLoader implements EventLoader
+final readonly class EventLoader implements StreamEventLoader
 {
     public function __construct(private StreamEventSerializer $serializer)
     {

@@ -10,8 +10,8 @@ use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Larastorm\EventStore\Loader\LazyQueryLoader;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
+use Chronhub\Larastorm\EventStore\Loader\EventLoaderFactory;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Larastorm\EventStore\Loader\StreamEventLoaderFactory;
 use Illuminate\Contracts\Container\Container as ContainerContract;
 
 final class StreamEventLoaderFactoryTest extends ProphecyTestCase
@@ -21,7 +21,10 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
     protected function setUp(): void
     {
         $this->container = Container::getInstance();
-        $this->container->bind(StreamEventLoader::class, fn () => $this->prophesize(StreamEventLoader::class)->reveal());
+        $this->container->bind(
+            StreamEventLoader::class,
+            fn () => $this->prophesize(StreamEventLoader::class)->reveal()
+        );
     }
 
     /**
@@ -29,11 +32,11 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
      *
      * @dataProvider provideCursorKey
      */
-    public function it_return_cursor_query_loader_instance(?string $key): void
+    public function it_return_cursor_query_loader_instance(?string $name): void
     {
-        $factory = new StreamEventLoaderFactory($this->container);
+        $factory = new EventLoaderFactory($this->container);
 
-        $this->assertInstanceOf(CursorQueryLoader::class, $factory($key));
+        $this->assertInstanceOf(CursorQueryLoader::class, $factory->createEventLoader($name));
     }
 
     /**
@@ -41,9 +44,9 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
      */
     public function it_return_lazy_query_loader_instance(): void
     {
-        $factory = new StreamEventLoaderFactory($this->container);
+        $factory = new EventLoaderFactory($this->container);
 
-        $this->assertInstanceOf(LazyQueryLoader::class, $factory('lazy'));
+        $this->assertInstanceOf(LazyQueryLoader::class, $factory->createEventLoader('lazy'));
     }
 
     /**
@@ -53,15 +56,14 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
      */
     public function it_return_lazy_query_loader_instance_with_chunk_size_defined(int $chunkSize): void
     {
-        // checkMe
         $this->container->bind(
             StreamEventSerializer::class,
             fn (): StreamEventSerializer => $this->prophesize(StreamEventSerializer::class)->reveal()
         );
 
-        $factory = new StreamEventLoaderFactory($this->container);
+        $factory = new EventLoaderFactory($this->container);
 
-        $instance = $factory('lazy:'.$chunkSize);
+        $instance = $factory->createEventLoader('lazy:'.$chunkSize);
 
         $this->assertInstanceOf(LazyQueryLoader::class, $instance);
 
@@ -73,11 +75,14 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
      */
     public function it_finally_resolve_service_with_container(): void
     {
-        $this->container->bind('stream_event.loader', fn (Container $container): StreamEventLoader => $container[CursorQueryLoader::class]);
+        $this->container->bind(
+            'stream_event.loader',
+            fn (Container $container): StreamEventLoader => $container[CursorQueryLoader::class]
+        );
 
-        $factory = new StreamEventLoaderFactory($this->container);
+        $factory = new EventLoaderFactory($this->container);
 
-        $instance = $factory('stream_event.loader');
+        $instance = $factory->createEventLoader('stream_event.loader');
 
         $this->assertInstanceOf(CursorQueryLoader::class, $instance);
     }

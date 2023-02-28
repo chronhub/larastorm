@@ -10,10 +10,10 @@ use Chronhub\Storm\Stream\StreamName;
 use Prophecy\Prophecy\ObjectProphecy;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
-use Chronhub\Larastorm\EventStore\Loader\StreamEventLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
 final class StreamEventLoaderTest extends ProphecyTestCase
@@ -43,7 +43,7 @@ final class StreamEventLoaderTest extends ProphecyTestCase
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
         $this->serializer->unserializeContent((array) $event)->willYield([$expectedEvent])->shouldBeCalledOnce();
 
-        $eventLoader = new StreamEventLoader($this->serializer->reveal());
+        $eventLoader = new EventLoader($this->serializer->reveal());
 
         $generator = $eventLoader($streamEvents, $this->streamName);
 
@@ -59,7 +59,7 @@ final class StreamEventLoaderTest extends ProphecyTestCase
 
         $this->serializer->unserializeContent([])->willYield([])->shouldNotBeCalled();
 
-        $eventLoader = new StreamEventLoader($this->serializer->reveal());
+        $eventLoader = new EventLoader($this->serializer->reveal());
 
         $eventLoader(new Collection([]), $this->streamName)->current();
     }
@@ -88,7 +88,7 @@ final class StreamEventLoaderTest extends ProphecyTestCase
             ->willThrow($queryException)
             ->shouldBeCalledOnce();
 
-        $eventLoader = new StreamEventLoader($this->serializer->reveal());
+        $eventLoader = new EventLoader($this->serializer->reveal());
 
         $eventLoader($streamEvents, $this->streamName)->current();
     }
@@ -114,7 +114,7 @@ final class StreamEventLoaderTest extends ProphecyTestCase
         $this->serializer->unserializeContent((array) $event)->willReturn($expectedEvent)->shouldBeCalledTimes(2);
         $this->serializer->unserializeContent((array) $event)->willThrow($queryException)->shouldBeCalledOnce();
 
-        $eventLoader = new StreamEventLoader($this->serializer->reveal());
+        $eventLoader = new EventLoader($this->serializer->reveal());
 
         $eventLoader($streamEvents, $this->streamName)->current();
     }

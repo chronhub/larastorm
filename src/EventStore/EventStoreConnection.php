@@ -19,11 +19,15 @@ use Chronhub\Storm\Chronicler\Exceptions\StreamAlreadyExists;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerConnection;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 
 abstract class EventStoreConnection implements ChroniclerConnection, ChroniclerDecorator
 {
     public function __construct(protected readonly ChroniclerConnection|TransactionalChronicler $chronicler)
     {
+        if ($this->chronicler instanceof ChroniclerDecorator) {
+            throw new InvalidArgumentException('Chronicler Connection must not be a decorator');
+        }
     }
 
     public function firstCommit(Stream $stream): void

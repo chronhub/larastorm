@@ -122,7 +122,7 @@ final readonly class CqrsManager implements ReporterManager
     {
         $routeLocator = new FindRoute($group, $this->container[MessageAlias::class], $this->container);
 
-        $messageProducer = ($this->producerFactory)($group);
+        $messageProducer = $this->producerFactory->createMessageProducer($group);
 
         return new HandleRoute($routeLocator, $messageProducer, $this->container[ProducerUnity::class]);
     }

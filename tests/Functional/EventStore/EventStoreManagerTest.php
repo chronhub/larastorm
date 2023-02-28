@@ -375,11 +375,31 @@ final class EventStoreManagerTest extends OrchestraTestCase
      *
      * @dataProvider provideStoreDriver
      */
-    public function it_raise_exception_when_write_lock_is_not_defined_with_fake_lock(string $storeDriver): void
+    public function it_return_fake_lock_when_write_lock_is_not_defined(string $storeDriver): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Write lock is not defined');
+        $this->app['config']->set('chronicler.providers.connection.write', [
+            'store' => $storeDriver,
+            'tracking' => [
+                'tracker_id' => TrackTransactionalStream::class,
+                'subscribers' => [],
+            ],
+            //'write_lock' => null,
+            'strategy' => PgsqlSingleStreamPersistence::class,
+            'query_loader' => 'cursor',
+        ]);
 
+        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+
+        $this->manager->create('write');
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider provideStoreDriver
+     */
+    public function it_return_fake_lock_when_write_lock_is_null(string $storeDriver): void
+    {
         $this->app['config']->set('chronicler.providers.connection.write', [
             'store' => $storeDriver,
             'tracking' => [

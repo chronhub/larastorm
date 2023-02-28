@@ -9,28 +9,21 @@ use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 
-class WriteLockFactory
+class LockFactory
 {
     public function __construct(protected Container $container)
     {
     }
 
-    public function __invoke(Connection $connection, array $config): WriteLockStrategy
+    public function createLock(Connection $connection, null|bool|string $lock): WriteLockStrategy
     {
-        $writeLock = $config['write_lock'] ?? null;
-
-        if ($writeLock === null) {
-            throw new InvalidArgumentException('Write lock is not defined');
-        }
-
-        if ($writeLock === false) {
+        if ($lock === false || $lock === null) {
             return new FakeWriteLock();
         }
 
         $driver = $connection->getDriverName();
 
-        // Use default write lock strategy
-        if (true === $writeLock) {
+        if ($lock === true) {
             return match ($driver) {
                 'pgsql' => new PgsqlWriteLock($connection),
                 'mysql' => new MysqlWriteLock(),
@@ -38,7 +31,6 @@ class WriteLockFactory
             };
         }
 
-        // at this point, write lock strategy should be a service, and we just resolve it
-        return $this->container[$writeLock];
+        return $this->container[$lock];
     }
 }

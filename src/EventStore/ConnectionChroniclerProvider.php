@@ -121,7 +121,7 @@ final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
     /**
      * @param  array{strategy: string, query_loader: string|null, write_lock: bool|null}  $config
      */
-    protected function createStandaloneStore(Connection $connection, array $config, bool $isTransactional): ChroniclerDB
+    private function createStandaloneStore(Connection $connection, array $config, bool $isTransactional): ChroniclerDB
     {
         return $this->storeDatabaseFactory->createStore(
             $connection,

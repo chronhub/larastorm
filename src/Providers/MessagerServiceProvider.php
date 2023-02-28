@@ -10,16 +10,10 @@ use Chronhub\Storm\Contracts\Message\UniqueId;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
-use Chronhub\Storm\Serializer\JsonSerializerFactory;
 use Illuminate\Contracts\Support\DeferrableProvider;
-use Chronhub\Storm\Contracts\Serializer\ContentSerializer;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 use Chronhub\Storm\Contracts\Message\MessageFactory as Factory;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use function in_array;
-use function array_map;
+use Chronhub\Larastorm\Support\Serializer\JsonSerializerFactory;
 
 class MessagerServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -43,30 +37,13 @@ class MessagerServiceProvider extends ServiceProvider implements DeferrableProvi
 
     protected function registerSerializer(): void
     {
-        $eventTimeNormalizer = 'serializer.normalizer.event_time.utc';
-
-        if (in_array($eventTimeNormalizer, config('messager.serializer.normalizers'))) {
-            $this->app->singleton($eventTimeNormalizer,
-                fn (Application $app): NormalizerInterface => new DateTimeNormalizer([
-                    DateTimeNormalizer::FORMAT_KEY => $app[SystemClock::class]->getFormat(),
-                    DateTimeNormalizer::TIMEZONE_KEY => 'UTC',
-                ]));
-        }
-
         $this->app->singleton(MessageSerializer::class, function (Application $app): MessageSerializer {
-            $normalizers = array_map(
-                fn (string $normalizer): NormalizerInterface|DenormalizerInterface => $app[$normalizer],
-                config('messager.serializer.normalizers')
+            $serializerFactory = new JsonSerializerFactory(fn (): Application => $app);
+
+            return $serializerFactory->createForMessage(
+                null,
+                ...config('messager.serializer.normalizers', [])
             );
-
-            $contentSerializer = null;
-            if ($app->bound(ContentSerializer::class)) {
-                $contentSerializer = $app[ContentSerializer::class];
-            }
-
-            $serializerFactory = new JsonSerializerFactory();
-
-            return $serializerFactory->createForMessaging($contentSerializer, ...$normalizers);
         });
     }
 
@@ -98,7 +75,6 @@ class MessagerServiceProvider extends ServiceProvider implements DeferrableProvi
             SystemClock::class,
             Clock::SERVICE_ID,
             Factory::class,
-            'serializer.normalizer.event_time.utc',
             MessageSerializer::class,
             MessageAlias::class,
             UniqueId::class,

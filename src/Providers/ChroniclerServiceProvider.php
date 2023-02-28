@@ -6,30 +6,23 @@ namespace Chronhub\Larastorm\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Container\Container;
-use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
-use Chronhub\Storm\Serializer\JsonSerializerFactory;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
-use Chronhub\Storm\Contracts\Serializer\ContentSerializer;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Chronhub\Larastorm\Support\Serializer\JsonSerializerFactory;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
-use function in_array;
-use function array_map;
 
 class ChroniclerServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -79,30 +72,13 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
 
     protected function registerSerializer(): void
     {
-        if (in_array('serializer.normalizer.event_time.utc', config('chronicler.event_serializer.normalizers'))) {
-            $this->app->singleton(
-                'serializer.normalizer.event_time.utc',
-                fn (Application $app): NormalizerInterface => new DateTimeNormalizer([
-                    DateTimeNormalizer::FORMAT_KEY => $app[SystemClock::class]->getFormat(),
-                    DateTimeNormalizer::TIMEZONE_KEY => 'UTC',
-                ]));
-        }
-
         $this->app->singleton(StreamEventSerializer::class, function (Application $app): StreamEventSerializer {
-            $normalizers = array_map(
-                fn (string $normalizer): NormalizerInterface|DenormalizerInterface => $app[$normalizer],
-                config('chronicler.event_serializer.normalizers')
+            $serializerFactory = new JsonSerializerFactory(fn (): Application => $app);
+
+            return $serializerFactory->createForStream(
+                null,
+                ...config('chronicler.event_serializer.normalizers', [])
             );
-
-            $contentSerializer = null;
-
-            if ($app->bound(ContentSerializer::class)) {
-                $contentSerializer = $app[ContentSerializer::class];
-            }
-
-            $serializerFactory = new JsonSerializerFactory();
-
-            return $serializerFactory->createForStream($contentSerializer, ...$normalizers);
         });
     }
 
@@ -157,7 +133,6 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             RepositoryManager::class,
             InMemoryChroniclerProvider::class,
             ConnectionChroniclerProvider::class,
-            'serializer.normalizer.event_time.utc',
         ];
     }
 }

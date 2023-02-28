@@ -63,15 +63,12 @@ return [
     | Message Serializer
     |--------------------------------------------------------------------------
     |
-    |
-    |
     | @see \Chronhub\Storm\Serializer\JsonSerializerFactory
     */
 
     'serializer' => [
         'normalizers' => [
             \Symfony\Component\Serializer\Normalizer\UidNormalizer::class,
-            'serializer.normalizer.event_time.utc',
         ],
     ],
 

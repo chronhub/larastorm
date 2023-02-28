@@ -13,7 +13,7 @@ class CheckSupervisedProjectionStatusCommand extends Command
     protected $signature = 'projector:check-supervised
                             { name : The name of the projector }';
 
-    protected $description = 'Check status of all projections which are supervised';
+    protected $description = 'Check real projection status which are supervised';
 
     public function handle(Supervisor $supervisor): void
     {

@@ -11,6 +11,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
+use Chronhub\Storm\Serializer\JsonSerializerFactory;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
@@ -19,7 +20,6 @@ use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
-use Chronhub\Larastorm\Support\Serializer\JsonSerializerFactory;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
@@ -75,7 +75,7 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         $this->app->singleton(StreamEventSerializer::class, function (Application $app): StreamEventSerializer {
             $serializerFactory = new JsonSerializerFactory(fn (): Application => $app);
 
-            return $serializerFactory->createForStream(
+            return $serializerFactory->createStreamSerializer(
                 null,
                 ...config('chronicler.event_serializer.normalizers', [])
             );

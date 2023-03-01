@@ -10,10 +10,10 @@ use Chronhub\Storm\Contracts\Message\UniqueId;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
+use Chronhub\Storm\Serializer\JsonSerializerFactory;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 use Chronhub\Storm\Contracts\Message\MessageFactory as Factory;
-use Chronhub\Larastorm\Support\Serializer\JsonSerializerFactory;
 
 class MessagerServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -40,7 +40,7 @@ class MessagerServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->singleton(MessageSerializer::class, function (Application $app): MessageSerializer {
             $serializerFactory = new JsonSerializerFactory(fn (): Application => $app);
 
-            return $serializerFactory->createForMessage(
+            return $serializerFactory->createMessageSerializer(
                 null,
                 ...config('messager.serializer.normalizers', [])
             );

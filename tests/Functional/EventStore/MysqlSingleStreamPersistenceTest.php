@@ -16,10 +16,10 @@ use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Storm\Serializer\SerializeToJson;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Message\EventHeader;
+use Chronhub\Storm\Serializer\JsonSerializerFactory;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Larastorm\Support\Serializer\JsonSerializerFactory;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 use function array_keys;
@@ -108,7 +108,7 @@ final class MysqlSingleStreamPersistenceTest extends OrchestraTestCase
     public function it_serialize_domain_event(): void
     {
         $factory = new JsonSerializerFactory(fn () => $this->app);
-        $streamSerializer = $factory->createForStream();
+        $streamSerializer = $factory->createStreamSerializer();
 
         $streamPersistence = $this->newStreamPersistence($streamSerializer);
 

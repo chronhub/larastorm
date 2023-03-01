@@ -86,13 +86,6 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
                 ],
             ],
 
-            /*
-            |--------------------------------------------------------------------------
-            | Migration and command
-            |--------------------------------------------------------------------------
-            |
-            */
-
             'console' => [
                 'load_migration' => true,
 

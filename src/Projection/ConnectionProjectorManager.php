@@ -19,7 +19,7 @@ use Chronhub\Storm\Projector\Repository\PersistentProjectorRepository;
 
 final class ConnectionProjectorManager extends AbstractProjectorManager
 {
-    protected function createProjectorRepository(Context $context, Store $store, ?ReadModel $readModel): ProjectorRepository
+    protected function createRepository(Context $context, Store $store, ?ReadModel $readModel): ProjectorRepository
     {
         $store = new ConnectionStore($store);
 

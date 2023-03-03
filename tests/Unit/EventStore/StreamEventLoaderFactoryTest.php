@@ -10,9 +10,9 @@ use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Larastorm\EventStore\Loader\LazyQueryLoader;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
-use Chronhub\Larastorm\EventStore\Loader\EventLoaderFactory;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Illuminate\Contracts\Container\Container as ContainerContract;
+use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
 
 final class StreamEventLoaderFactoryTest extends ProphecyTestCase
 {
@@ -34,7 +34,7 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
      */
     public function it_return_cursor_query_loader_instance(?string $name): void
     {
-        $factory = new EventLoaderFactory($this->container);
+        $factory = new EventLoaderConnectionFactory($this->container);
 
         $this->assertInstanceOf(CursorQueryLoader::class, $factory->createEventLoader($name));
     }
@@ -44,7 +44,7 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
      */
     public function it_return_lazy_query_loader_instance(): void
     {
-        $factory = new EventLoaderFactory($this->container);
+        $factory = new EventLoaderConnectionFactory($this->container);
 
         $this->assertInstanceOf(LazyQueryLoader::class, $factory->createEventLoader('lazy'));
     }
@@ -61,7 +61,7 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
             fn (): StreamEventSerializer => $this->prophesize(StreamEventSerializer::class)->reveal()
         );
 
-        $factory = new EventLoaderFactory($this->container);
+        $factory = new EventLoaderConnectionFactory($this->container);
 
         $instance = $factory->createEventLoader('lazy:'.$chunkSize);
 
@@ -80,7 +80,7 @@ final class StreamEventLoaderFactoryTest extends ProphecyTestCase
             fn (Container $container): StreamEventLoader => $container[CursorQueryLoader::class]
         );
 
-        $factory = new EventLoaderFactory($this->container);
+        $factory = new EventLoaderConnectionFactory($this->container);
 
         $instance = $factory->createEventLoader('stream_event.loader');
 

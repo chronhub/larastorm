@@ -16,11 +16,11 @@ use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
 use Chronhub\Larastorm\EventStore\Persistence\EventStream;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryEventStream;
-use Chronhub\Larastorm\EventStore\Loader\EventLoaderFactory;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseDatabase;
+use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 
 final class EventStoreProviderFactoryTest extends ProphecyTestCase
@@ -29,7 +29,7 @@ final class EventStoreProviderFactoryTest extends ProphecyTestCase
 
     private ObjectProphecy|LockFactory $lockFactory;
 
-    private ObjectProphecy|EventLoaderFactory $streamEventLoaderFactory;
+    private ObjectProphecy|EventLoaderConnectionFactory $streamEventLoaderFactory;
 
     private Connection|ObjectProphecy $connection;
 
@@ -39,7 +39,7 @@ final class EventStoreProviderFactoryTest extends ProphecyTestCase
 
         $this->container = Container::getInstance();
         $this->lockFactory = $this->prophesize(LockFactory::class);
-        $this->streamEventLoaderFactory = $this->prophesize(EventLoaderFactory::class);
+        $this->streamEventLoaderFactory = $this->prophesize(EventLoaderConnectionFactory::class);
         $this->connection = $this->prophesize(Connection::class);
     }
 

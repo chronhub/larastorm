@@ -103,9 +103,9 @@ final class AggregateRepositoryManager implements Manager
 
         $aggregateCache = $this->aggregateCacheFactory->createCache(
             $aggregateType->current(),
-            $config['size'] ?? 0,
-            $config['tag'] ?? null,
-            $config['driver'] ?? null
+            $config['cache']['size'] ?? 0,
+            $config['cache']['tag'] ?? null,
+            $config['cache']['driver'] ?? null
         );
 
         $eventDecorators = $this->makeEventDecorators($config['event_decorators'] ?? []);

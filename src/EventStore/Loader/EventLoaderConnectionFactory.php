@@ -9,7 +9,7 @@ use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use function explode;
 use function str_starts_with;
 
-class EventLoaderFactory
+class EventLoaderConnectionFactory
 {
     public readonly string $default;
 

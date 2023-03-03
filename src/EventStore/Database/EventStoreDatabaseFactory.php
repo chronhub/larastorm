@@ -10,15 +10,15 @@ use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
 use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
 use Chronhub\Larastorm\EventStore\Persistence\EventStream;
-use Chronhub\Larastorm\EventStore\Loader\EventLoaderFactory;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
+use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
 
 class EventStoreDatabaseFactory
 {
     protected Container $container;
 
     public function __construct(protected readonly LockFactory $lockFactory,
-                                protected readonly EventLoaderFactory $eventLoaderFactory)
+                                protected readonly EventLoaderConnectionFactory $eventLoaderFactory)
     {
     }
 

@@ -95,15 +95,22 @@ final class AggregateRepositoryManager implements Manager
 
     private function createGenericRepositoryDriver(string $streamName, array $config): Repository
     {
+        $eventStore = $this->eventStoreResolver->resolve($config['chronicler']);
+
         $aggregateType = $this->aggregateTypeFactory->createType($config['aggregate_type']);
 
-        return new AggregateRepository(
-            $this->eventStoreResolver->resolve($config['chronicler']),
-            $this->streamProducerFactory->createStreamProducer($streamName, $config['strategy'] ?? null),
-            $this->aggregateCacheFactory->createCache($aggregateType->current(), $config['cache'] ?? []),
-            $aggregateType,
-            $this->makeEventDecorators($config['event_decorators'] ?? [])
+        $streamProducer = $this->streamProducerFactory->createStreamProducer($streamName, $config['strategy'] ?? null);
+
+        $aggregateCache = $this->aggregateCacheFactory->createCache(
+            $aggregateType->current(),
+            $config['size'] ?? 0,
+            $config['tag'] ?? null,
+            $config['driver'] ?? null
         );
+
+        $eventDecorators = $this->makeEventDecorators($config['event_decorators'] ?? []);
+
+        return new AggregateRepository($eventStore, $streamProducer, $aggregateCache, $aggregateType, $eventDecorators);
     }
 
     private function makeEventDecorators(array $aggregateEventDecorators = []): MessageDecorator

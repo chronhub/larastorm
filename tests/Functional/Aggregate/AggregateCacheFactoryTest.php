@@ -12,7 +12,6 @@ use Chronhub\Storm\Aggregate\NullAggregateCache;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Larastorm\Aggregate\AggregateTaggedCache;
 use Chronhub\Larastorm\Aggregate\AggregateCacheFactory;
-use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 
 final class AggregateCacheFactoryTest extends OrchestraTestCase
 {
@@ -23,7 +22,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
     {
         $factory = new AggregateCacheFactory();
 
-        $aggregateCache = $factory->createCache(AggregateRootStub::class, ['size' => 10]);
+        $aggregateCache = $factory->createCache(AggregateRootStub::class, 10);
 
         $this->assertInstanceOf(AggregateTaggedCache::class, $aggregateCache);
 
@@ -38,10 +37,11 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
     {
         $factory = new AggregateCacheFactory();
 
-        $aggregateCache = $factory->createCache(AggregateRootStub::class, [
-            'size' => 1000,
-            'tag' => 'my_tag',
-        ]);
+        $aggregateCache = $factory->createCache(
+            AggregateRootStub::class,
+            1000,
+            'my_tag'
+        );
 
         $this->assertInstanceOf(AggregateTaggedCache::class, $aggregateCache);
 
@@ -58,10 +58,11 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
 
         $factory = new AggregateCacheFactory();
 
-        $factory->createCache(AggregateRootStub::class, [
-            'size' => 1,
-            'driver' => 'redis',
-        ]);
+        $factory->createCache(AggregateRootStub::class,
+            1,
+            null,
+            'redis'
+        );
     }
 
     /**
@@ -69,33 +70,18 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
      *
      * @dataProvider provideValuesForNullAggregateCache
      */
-    public function it_return_null_aggregate_cache(array $cacheConfig): void
+    public function it_return_null_aggregate_cache(?int $cacheSize): void
     {
         $factory = new AggregateCacheFactory();
 
-        $aggregateCache = $factory->createCache(AggregateRootStub::class, $cacheConfig);
+        $aggregateCache = $factory->createCache(AggregateRootStub::class, $cacheSize);
 
         $this->assertEquals(NullAggregateCache::class, $aggregateCache::class);
     }
 
-    /**
-     * @test
-     */
-    public function it_raise_exception_when_string_aggregate_root_is_not_a_valid_class_name(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('String aggregate root must be a valid class name');
-
-        $factory = new AggregateCacheFactory();
-
-        /** @phpstan-ignore-next-line  */
-        $factory->createCache('foo', []);
-    }
-
     public function provideValuesForNullAggregateCache(): Generator
     {
-        yield [[]];
-        yield [['foo' => 'bar']];
-        yield [['size' => 0]];
+        yield [null];
+        yield [0];
     }
 }

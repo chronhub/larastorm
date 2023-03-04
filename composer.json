@@ -23,10 +23,8 @@
     "laravel/pint": "^1.6",
     "phpstan/phpstan":"^1.10",
     "nunomaduro/larastan": "^2.4",
-    "jangregor/phpstan-prophecy": "^1.0",
     "orchestra/testbench": "8.*",
-    "phpspec/prophecy-phpunit": "dev-master",
-    "phpunit/phpunit": "^9.5",
+    "phpunit/phpunit": "^10.0",
     "roave/security-advisories": "dev-latest",
     "doctrine/dbal": "^3.5.1",
     "rector/rector": "dev-main"

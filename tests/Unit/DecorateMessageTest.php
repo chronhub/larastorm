@@ -6,17 +6,19 @@ namespace Chronhub\Larastorm\Tests\Unit;
 
 use stdClass;
 use Chronhub\Storm\Message\Message;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Tracker\TrackMessage;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Storm\Contracts\Message\MessageDecorator;
 use Chronhub\Larastorm\Support\MessageDecorator\DecorateMessage;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\MessageDecorator\DecorateMessage
+ */
 final class DecorateMessageTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_decorate_message_by_subscribing_to_tracker(): void
     {
         $messageDecorator = new class() implements MessageDecorator
@@ -43,10 +45,8 @@ final class DecorateMessageTest extends UnitTestCase
         $this->assertEquals(['foo' => 'bar'], $story->message()->headers());
     }
 
-    /**
-     * @test
-     */
-    public function it_can_be_untracked(): void
+    #[Test]
+    public function it_can_be_untracked(): never
     {
         $this->markTestSkipped('assert message listener must be move to support testing in message pkg');
     }

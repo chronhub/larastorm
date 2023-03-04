@@ -9,142 +9,121 @@ use Exception;
 use Generator;
 use RuntimeException;
 use InvalidArgumentException;
-use Prophecy\Prophecy\ObjectProphecy;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\EventStore\MysqlTransactionalEventStore;
 use Chronhub\Storm\Chronicler\Exceptions\TransactionNotStarted;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Storm\Chronicler\Exceptions\TransactionAlreadyStarted;
 
-final class MysqlTransactionalEventStoreTest extends ProphecyTestCase
+#[CoversClass(MysqlTransactionalEventStore::class)]
+final class MysqlTransactionalEventStoreTest extends UnitTestCase
 {
-    private TransactionalChronicler|ObjectProphecy $chronicler;
+    private TransactionalChronicler|MockObject $chronicler;
 
     protected function setUp(): void
     {
-        $this->chronicler = $this->prophesize(TransactionalChronicler::class);
+        $this->chronicler = $this->createMock(TransactionalChronicler::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_start_transaction(): void
     {
-        $this->chronicler->beginTransaction()->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('beginTransaction');
 
-        $decorator = new MysqlTransactionalEventStore($this->chronicler->reveal());
+        $decorator = new MysqlTransactionalEventStore($this->chronicler);
 
         $decorator->beginTransaction();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideException
-     */
+    #[DataProvider('provideException')]
+    #[Test]
     public function it_does_not_hold_exception_on_begin(Exception $exception): void
     {
         $this->expectException($exception::class);
 
-        $this->chronicler->beginTransaction()->willThrow($exception)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('beginTransaction')->willThrowException($exception);
 
-        $decorator = new MysqlTransactionalEventStore($this->chronicler->reveal());
+        $decorator = new MysqlTransactionalEventStore($this->chronicler);
 
         $decorator->beginTransaction();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_commit_transaction(): void
     {
-        $this->chronicler->commitTransaction()->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('commitTransaction');
 
-        $decorator = new MysqlTransactionalEventStore($this->chronicler->reveal());
+        $decorator = new MysqlTransactionalEventStore($this->chronicler);
 
         $decorator->commitTransaction();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideException
-     */
+    #[DataProvider('provideException')]
+    #[Test]
     public function it_does_not_hold_exception_on_commit(Exception $exception): void
     {
         $this->expectException($exception::class);
 
-        $this->chronicler->commitTransaction()->willThrow($exception)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('commitTransaction')->willThrowException($exception);
 
-        $decorator = new MysqlTransactionalEventStore($this->chronicler->reveal());
+        $decorator = new MysqlTransactionalEventStore($this->chronicler);
 
         $decorator->commitTransaction();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_rollback_transaction(): void
     {
-        $this->chronicler->rollbackTransaction()->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('rollbackTransaction');
 
-        $decorator = new MysqlTransactionalEventStore($this->chronicler->reveal());
+        $decorator = new MysqlTransactionalEventStore($this->chronicler);
 
         $decorator->rollbackTransaction();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideException
-     */
+    #[DataProvider('provideException')]
+    #[Test]
     public function it_does_not_hold_exception_on_rollback(Exception $exception): void
     {
         $this->expectException($exception::class);
 
-        $this->chronicler->rollbackTransaction()->willThrow($exception)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('rollbackTransaction')->willThrowException($exception);
 
-        $decorator = new MysqlTransactionalEventStore($this->chronicler->reveal());
+        $decorator = new MysqlTransactionalEventStore($this->chronicler);
 
         $decorator->rollbackTransaction();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideBoolean
-     */
+    #[DataProvider('provideBoolean')]
+    #[Test]
     public function it_assert_in_transaction(bool $inTransaction): void
     {
-        $this->chronicler->inTransaction()->willReturn($inTransaction)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('inTransaction')->willReturn($inTransaction);
 
-        $decorator = new MysqlTransactionalEventStore($this->chronicler->reveal());
+        $decorator = new MysqlTransactionalEventStore($this->chronicler);
 
         $this->assertEquals($inTransaction, $decorator->inTransaction());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideValue
-     */
+    #[DataProvider('provideValue')]
+    #[Test]
     public function it_process_fully_transactional(mixed $value): void
     {
         $callback = fn (): mixed => $value;
 
-        /** @phpstan-ignore-next-line */
-        $this->chronicler->transactional($callback)->willReturn($value)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('transactional')->willReturn($value);
 
-        $decorator = new MysqlTransactionalEventStore($this->chronicler->reveal());
+        $decorator = new MysqlTransactionalEventStore($this->chronicler);
 
         $this->assertEquals($value, $decorator->transactional($callback));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideException
-     */
+    #[DataProvider('provideException')]
+    #[Test]
     public function it_does_not_hold_exception_on_fully_transactional(Exception $exception): void
     {
         $this->expectException($exception::class);
@@ -152,15 +131,14 @@ final class MysqlTransactionalEventStoreTest extends ProphecyTestCase
 
         $callback = fn (): bool => true;
 
-        /** @phpstan-ignore-next-line */
-        $this->chronicler->transactional($callback)->willThrow($exception)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('transactional')->willThrowException($exception);
 
-        $decorator = new MysqlTransactionalEventStore($this->chronicler->reveal());
+        $decorator = new MysqlTransactionalEventStore($this->chronicler);
 
         $decorator->transactional($callback);
     }
 
-    public function provideException(): Generator
+    public static function provideException(): Generator
     {
         yield [new RuntimeException('foo')];
         yield [new InvalidArgumentException('foo')];
@@ -168,13 +146,13 @@ final class MysqlTransactionalEventStoreTest extends ProphecyTestCase
         yield [new TransactionAlreadyStarted('foo')];
     }
 
-    public function provideBoolean(): Generator
+    public static function provideBoolean(): Generator
     {
         yield [true];
         yield [false];
     }
 
-    public function provideValue(): Generator
+    public static function provideValue(): Generator
     {
         yield [false];
         yield [true];

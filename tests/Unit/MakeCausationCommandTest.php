@@ -8,12 +8,14 @@ use Generator;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Message\Message;
 use Chronhub\Storm\Stream\StreamName;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Tracker\TrackMessage;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Storm\Contracts\Message\Header;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Storm\Chronicler\EventChronicler;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Larastorm\Tests\Double\SomeCommand;
 use Chronhub\Storm\Contracts\Message\EventHeader;
@@ -22,13 +24,13 @@ use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Larastorm\Support\Bridge\MakeCausationCommand;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 
-final class MakeCausationCommandTest extends ProphecyTestCase
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\Bridge\MakeCausationCommand
+ */
+final class MakeCausationCommandTest extends UnitTestCase
 {
-    /**
-     * @test
-     *
-     * @dataProvider provideStreamEventName
-     */
+    #[DataProvider('provideStreamEventName')]
+    #[Test]
     public function it_add_correlation_headers_from_dispatched_command_on_stream_event(string $streamEventName): void
     {
         $command = (SomeCommand::fromContent(['foo' => 'bar']))
@@ -50,8 +52,8 @@ final class MakeCausationCommandTest extends ProphecyTestCase
         $streamStory = $streamTracker->newStory($streamEventName);
         $streamStory->deferred(fn (): Stream => $stream);
 
-        $chronicler = $this->prophesize(Chronicler::class);
-        $eventChronicler = new EventChronicler($chronicler->reveal(), $streamTracker);
+        $chronicler = $this->createMock(Chronicler::class);
+        $eventChronicler = new EventChronicler($chronicler, $streamTracker);
 
         $subscriber = new MakeCausationCommand();
         $subscriber->attachToReporter($messageTracker);
@@ -76,11 +78,8 @@ final class MakeCausationCommandTest extends ProphecyTestCase
         $this->assertNull(ReflectionProperty::getProperty($subscriber, 'currentCommand'));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStreamEventName
-     */
+    #[DataProvider('provideStreamEventName')]
+    #[Test]
     public function it_does_not_add_correlation_headers_if_already_exists(string $streamEventName): void
     {
         $message = (SomeCommand::fromContent(['foo' => 'bar']))
@@ -108,9 +107,9 @@ final class MakeCausationCommandTest extends ProphecyTestCase
         $streamStory = $streamTracker->newStory($streamEventName);
         $streamStory->deferred(fn (): Stream => $stream);
 
-        $chronicler = $this->prophesize(Chronicler::class);
+        $chronicler = $this->createMock(Chronicler::class);
 
-        $eventChronicler = new EventChronicler($chronicler->reveal(), $streamTracker);
+        $eventChronicler = new EventChronicler($chronicler, $streamTracker);
 
         $subscriber = new MakeCausationCommand();
         $subscriber->attachToReporter($messageTracker);
@@ -135,7 +134,7 @@ final class MakeCausationCommandTest extends ProphecyTestCase
         $this->assertNull(ReflectionProperty::getProperty($subscriber, 'currentCommand'));
     }
 
-    public function provideStreamEventName(): Generator
+    public static function provideStreamEventName(): Generator
     {
         yield [EventableChronicler::FIRST_COMMIT_EVENT];
         yield [EventableChronicler::PERSIST_STREAM_EVENT];

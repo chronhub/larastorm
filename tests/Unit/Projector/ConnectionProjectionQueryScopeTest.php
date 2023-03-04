@@ -5,28 +5,27 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
 use Generator;
-use Prophecy\Prophecy\ObjectProphecy;
 use Illuminate\Database\Query\Builder;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 
-final class ConnectionProjectionQueryScopeTest extends ProphecyTestCase
+final class ConnectionProjectionQueryScopeTest extends UnitTestCase
 {
-    private Builder|ObjectProphecy $builder;
+    private MockObject|Builder $builder;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->builder = $this->prophesize(Builder::class);
+        $this->builder = $this->createMock(Builder::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideInvalidPosition
-     */
+    #[DataProvider('provideInvalidPosition')]
+    #[Test]
     public function it_raise_exception_when_current_position_is_less_or_equals_than_zero(int $invalidPosition): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -37,30 +36,25 @@ final class ConnectionProjectionQueryScopeTest extends ProphecyTestCase
         $query = $scope->fromIncludedPosition();
         $query->setCurrentPosition($invalidPosition);
 
-        $query->apply()($this->builder->reveal());
+        $query->apply()($this->builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_query(): void
     {
-        $this->builder->where('no', '>=', 20)->willReturn($this->builder)->shouldBeCalledOnce();
-        $this->builder->orderBy('no')->willReturn($this->builder)->shouldBeCalledOnce();
+        $this->builder->expects($this->once())->method('where')->with('no', '>=', 20)->willReturn($this->builder);
+        $this->builder->expects($this->once())->method('orderBy')->with('no')->willReturn($this->builder);
 
         $scope = new ConnectionProjectionQueryScope();
 
         $query = $scope->fromIncludedPosition();
         $query->setCurrentPosition(20);
 
-        $query->apply()($this->builder->reveal());
+        $query->apply()($this->builder);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideInvalidPosition
-     */
+    #[DataProvider('provideInvalidPosition')]
+    #[Test]
     public function it_raise_exception_when_current_position_is_less_or_equals_than_zero_with_limit(int $invalidPosition): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -71,27 +65,25 @@ final class ConnectionProjectionQueryScopeTest extends ProphecyTestCase
         $query = $scope->fromIncludedPositionWithLimit();
         $query->setCurrentPosition($invalidPosition);
 
-        $query->apply()($this->builder->reveal());
+        $query->apply()($this->builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_query_with_limit(): void
     {
-        $this->builder->where('no', '>=', 20)->willReturn($this->builder)->shouldBeCalledOnce();
-        $this->builder->orderBy('no')->willReturn($this->builder)->shouldBeCalledOnce();
-        $this->builder->limit(100)->willReturn($this->builder)->shouldBeCalledOnce();
+        $this->builder->expects($this->once())->method('where')->with('no', '>=', 20)->willReturn($this->builder);
+        $this->builder->expects($this->once())->method('orderBy')->with('no')->willReturn($this->builder);
+        $this->builder->expects($this->once())->method('limit')->with(100)->willReturn($this->builder);
 
         $scope = new ConnectionProjectionQueryScope();
 
         $query = $scope->fromIncludedPositionWithLimit(100);
         $query->setCurrentPosition(20);
 
-        $query->apply()($this->builder->reveal());
+        $query->apply()($this->builder);
     }
 
-    public function provideInvalidPosition(): Generator
+    public static function provideInvalidPosition(): Generator
     {
         yield [0];
         yield [-5];

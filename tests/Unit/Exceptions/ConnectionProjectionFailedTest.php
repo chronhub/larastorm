@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\Exceptions;
 
 use PDOException;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed
+ */
 final class ConnectionProjectionFailedTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_from_query_exception(): void
     {
         $queryException = QueryExceptionStub::withCode('123');
@@ -26,9 +28,7 @@ final class ConnectionProjectionFailedTest extends UnitTestCase
         $this->assertEquals($queryException->getCode(), $exception->getCode());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_from_query_exception_with_previous_pdo_exception(): void
     {
         $pdoException = new PDOException('foo', 0);

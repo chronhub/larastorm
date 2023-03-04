@@ -14,7 +14,7 @@ final class AggregateTaggedCache implements AggregateCache
     private int $count = 0;
 
     public function __construct(private readonly Repository $cache,
-                                public readonly string $cacheTag,
+                                public readonly string $tag,
                                 public readonly int $limit)
     {
     }
@@ -33,14 +33,14 @@ final class AggregateTaggedCache implements AggregateCache
 
         $cacheKey = $this->determineCacheKey($aggregateId);
 
-        $this->cache->tags([$this->cacheTag])->forever($cacheKey, $aggregateRoot);
+        $this->cache->tags([$this->tag])->forever($cacheKey, $aggregateRoot);
     }
 
     public function get(AggregateIdentity $aggregateId): ?AggregateRoot
     {
         $cacheKey = $this->determineCacheKey($aggregateId);
 
-        return $this->cache->tags([$this->cacheTag])->get($cacheKey);
+        return $this->cache->tags([$this->tag])->get($cacheKey);
     }
 
     public function forget(AggregateIdentity $aggregateId): void
@@ -48,7 +48,7 @@ final class AggregateTaggedCache implements AggregateCache
         if ($this->has($aggregateId)) {
             $cacheKey = $this->determineCacheKey($aggregateId);
 
-            if ($this->cache->tags([$this->cacheTag])->forget($cacheKey)) {
+            if ($this->cache->tags([$this->tag])->forget($cacheKey)) {
                 $this->count--;
             }
         }
@@ -58,14 +58,14 @@ final class AggregateTaggedCache implements AggregateCache
     {
         $this->count = 0;
 
-        $this->cache->tags([$this->cacheTag])->flush();
+        $this->cache->tags([$this->tag])->flush();
     }
 
     public function has(AggregateIdentity $aggregateId): bool
     {
         $cacheKey = $this->determineCacheKey($aggregateId);
 
-        return $this->cache->tags([$this->cacheTag])->has($cacheKey);
+        return $this->cache->tags([$this->tag])->has($cacheKey);
     }
 
     public function count(): int

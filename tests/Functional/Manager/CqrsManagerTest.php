@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Manager;
 
 use Generator;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
 use Chronhub\Storm\Tracker\TrackMessage;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Larastorm\Providers\CqrsServiceProvider;
@@ -31,11 +33,8 @@ class CqrsManagerTest extends OrchestraTestCase
         $this->manager = $this->app[ReporterManager::class];
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideDomainType
-     */
+    #[DataProvider('provideDomainType')]
+    #[Test]
     public function it_resolve_string_tracker_from_router(DomainType $domainType): void
     {
         $messageTracker = new TrackMessage();
@@ -53,11 +52,8 @@ class CqrsManagerTest extends OrchestraTestCase
         $this->assertEquals($messageTracker, $reporter->tracker());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideDomainType
-     */
+    #[DataProvider('provideDomainType')]
+    #[Test]
     public function it_raise_exception_when_create_reporter_with_name_and_type_not_found_in_router(DomainType $domainType): void
     {
         $this->expectException(RoutingViolation::class);
@@ -66,11 +62,8 @@ class CqrsManagerTest extends OrchestraTestCase
         $this->manager->create($domainType->value, 'default');
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideDomainType
-     */
+    #[DataProvider('provideDomainType')]
+    #[Test]
     public function it_raise_exception_when_router_producer_service_is_not_provided(DomainType $domainType): void
     {
         $this->expectException(RoutingViolation::class);
@@ -81,7 +74,7 @@ class CqrsManagerTest extends OrchestraTestCase
         $this->manager->create($domainType->value, 'default');
     }
 
-    public function provideDomainType(): Generator
+    public static function provideDomainType(): Generator
     {
         yield [DomainType::COMMAND];
         yield [DomainType::EVENT];

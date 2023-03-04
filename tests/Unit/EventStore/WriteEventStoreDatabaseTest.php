@@ -7,13 +7,15 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Generator;
 use Throwable;
 use RuntimeException;
-use Prophecy\Argument;
 use InvalidArgumentException;
 use Chronhub\Storm\Stream\Stream;
 use Illuminate\Database\Query\Builder;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Illuminate\Database\Schema\Builder as SchemaBuilder;
@@ -21,177 +23,236 @@ use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Larastorm\EventStore\WriteLock\FakeWriteLock;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 use function iterator_to_array;
 
-final class WriteEventStoreDatabaseTest extends ProphecyTestCase
+#[CoversClass(EventStoreDatabase::class)]
+final class WriteEventStoreDatabaseTest extends UnitTestCase
 {
     use ProvideTestingStore;
 
-    /**
-     * @test
-     *
-     * @dataProvider provideWriteLock
-     */
+    #[DataProvider('provideWriteLock')]
+    #[Test]
     public function it_assert_write_query_builder(?WriteLockStrategy $writeLock = null): void
     {
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
+        $builder = $this->createMock(Builder::class);
 
-        $builder = $this->prophesize(Builder::class);
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $this->connection->table($tableName)->willReturn($builder->reveal())->shouldBeCalledOnce();
+        $this->connection->expects($this->once())
+            ->method('table')
+            ->with($tableName)
+            ->willReturn($builder);
 
         $queryBuilder = $this->eventStore($writeLock)->getBuilderforWrite($this->streamName);
 
-        $this->assertSame($builder->reveal(), $queryBuilder);
+        $this->assertSame($builder, $queryBuilder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_write_query_builder_with_mysql_write_lock(): void
     {
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
+        $builder = $this->createMock(Builder::class);
 
-        $builder = $this->prophesize(Builder::class);
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $this->connection->table($tableName)->willReturn($builder->reveal())->shouldBeCalledOnce();
-        $builder->lockForUpdate()->willReturn($builder)->shouldBeCalledOnce();
+        $this->connection->expects($this->once())
+            ->method('table')
+            ->with($tableName)
+            ->willReturn($builder);
+
+        $builder->expects($this->once())
+            ->method('lockForUpdate')
+            ->willReturn($builder);
 
         $queryBuilder = $this->eventStore(new MysqlWriteLock())->getBuilderforWrite($this->streamName);
 
-        $this->assertSame($builder->reveal(), $queryBuilder);
+        $this->assertSame($builder, $queryBuilder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_first_stream(): void
     {
         // create event stream table
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledTimes(2);
-        $this->streamCategory->__invoke($this->streamName->name)->willReturn(null)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->exactly(2))
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $this->eventStreamProvider
-            ->createStream(
-                $this->streamName->name,
-                $tableName,
-                null
-            )
-            ->willReturn(true)->shouldBeCalledOnce();
+        $this->streamCategory->expects($this->once())
+            ->method('__invoke')
+            ->with($this->streamName->name)
+            ->willReturn(null);
 
-        // stream persistence
-        $this->streamPersistence->up($tableName)->willReturn(null)->shouldBeCalledOnce();
+        $this->eventStreamProvider->expects($this->once())
+            ->method('createStream')
+            ->with($this->streamName->name, $tableName, null)
+            ->willReturn(true);
 
-        $eventStore = $this->eventStore(null);
+        $this->streamPersistence->expects($this->once())
+            ->method('up')
+            ->with($tableName)
+            ->willReturn(null);
+
+        $eventStore = $this->eventStore();
 
         $eventStore->firstCommit(new Stream($this->streamName));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_first_stream_with_category_detected(): void
     {
-        // create event stream table
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledTimes(2);
-        $this->streamCategory->__invoke($this->streamName->name)->willReturn('admin')->shouldBeCalledOnce();
 
-        $this->eventStreamProvider
-            ->createStream(
-                $this->streamName->name,
-                $tableName,
-                'admin'
-            )
-            ->willReturn(true)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->exactly(2))
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        // stream persistence
-        $this->streamPersistence->up($tableName)->willReturn(null)->shouldBeCalledOnce();
+        $this->streamCategory->expects($this->once())
+            ->method('__invoke')
+            ->with($this->streamName->name)
+            ->willReturn('admin');
 
-        $eventStore = $this->eventStore(null);
+        $this->eventStreamProvider->expects($this->once())
+            ->method('createStream')
+            ->with($this->streamName->name, $tableName, 'admin')
+            ->willReturn(true);
+
+        $this->streamPersistence->expects($this->once())
+            ->method('up')
+            ->with($tableName)
+            ->willReturn(null);
+
+        $eventStore = $this->eventStore();
 
         $eventStore->firstCommit(new Stream($this->streamName));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_on_create_first_stream_when_event_stream_provider_failed_to_create(): void
     {
         $this->expectException(ConnectionQueryFailure::class);
         $this->expectExceptionMessage("Unable to insert data for stream {$this->streamName->name} in event stream table");
 
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
-        $this->streamCategory->__invoke($this->streamName->name)->willReturn(null)->shouldBeCalledOnce();
 
-        $this->eventStreamProvider
-            ->createStream(
-                $this->streamName->name,
-                $tableName,
-                null
-            )
-            ->willReturn(false)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        // stream persistence
-        $this->streamPersistence->up($tableName)->shouldNotBeCalled();
+        $this->streamCategory->expects($this->once())
+            ->method('__invoke')
+            ->with($this->streamName->name)
+            ->willReturn(null);
 
-        $this->eventStore(null)->firstCommit(new Stream($this->streamName));
+        $this->eventStreamProvider->expects($this->once())
+            ->method('createStream')
+            ->with($this->streamName->name, $tableName, null)
+            ->willReturn(false);
+
+        $this->streamPersistence->expects($this->never())->method('up');
+
+        $this->eventStore()->firstCommit(new Stream($this->streamName));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_on_create_first_stream_when_up_stream_failed_to_create(): void
     {
         $this->expectException(QueryException::class);
 
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledTimes(2);
-        $this->streamCategory->__invoke($this->streamName->name)->willReturn(null)->shouldBeCalledOnce();
 
-        $this->eventStreamProvider
-            ->createStream(
-                $this->streamName->name,
-                $tableName,
-                null
-            )
-            ->willReturn(true)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->exactly(2))
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        // stream persistence
-        $schemaBuilder = $this->prophesize(SchemaBuilder::class);
-        $this->connection->getSchemaBuilder()->willReturn($schemaBuilder)->shouldBeCalledOnce();
-        $schemaBuilder->drop($tableName)->shouldBeCalledOnce();
-        $this->eventStreamProvider->deleteStream($this->streamName->name)->willReturn(true)->shouldBeCalledOnce();
-        $this->streamPersistence->up($tableName)->willThrow(QueryExceptionStub::withCode('some_code'))->shouldBeCalledOnce();
+        $this->streamCategory->expects($this->once())
+            ->method('__invoke')
+            ->with($this->streamName->name)
+            ->willReturn(null);
 
-        $this->eventStore(null)->firstCommit(new Stream($this->streamName));
+        $this->eventStreamProvider->expects($this->once())
+            ->method('createStream')
+            ->with($this->streamName->name, $tableName, null)
+            ->willReturn(true);
+
+        $schemaBuilder = $this->createMock(SchemaBuilder::class);
+
+        $this->connection->expects($this->once())
+            ->method('getSchemaBuilder')
+            ->willReturn($schemaBuilder);
+
+        $schemaBuilder->expects($this->once())
+            ->method('drop')
+            ->with($tableName);
+
+        $this->eventStreamProvider->expects($this->once())
+            ->method('deleteStream')
+            ->with($this->streamName->name)
+            ->willReturn(true);
+
+        $this->streamPersistence->expects($this->once())
+            ->method('up')
+            ->with($tableName)
+            ->willThrowException(QueryExceptionStub::withCode('some_code'));
+
+        $this->eventStore()->firstCommit(new Stream($this->streamName));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_amend_stream(): void
     {
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledTimes(2);
 
-        $this->writeLock->acquireLock($tableName)->willReturn(true)->shouldBeCalledOnce();
-        $this->writeLock->releaseLock($tableName)->willReturn(true)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->exactly(2))
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $builder = $this->prophesize(Builder::class);
-        $this->connection->table($tableName)->willReturn($builder)->shouldBeCalledOnce();
+        $this->writeLock->expects($this->once())
+            ->method('acquireLock')
+            ->with($tableName)
+            ->willReturn(true);
+
+        $this->writeLock->expects($this->once())
+            ->method('releaseLock')
+            ->with($tableName)
+            ->willReturn(true);
+
+        $builder = $this->createMock(Builder::class);
+
+        $this->connection->expects($this->once())
+            ->method('table')
+            ->with($tableName)
+            ->willReturn($builder);
 
         $streamEvents = iterator_to_array($this->provideStreamEvents());
 
-        $this->streamPersistence
-            ->serialize(Argument::type(SomeEvent::class))
-            ->willReturn(['headers' => 'foo', 'content' => 'bar'])
-            ->shouldBeCalledTimes(4);
+        $this->streamPersistence->expects($this->exactly(4))
+            ->method('serialize')
+            ->with($this->isInstanceOf(SomeEvent::class))
+            ->willReturnMap(
+                [
+                    [$streamEvents[0], ['headers' => 'foo', 'content' => 'bar']],
+                    [$streamEvents[1], ['headers' => 'foo', 'content' => 'bar']],
+                    [$streamEvents[2], ['headers' => 'foo', 'content' => 'bar']],
+                    [$streamEvents[3], ['headers' => 'foo', 'content' => 'bar']],
+                ]
+            )
+            ->willReturn(['headers' => 'foo', 'content' => 'bar']);
 
         $expectedEvents = [
             ['headers' => 'foo', 'content' => 'bar'],
@@ -200,16 +261,17 @@ final class WriteEventStoreDatabaseTest extends ProphecyTestCase
             ['headers' => 'foo', 'content' => 'bar'],
         ];
 
-        $builder->insert($expectedEvents)->willReturn(Argument::type('bool'))->shouldBeCalledOnce();
+        $builder->expects($this->once())
+            ->method('insert')
+            ->with($expectedEvents)
+            ->willReturn(true);
 
-        $eventStore = $this->eventStore(null);
+        $eventStore = $this->eventStore();
 
         $eventStore->amend(new Stream($this->streamName, $streamEvents));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_on_amend_stream_when_lock_failed_to_be_acquired(): void
     {
         $this->expectException(ConnectionConcurrencyException::class);
@@ -217,151 +279,195 @@ final class WriteEventStoreDatabaseTest extends ProphecyTestCase
 
         $tableName = 'read_customer';
 
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $this->writeLock->acquireLock($tableName)->willReturn(false)->shouldBeCalledOnce();
-        $this->writeLock->releaseLock($tableName)->shouldNotBeCalled();
+        $this->writeLock->expects($this->once())
+            ->method('acquireLock')
+            ->with($tableName)
+            ->willReturn(false);
 
-        $this->streamPersistence
-            ->serialize(Argument::type(SomeEvent::class))
-            ->willReturn([])
-            ->shouldBeCalledTimes(4);
+        $this->writeLock->expects($this->never())->method('releaseLock');
 
-        $eventStore = $this->eventStore(null);
+        $this->streamPersistence->expects($this->exactly(4))
+            ->method('serialize')
+            ->with($this->isInstanceOf(SomeEvent::class))
+            ->willReturn([]);
+
+        $eventStore = $this->eventStore();
         $streamEvents = iterator_to_array($this->provideStreamEvents());
 
         $eventStore->amend(new Stream($this->streamName, $streamEvents));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideAnyException
-     */
+    #[DataProvider('provideAnyException')]
+    #[Test]
     public function it_always_release_lock_when_exception_raised_on_amend_stream(Throwable $exception): void
     {
         $this->expectException($exception::class);
 
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledTimes(2);
 
-        $this->writeLock->acquireLock($tableName)->willReturn(true)->shouldBeCalledOnce();
-        $this->writeLock->releaseLock($tableName)->willReturn(true)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->exactly(2))
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $builder = $this->prophesize(Builder::class);
-        $this->connection->table($tableName)->willReturn($builder)->shouldBeCalledOnce();
+        $this->writeLock->expects($this->once())
+            ->method('acquireLock')
+            ->with($tableName)
+            ->willReturn(true);
+
+        $this->writeLock->expects($this->once())
+            ->method('releaseLock')
+            ->with($tableName)
+            ->willReturn(true);
+
+        $builder = $this->createMock(Builder::class);
+
+        $this->connection->expects($this->once())
+            ->method('table')
+            ->with($tableName)
+            ->willReturn($builder);
 
         $streamEvents = iterator_to_array($this->provideStreamEvents());
 
-        $this->streamPersistence
-            ->serialize(Argument::type(SomeEvent::class))
-            ->willReturn(['headers' => 'foo', 'content' => 'bar'])
-            ->shouldBeCalledTimes(4);
+        $this->streamPersistence->expects($this->exactly(4))
+            ->method('serialize')
+            ->with($this->isInstanceOf(SomeEvent::class))
+            ->willReturnMap(
+                [
+                    [$streamEvents[0], ['headers' => 'foo', 'content' => 'bar']],
+                    [$streamEvents[1], ['headers' => 'foo', 'content' => 'bar']],
+                    [$streamEvents[2], ['headers' => 'foo', 'content' => 'bar']],
+                    [$streamEvents[3], ['headers' => 'foo', 'content' => 'bar']],
+                ]
+            )
+            ->willReturn(['headers' => 'foo', 'content' => 'bar']);
 
-        $builder->insert(Argument::type('array'))->willThrow($exception)->shouldBeCalledOnce();
+        $builder->expects($this->once())
+            ->method('insert')
+            ->with($this->isType('array'))
+            ->willThrowException($exception);
 
-        $eventStore = $this->eventStore(null);
+        $eventStore = $this->eventStore();
 
         $eventStore->amend(new Stream($this->streamName, $streamEvents));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_early_on_amend_streams_whens_stream_events_are_empty(): void
     {
         $tableName = 'read_customer';
 
-        $this->streamPersistence->tableName($this->streamName)->shouldNotBeCalled();
+        $this->streamPersistence->expects($this->never())->method('tableName');
 
-        $this->writeLock->acquireLock($tableName)->shouldNotBeCalled();
-        $this->writeLock->releaseLock($tableName)->shouldNotBeCalled();
+        $this->writeLock->expects($this->never())->method('acquireLock');
+        $this->writeLock->expects($this->never())->method('releaseLock');
 
-        $this->streamPersistence->serialize(Argument::type('object'))->shouldNotBeCalled();
+        $this->streamPersistence->expects($this->never())->method('serialize');
 
-        $eventStore = $this->eventStore(null);
+        $eventStore = $this->eventStore();
 
         $eventStore->amend(new Stream($this->streamName, []));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_delete_stream(): void
     {
         $tableName = 'read_customer';
 
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
-        $this->eventStreamProvider->deleteStream($this->streamName->name)->willReturn(true)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $schemaBuilder = $this->prophesize(SchemaBuilder::class);
-        $schemaBuilder->drop($tableName)->shouldBeCalledOnce();
-        $this->connection->getSchemaBuilder()->willReturn($schemaBuilder)->shouldBeCalledOnce();
+        $this->eventStreamProvider->expects($this->once())
+            ->method('deleteStream')
+            ->with($this->streamName->name)
+            ->willReturn(true);
 
-        $eventStore = $this->eventStore(null);
+        $schemaBuilder = $this->createMock(SchemaBuilder::class);
+
+        $schemaBuilder->expects($this->once())->method('drop')->with($tableName);
+
+        $this->connection->expects($this->once())
+            ->method('getSchemaBuilder')
+            ->willReturn($schemaBuilder);
+
+        $eventStore = $this->eventStore();
 
         $eventStore->delete($this->streamName);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_on_delete_stream_when_event_stream_provider_failed_to_delete(): void
     {
         $this->expectException(StreamNotFound::class);
 
-        $this->eventStreamProvider->deleteStream($this->streamName->name)->willReturn(false)->shouldBeCalledOnce();
+        $this->eventStreamProvider->expects($this->once())
+            ->method('deleteStream')
+            ->with($this->streamName->name)
+            ->willReturn(false);
 
-        $this->connection->getSchemaBuilder()->shouldNotBeCalled();
+        $this->connection->expects($this->never())->method('getSchemaBuilder');
 
         $eventStore = $this->eventStore(null);
 
         $eventStore->delete($this->streamName);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_on_delete_stream_when_query_exception_is_raised_from_event_stream_provider(): void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionCode('1234');
 
         $queryException = QueryExceptionStub::withCode('1234');
-        $this->eventStreamProvider->deleteStream($this->streamName->name)->willThrow($queryException)->shouldBeCalledOnce();
+        $this->eventStreamProvider->expects($this->once())
+            ->method('deleteStream')
+            ->with($this->streamName->name)
+            ->willThrowException($queryException);
 
-        $eventStore = $this->eventStore(null);
+        $eventStore = $this->eventStore();
 
         $eventStore->delete($this->streamName);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_does_not_raise_exception_on_delete_stream_when_query_exception_is_raised_from_event_stream_provider_and_does_not_affected_rows(): void
     {
-        $this->markAsRisky();
-
         $tableName = 'read_customer';
 
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
         $queryException = QueryExceptionStub::withCode('00000');
-        $this->eventStreamProvider->deleteStream($this->streamName->name)->willThrow($queryException)->shouldBeCalledOnce();
 
-        $eventStore = $this->eventStore(null);
+        $this->eventStreamProvider->expects($this->once())
+            ->method('deleteStream')
+            ->with($this->streamName->name)
+            ->willThrowException($queryException);
+
+        $eventStore = $this->eventStore();
 
         // hold previous exception and drop stream table
-        $schemaBuilder = $this->prophesize(SchemaBuilder::class);
-        $schemaBuilder->drop($tableName)->shouldBeCalledOnce();
-        $this->connection->getSchemaBuilder()->willReturn($schemaBuilder)->shouldBeCalledOnce();
+        $schemaBuilder = $this->createMock(SchemaBuilder::class);
+
+        $schemaBuilder->expects($this->once())->method('drop')->with($tableName);
+
+        $this->connection->expects($this->once())
+            ->method('getSchemaBuilder')
+            ->willReturn($schemaBuilder);
 
         $eventStore->delete($this->streamName);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_on_delete_stream_when_dropping_table_failed(): void
     {
         $this->expectException(QueryException::class);
@@ -369,54 +475,65 @@ final class WriteEventStoreDatabaseTest extends ProphecyTestCase
 
         $tableName = 'read_customer';
 
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $this->eventStreamProvider->deleteStream($this->streamName->name)->willReturn(true)->shouldBeCalledOnce();
+        $this->eventStreamProvider->expects($this->once())
+            ->method('deleteStream')
+            ->with($this->streamName->name)
+            ->willReturn(true);
 
-        $schemaBuilder = $this->prophesize(SchemaBuilder::class);
-        $this->connection->getSchemaBuilder()->willReturn($schemaBuilder)->shouldBeCalledOnce();
+        $schemaBuilder = $this->createMock(SchemaBuilder::class);
+
+        $this->connection->expects($this->once())
+            ->method('getSchemaBuilder')
+            ->willReturn($schemaBuilder);
 
         $queryException = QueryExceptionStub::withCode('1234');
 
-        $schemaBuilder->drop($tableName)->willThrow($queryException)->shouldBeCalledOnce();
+        $schemaBuilder->expects($this->once())->method('drop')->with($tableName)->willThrowException($queryException);
 
-        $eventStore = $this->eventStore(null);
+        $eventStore = $this->eventStore();
 
         $eventStore->delete($this->streamName);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_does_not_raise_exception_on_delete_stream_when_dropping_table_failed_and_does_not_affected_rows(): void
     {
-        $this->markAsRisky();
-
         $tableName = 'read_customer';
+        $schemaBuilder = $this->createMock(SchemaBuilder::class);
 
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $this->eventStreamProvider->deleteStream($this->streamName->name)->willReturn(true)->shouldBeCalledOnce();
+        $this->eventStreamProvider->expects($this->once())
+            ->method('deleteStream')
+            ->with($this->streamName->name)
+            ->willReturn(true);
 
-        $schemaBuilder = $this->prophesize(SchemaBuilder::class);
-        $this->connection->getSchemaBuilder()->willReturn($schemaBuilder)->shouldBeCalledOnce();
+        $this->connection->expects($this->once())->method('getSchemaBuilder')->willReturn($schemaBuilder);
 
         $queryException = QueryExceptionStub::withCode('00000');
 
-        $schemaBuilder->drop($tableName)->willThrow($queryException)->shouldBeCalledOnce();
+        $schemaBuilder->expects($this->once())->method('drop')->with($tableName)->willThrowException($queryException);
 
-        $eventStore = $this->eventStore(null);
+        $eventStore = $this->eventStore();
 
         $eventStore->delete($this->streamName);
     }
 
-    public function provideAnyException(): Generator
+    public static function provideAnyException(): Generator
     {
         yield [new RuntimeException('some exception')];
         yield [new InvalidArgumentException('some exception')];
     }
 
-    public function provideWriteLock(): Generator
+    public static function provideWriteLock(): Generator
     {
         yield [new FakeWriteLock()];
         yield [null];

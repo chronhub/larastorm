@@ -39,7 +39,7 @@ class EventStoreDatabaseFactory
 
         return $isTransactional
             ? new EventStoreTransactionalDatabase(...$args)
-            : new EventStoreDatabaseDatabase(...$args);
+            : new EventStoreDatabase(...$args);
     }
 
     public function setContainer(Container $container): void

@@ -9,7 +9,7 @@ use Chronhub\Storm\Chronicler\Exceptions\TransactionNotStarted;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Storm\Chronicler\Exceptions\TransactionAlreadyStarted;
 
-final class EventStoreTransactionalDatabase extends EventStoreDatabaseDatabase implements TransactionalChronicler
+final class EventStoreTransactionalDatabase extends EventStoreDatabase implements TransactionalChronicler
 {
     public function beginTransaction(): void
     {

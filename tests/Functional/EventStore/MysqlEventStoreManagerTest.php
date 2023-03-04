@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
 use Illuminate\Database\Connection;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Storm\Chronicler\EventChronicler;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
@@ -22,13 +23,16 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Larastorm\EventStore\MysqlTransactionalEventStore;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseDatabase;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\EventStore\EventStoreManager
+ */
 final class MysqlEventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;
@@ -43,9 +47,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals('connection', config('chronicler.defaults.provider'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_transactional_eventable_instance(): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -94,9 +96,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(DetermineStreamCategory::class, $streamCategory);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_eventable_instance(): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -122,12 +122,10 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(MysqlEventStore::class, $decoratorEventStore);
 
         $concreteEventStore = $decoratorEventStore->innerChronicler();
-        $this->assertInstanceOf(EventStoreDatabaseDatabase::class, $concreteEventStore);
+        $this->assertInstanceOf(EventStoreDatabase::class, $concreteEventStore);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_standalone_instance(): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -150,12 +148,10 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertNotInstanceOf(EventableChronicler::class, $eventStore);
         $this->assertEquals(MysqlEventStore::class, $eventStore::class);
         $this->assertInstanceOf(ChroniclerDecorator::class, $eventStore);
-        $this->assertEquals(EventStoreDatabaseDatabase::class, $eventStore->innerChronicler()::class);
+        $this->assertEquals(EventStoreDatabase::class, $eventStore->innerChronicler()::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_transactional_standalone_instance(): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [

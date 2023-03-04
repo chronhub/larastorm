@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Projector;
 
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
@@ -15,9 +16,7 @@ use Chronhub\Larastorm\Projection\ProvideProjectorServiceManager;
 
 final class ProjectFacadeTest extends OrchestraTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_root(): void
     {
         $root = Project::getFacadeRoot();
@@ -26,9 +25,7 @@ final class ProjectFacadeTest extends OrchestraTestCase
         $this->assertEquals(ProvideProjectorServiceManager::class, $root::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_instance(): void
     {
         $manager = Project::setDefaultDriver('in_memory');
@@ -38,9 +35,7 @@ final class ProjectFacadeTest extends OrchestraTestCase
         $this->assertInstanceOf(InMemoryProjectorManager::class, $projectorManager);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_set_and_get_default_driver(): void
     {
         Project::setDefaultDriver('foo');
@@ -54,9 +49,7 @@ final class ProjectFacadeTest extends OrchestraTestCase
         $this->assertEquals('bar', config('projector.defaults.projector'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_fix_facade_service_id(): void
     {
         $this->assertEquals('projector.service_manager', Project::SERVICE_ID);

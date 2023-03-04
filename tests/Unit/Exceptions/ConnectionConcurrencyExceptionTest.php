@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\Exceptions;
 
 use PDOException;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException
+ */
 final class ConnectionConcurrencyExceptionTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_message_from_acquire_lock_failed(): void
     {
         $exception = ConnectionConcurrencyException::failedToAcquireLock();
@@ -22,9 +24,7 @@ final class ConnectionConcurrencyExceptionTest extends UnitTestCase
         $this->assertEquals('Failed to acquire lock', $exception->getMessage());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_message_from_unlock_stream_failed(): void
     {
         $queryException = QueryExceptionStub::withCode('1234');
@@ -34,9 +34,7 @@ final class ConnectionConcurrencyExceptionTest extends UnitTestCase
         $this->assertEquals("Events or Aggregates ids have already been used in the same stream\n", $exception->getMessage());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_message_from_unlock_stream_failed_with_pdo_exception(): void
     {
         $pdoException = new PDOException('foo', 0);

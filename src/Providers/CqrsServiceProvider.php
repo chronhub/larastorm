@@ -17,10 +17,6 @@ use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 
 class CqrsServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    public function boot(): void
-    {
-    }
-
     public function register(): void
     {
         $this->app->singleton(ProducerUnity::class, LogicalProducer::class);

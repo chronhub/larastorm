@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Illuminate\Container\Container;
-use Prophecy\Prophecy\ObjectProphecy;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Routing\CommandGroup;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Producer\ProduceMessage;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Chronhub\Larastorm\Cqrs\MessageProducerFactory;
 use Chronhub\Storm\Contracts\Producer\ProducerUnity;
@@ -18,26 +21,28 @@ use Chronhub\Storm\Contracts\Producer\MessageProducer;
 use Chronhub\Larastorm\Support\Producer\IlluminateQueue;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 
-final class MessageProducerFactoryTest extends ProphecyTestCase
+#[CoversClass(MessageProducerFactory::class)]
+final class MessageProducerFactoryTest extends UnitTestCase
 {
-    private ObjectProphecy|RouteCollection $routes;
-
-    protected function setUp(): void
-    {
-        $this->routes = $this->prophesize(RouteCollection::class);
-    }
+    private MockObject|RouteCollection $routes;
 
     /**
-     * @test
+     * @throws Exception
      */
+    protected function setUp(): void
+    {
+        $this->routes = $this->createMock(RouteCollection::class);
+    }
+
+    #[Test]
     public function it_create_message_producer_instance_from_group_calling_producer_service_id(): void
     {
-        $container = Container::getInstance();
+        $instance = $this->createMock(MessageProducer::class);
 
-        $instance = $this->prophesize(MessageProducer::class)->reveal();
+        $container = Container::getInstance();
         $container->instance('message_producer.service', $instance);
 
-        $group = new CommandGroup('default', $this->routes->reveal());
+        $group = new CommandGroup('default', $this->routes);
         $group->withProducerServiceId('message_producer.service');
 
         $factory = new MessageProducerFactory(fn () => $container);
@@ -45,39 +50,22 @@ final class MessageProducerFactoryTest extends ProphecyTestCase
         $this->assertSame($instance, $factory->createMessageProducer($group));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_default_message_producer_instance_from_group_with_null_producer_service_id(): void
     {
-        //fixMe phpUnit 10
         $container = $this->createMock(Container::class);
 
-        $group = new CommandGroup('default', $this->routes->reveal());
+        $group = new CommandGroup('default', $this->routes);
         $this->assertNull($group->producerServiceId());
 
-        $container
-            ->expects($this->at(0))
+        $container->expects($this->exactly(3))
             ->method('offsetGet')
-            ->with(QueueingDispatcher::class)
-            ->will(
-                $this->returnValue($this->createMock(QueueingDispatcher::class))
-            );
-
-        $container
-            ->expects($this->at(1))
-            ->method('offsetGet')
-            ->with(MessageSerializer::class)
-            ->will(
-                $this->returnValue($this->createMock(MessageSerializer::class))
-            );
-
-        $container
-            ->expects($this->at(2))
-            ->method('offsetGet')
-            ->with(ProducerUnity::class)
-            ->will(
-                $this->returnValue($this->createMock(ProducerUnity::class))
+            ->willReturnMap(
+                [
+                    [QueueingDispatcher::class, $this->createMock(QueueingDispatcher::class)],
+                    [MessageSerializer::class, $this->createMock(MessageSerializer::class)],
+                    [ProducerUnity::class, $this->createMock(ProducerUnity::class)],
+                ]
             );
 
         $factory = new MessageProducerFactory(fn () => $container);
@@ -93,41 +81,24 @@ final class MessageProducerFactoryTest extends ProphecyTestCase
         $this->assertNull($queueOptions);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_default_message_producer_instance_from_group_with_group_queue_options_and_null_producer_service_id(): void
     {
-        //fixMe phpUnit 10
         $container = $this->createMock(Container::class);
 
-        $group = new CommandGroup('default', $this->routes->reveal());
+        $group = new CommandGroup('default', $this->routes);
         $group->withQueue(['foo' => 'bar']);
 
         $this->assertNull($group->producerServiceId());
 
-        $container
-            ->expects($this->at(0))
+        $container->expects($this->exactly(3))
             ->method('offsetGet')
-            ->with(QueueingDispatcher::class)
-            ->will(
-                $this->returnValue($this->createMock(QueueingDispatcher::class))
-            );
-
-        $container
-            ->expects($this->at(1))
-            ->method('offsetGet')
-            ->with(MessageSerializer::class)
-            ->will(
-                $this->returnValue($this->createMock(MessageSerializer::class))
-            );
-
-        $container
-            ->expects($this->at(2))
-            ->method('offsetGet')
-            ->with(ProducerUnity::class)
-            ->will(
-                $this->returnValue($this->createMock(ProducerUnity::class))
+            ->willReturnMap(
+                [
+                    [QueueingDispatcher::class, $this->createMock(QueueingDispatcher::class)],
+                    [MessageSerializer::class, $this->createMock(MessageSerializer::class)],
+                    [ProducerUnity::class, $this->createMock(ProducerUnity::class)],
+                ]
             );
 
         $factory = new MessageProducerFactory(fn () => $container);

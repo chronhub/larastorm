@@ -8,34 +8,45 @@ use Generator;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\LazyCollection;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\EventStore\Loader\LazyQueryLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
-final class LazyQueryLoaderTest extends ProphecyTestCase
+#[CoversClass(LazyQueryLoader::class)]
+final class LazyQueryLoaderTest extends UnitTestCase
 {
-    /**
-     * @test
-     *
-     * @dataProvider provideChunkSize
-     */
+    #[DataProvider('provideChunkSize')]
+    #[Test]
     public function it_can_be_instantiated(int $chunkSize): void
     {
         $someEvent = SomeEvent::fromContent(['foo' => 'bar']);
 
-        $builder = $this->prophesize(Builder::class);
-        $builder->lazy($chunkSize)->willReturn(new LazyCollection([['some' => 'payload']]))->shouldBeCalledOnce();
+        $builder = $this->createMock(Builder::class);
+        $builder->expects($this->once())
+            ->method('lazy')
+            ->with($chunkSize)
+            ->willReturn(new LazyCollection([['some' => 'payload']]));
 
-        $serializer = $this->prophesize(StreamEventSerializer::class);
-        $serializer->unserializeContent(['some' => 'payload'])->willYield([$someEvent])->shouldBeCalledOnce();
+        $serializer = $this->createMock(StreamEventSerializer::class);
+        $serializer->expects($this->once())
+            ->method('unserializeContent')
+            ->with(['some' => 'payload'])
+            ->will($this->returnCallback(function () use ($someEvent) {
+                yield $someEvent;
 
-        $eventLoader = new EventLoader($serializer->reveal());
+                return 1;
+            }));
+
+        $eventLoader = new EventLoader($serializer);
 
         $lazyQueryLoader = new LazyQueryLoader($eventLoader, $chunkSize);
 
-        $generator = $lazyQueryLoader->query($builder->reveal(), new StreamName('foo'));
+        $generator = $lazyQueryLoader->query($builder, new StreamName('foo'));
 
         $this->assertEquals($someEvent, $generator->current());
 
@@ -44,7 +55,7 @@ final class LazyQueryLoaderTest extends ProphecyTestCase
         $this->assertEquals(1, $generator->getReturn());
     }
 
-    public function provideChunkSize(): Generator
+    public static function provideChunkSize(): Generator
     {
         yield [1];
         yield [10];

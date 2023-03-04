@@ -7,8 +7,12 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Generator;
 use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
-use Prophecy\Prophecy\ObjectProphecy;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Storm\Contracts\Stream\StreamPersistence;
@@ -17,67 +21,69 @@ use Chronhub\Larastorm\EventStore\Persistence\EventStream;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryEventStream;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseDatabase;
 use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 
-final class EventStoreProviderFactoryTest extends ProphecyTestCase
+#[CoversClass(EventStoreDatabaseFactory::class)]
+
+final class EventStoreProviderFactoryTest extends UnitTestCase
 {
     private Container $container;
 
-    private ObjectProphecy|LockFactory $lockFactory;
+    private LockFactory|MockObject $lockFactory;
 
-    private ObjectProphecy|EventLoaderConnectionFactory $streamEventLoaderFactory;
+    private EventLoaderConnectionFactory|MockObject $streamEventLoaderFactory;
 
-    private Connection|ObjectProphecy $connection;
+    private Connection|MockObject $connection;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->container = Container::getInstance();
-        $this->lockFactory = $this->prophesize(LockFactory::class);
-        $this->streamEventLoaderFactory = $this->prophesize(EventLoaderConnectionFactory::class);
-        $this->connection = $this->prophesize(Connection::class);
+        $this->lockFactory = $this->createMock(LockFactory::class);
+        $this->streamEventLoaderFactory = $this->createMock(EventLoaderConnectionFactory::class);
+        $this->connection = $this->createMock(Connection::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideBoolean
-     */
+    #[DataProvider('provideBoolean')]
+    #[Test]
     public function it_return_event_store_database(bool $isTransactional): void
     {
-        $writeLock = $this->prophesize(WriteLockStrategy::class)->reveal();
+        $writeLock = $this->createMock(WriteLockStrategy::class);
+        $eventLoader = $this->createMock(StreamEventLoaderConnection::class);
+        $persistence = $this->createMock(StreamPersistence::class);
+        $streamCategory = $this->createMock(StreamCategory::class);
+
         $this->lockFactory
-            ->createLock($this->connection->reveal(), false)
-            ->willReturn($writeLock)
-            ->shouldBeCalledOnce();
+            ->expects($this->once())
+            ->method('createLock')
+            ->with($this->connection, false)
+            ->willReturn($writeLock);
 
-        $eventLoader = $this->prophesize(StreamEventLoaderConnection::class)->reveal();
         $this->streamEventLoaderFactory
-            ->createEventLoader('cursor')
-            ->willReturn($eventLoader)
-            ->shouldBeCalledOnce();
+            ->expects($this->once())
+            ->method('createEventLoader')
+            ->with('cursor')
+            ->willReturn($eventLoader);
 
-        $persistence = $this->prophesize(StreamPersistence::class)->reveal();
         $this->container->instance('stream.persistence.pgsql', $persistence);
-
-        $streamCategory = $this->prophesize(StreamCategory::class)->reveal();
         $this->container->instance(StreamCategory::class, $streamCategory);
+
         $this->assertFalse($this->container->bound(EventStreamProvider::class));
 
-        $factory = new EventStoreDatabaseFactory(
-            $this->lockFactory->reveal(),
-            $this->streamEventLoaderFactory->reveal()
-        );
+        $factory = new EventStoreDatabaseFactory($this->lockFactory, $this->streamEventLoaderFactory);
 
         $factory->setContainer($this->container);
 
         $instance = $factory->createStore(
-            $this->connection->reveal(),
+            $this->connection,
             'stream.persistence.pgsql',
             'cursor',
             false,
@@ -87,7 +93,7 @@ final class EventStoreProviderFactoryTest extends ProphecyTestCase
         if ($isTransactional) {
             $this->assertInstanceOf(EventStoreTransactionalDatabase::class, $instance);
         } else {
-            $this->assertInstanceOf(EventStoreDatabaseDatabase::class, $instance);
+            $this->assertInstanceOf(EventStoreDatabase::class, $instance);
         }
 
         $streamPersistence = ReflectionProperty::getProperty($instance, 'streamPersistence');
@@ -100,42 +106,38 @@ final class EventStoreProviderFactoryTest extends ProphecyTestCase
         $this->assertInstanceOf(EventStream::class, ReflectionProperty::getProperty($instance, 'eventStreamProvider'));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideBoolean
-     */
+    #[DataProvider('provideBoolean')]
+    #[Test]
     public function it_resolve_event_stream_provider_from_container_if_bound(bool $isTransactional): void
     {
-        $writeLock = $this->prophesize(WriteLockStrategy::class)->reveal();
+        $writeLock = $this->createMock(WriteLockStrategy::class);
+        $eventLoader = $this->createMock(StreamEventLoaderConnection::class);
+        $persistence = $this->createMock(StreamPersistence::class);
+        $streamCategory = $this->createMock(StreamCategory::class);
+
         $this->lockFactory
-            ->createLock($this->connection->reveal(), true)
-            ->willReturn($writeLock)
-            ->shouldBeCalledOnce();
+            ->expects($this->once())
+            ->method('createLock')
+            ->with($this->connection, true)
+            ->willReturn($writeLock);
 
-        $eventLoader = $this->prophesize(StreamEventLoaderConnection::class)->reveal();
         $this->streamEventLoaderFactory
-            ->createEventLoader('cursor')
-            ->willReturn($eventLoader)
-            ->shouldBeCalledOnce();
+            ->expects($this->once())
+            ->method('createEventLoader')
+            ->with('cursor')
+            ->willReturn($eventLoader);
 
-        $persistence = $this->prophesize(StreamPersistence::class)->reveal();
         $this->container->instance('stream.persistence.pgsql', $persistence);
-
-        $streamCategory = $this->prophesize(StreamCategory::class)->reveal();
         $this->container->instance(StreamCategory::class, $streamCategory);
 
         $this->container->bind(EventStreamProvider::class, fn () => new InMemoryEventStream());
 
-        $factory = new EventStoreDatabaseFactory(
-            $this->lockFactory->reveal(),
-            $this->streamEventLoaderFactory->reveal(),
-        );
+        $factory = new EventStoreDatabaseFactory($this->lockFactory, $this->streamEventLoaderFactory);
 
         $factory->setContainer($this->container);
 
         $instance = $factory->createStore(
-            $this->connection->reveal(),
+            $this->connection,
             'stream.persistence.pgsql',
             'cursor',
             true,
@@ -145,7 +147,7 @@ final class EventStoreProviderFactoryTest extends ProphecyTestCase
         if ($isTransactional) {
             $this->assertInstanceOf(EventStoreTransactionalDatabase::class, $instance);
         } else {
-            $this->assertInstanceOf(EventStoreDatabaseDatabase::class, $instance);
+            $this->assertInstanceOf(EventStoreDatabase::class, $instance);
         }
 
         $streamPersistence = ReflectionProperty::getProperty($instance, 'streamPersistence');
@@ -154,7 +156,7 @@ final class EventStoreProviderFactoryTest extends ProphecyTestCase
         $this->assertInstanceOf(InMemoryEventStream::class, ReflectionProperty::getProperty($instance, 'eventStreamProvider'));
     }
 
-    public function provideBoolean(): Generator
+    public static function provideBoolean(): Generator
     {
         yield [true];
         yield [false];

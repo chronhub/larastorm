@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
 use Chronhub\Storm\Producer\LogicalProducer;
 use Chronhub\Storm\Routing\RoutingRegistrar;
 use Chronhub\Larastorm\Support\Facade\Report;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Storm\Contracts\Producer\ProducerUnity;
@@ -15,11 +17,10 @@ use Chronhub\Larastorm\Providers\CqrsServiceProvider;
 use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 
+#[CoversClass(CqrsServiceProvider::class)]
 final class CqrsServiceProviderTest extends OrchestraTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_bindings(): void
     {
         $this->assertTrue($this->app->bound(ProducerUnity::class));
@@ -35,9 +36,7 @@ final class CqrsServiceProviderTest extends OrchestraTestCase
         $this->assertEquals(Report::getFacadeRoot(), $this->app[ReporterManager::class]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_provides(): void
     {
         $provider = $this->app->getProvider(CqrsServiceProvider::class);

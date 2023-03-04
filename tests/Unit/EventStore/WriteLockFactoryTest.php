@@ -6,8 +6,10 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
-use Prophecy\Prophecy\ObjectProphecy;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
 use Chronhub\Larastorm\EventStore\WriteLock\FakeWriteLock;
 use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
@@ -15,89 +17,84 @@ use Chronhub\Larastorm\EventStore\WriteLock\PgsqlWriteLock;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Illuminate\Contracts\Container\Container as ContainerContract;
 
-final class WriteLockFactoryTest extends ProphecyTestCase
+#[CoversClass(LockFactory::class)]
+final class WriteLockFactoryTest extends UnitTestCase
 {
     private ContainerContract $container;
 
-    private Connection|ObjectProphecy $connection;
+    private Connection|MockObject $connection;
 
     protected function setUp(): void
     {
         $this->container = Container::getInstance();
-        $this->connection = $this->prophesize(Connection::class);
+        $this->connection = $this->createMock(Connection::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_fake_write_lock_on_null(): void
     {
         $factory = new LockFactory($this->container);
 
-        $lock = $factory->createLock($this->connection->reveal(), null);
+        $lock = $factory->createLock($this->connection, null);
 
         $this->assertInstanceOf(FakeWriteLock::class, $lock);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_fake_write_lock_on_false(): void
     {
         $factory = new LockFactory($this->container);
 
-        $lock = $factory->createLock($this->connection->reveal(), false);
+        $lock = $factory->createLock($this->connection, false);
 
         $this->assertInstanceOf(FakeWriteLock::class, $lock);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_pgsql_write_lock_on_true_write_lock_key_and_connection_driver(): void
     {
         $factory = new LockFactory($this->container);
 
-        $this->connection->getDriverName()->willReturn('pgsql')->shouldBeCalledOnce();
+        $this->connection->expects($this->once())
+            ->method('getDriverName')
+            ->willReturn('pgsql');
 
-        $lock = $factory->createLock($this->connection->reveal(), true);
+        $lock = $factory->createLock($this->connection, true);
 
         $this->assertInstanceOf(PgsqlWriteLock::class, $lock);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_mysql_write_lock_on_true_write_lock_key_and_connection_driver(): void
     {
         $factory = new LockFactory($this->container);
 
-        $this->connection->getDriverName()->willReturn('mysql')->shouldBeCalledOnce();
+        $this->connection->expects($this->once())
+            ->method('getDriverName')
+            ->willReturn('mysql');
 
-        $lock = $factory->createLock($this->connection->reveal(), true);
+        $lock = $factory->createLock($this->connection, true);
 
         $this->assertInstanceOf(MysqlWriteLock::class, $lock);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_resolve_string_write_lock_from_container(): void
     {
         $this->container->bind('foo', fn () => new FakeWriteLock());
 
         $factory = new LockFactory($this->container);
 
-        $this->connection->getDriverName()->willReturn('nope')->shouldBeCalledOnce();
+        $this->connection->expects($this->once())
+            ->method('getDriverName')
+            ->willReturn('not_used');
 
-        $lock = $factory->createLock($this->connection->reveal(), 'foo');
+        $lock = $factory->createLock($this->connection, 'foo');
 
         $this->assertInstanceOf(FakeWriteLock::class, $lock);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_on_true_write_lock_key_and_unsupported_connection_driver(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -105,8 +102,10 @@ final class WriteLockFactoryTest extends ProphecyTestCase
 
         $factory = new LockFactory($this->container);
 
-        $this->connection->getDriverName()->willReturn('mongo')->shouldBeCalledOnce();
+        $this->connection->expects($this->once())
+            ->method('getDriverName')
+            ->willReturn('mongo');
 
-        $factory->createLock($this->connection->reveal(), true);
+        $factory->createLock($this->connection, true);
     }
 }

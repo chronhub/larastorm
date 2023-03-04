@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Aggregate;
 
 use Illuminate\Cache\RedisStore;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Cache\Repository;
 use Chronhub\Storm\Aggregate\AggregateType;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Storm\Aggregate\NullAggregateCache;
@@ -27,6 +29,8 @@ use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as AggregateRepositoryContract;
 
+#[CoversClass(AggregateRepositoryManager::class)]
+
 final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
 {
     private AggregateRepositoryManager $repositoryManager;
@@ -38,9 +42,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->repositoryManager = $this->app[RepositoryManager::class];
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_a_generic_aggregate_repository(): void
     {
         $this->assertTrue($this->app['config']['aggregate.repository.use_messager_decorators']);
@@ -78,9 +80,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(ChainMessageDecorator::class, $eventDecorators);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_define_aggregate_cache(): void
     {
         $this->assertTrue($this->app['config']['aggregate.repository.use_messager_decorators']);
@@ -111,7 +111,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $size = ReflectionProperty::getProperty($aggregateRepository->aggregateCache, 'limit');
         $this->assertEquals(2000, $size);
 
-        $tag = ReflectionProperty::getProperty($aggregateRepository->aggregateCache, 'cacheTag');
+        $tag = ReflectionProperty::getProperty($aggregateRepository->aggregateCache, 'tag');
         $this->assertEquals('my_tag', $tag);
 
         $cacheDriver = ReflectionProperty::getProperty($aggregateRepository->aggregateCache, 'cache');
@@ -119,9 +119,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(RedisStore::class, $cacheDriver->getStore());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_define_aggregate_producer_strategy(): void
     {
         $this->app['config']->set('aggregate.repository.repositories', [
@@ -142,9 +140,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertEquals(OneStreamPerAggregate::class, $aggregateRepository->streamProducer::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_defined_event_store_as_registered_service(): void
     {
         $eventStore = Chronicle::setDefaultDriver('in_memory')->create('standalone');
@@ -169,9 +165,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertSame($eventStore, $aggregateRepository->chronicler);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_define_aggregate_type_as_string_aggregate_root(): void
     {
         $this->app['config']->set('aggregate.repository.repositories', [
@@ -193,9 +187,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertEquals(AggregateRootStub::class, $aggregateType->current());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_define_aggregate_type_as_registered_service(): void
     {
         $instance = new AggregateType(AggregateRootStub::class);
@@ -220,9 +212,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertEquals(AggregateRootStub::class, $aggregateType->current());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_define_aggregate_type_with_children(): void
     {
         $this->app['config']->set('aggregate.repository.repositories', [
@@ -249,9 +239,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertFalse($aggregateType->isSupported(AggregateRootFinalStub::class));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_extend_repository_manager(): void
     {
         $expectedConfig = [
@@ -266,7 +254,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $mock = $this->createMock(AggregateRepositoryContract::class);
 
         $this->repositoryManager->extends('withdraw',
-            function (Application $app, string $streamName, array $config) use ($expectedConfig, $mock): AggregateRepositoryContract {
+            function (Application $app, string $streamName, array $config) use ($expectedConfig, $mock) {
                 $this->assertEquals($expectedConfig, $config);
                 $this->assertEquals('withdraw', $streamName);
 
@@ -276,9 +264,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertSame($mock, $this->repositoryManager->create('withdraw'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_stream_name_is_not_defined(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -289,9 +275,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->repositoryManager->create('foo');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_repository_driver_is_not_defined(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -306,9 +290,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $this->repositoryManager->create('transaction');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_aggregate_producer_strategy_is_not_defined(): void
     {
         $this->expectException(InvalidArgumentException::class);

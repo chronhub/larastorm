@@ -7,32 +7,44 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\LazyCollection;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
-final class CursorQueryLoaderTest extends ProphecyTestCase
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader
+ */
+final class CursorQueryLoaderTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_can_be_instantiated(): void
     {
         $someEvent = SomeEvent::fromContent(['foo' => 'bar']);
 
-        $builder = $this->prophesize(Builder::class);
-        $builder->cursor()->willReturn(new LazyCollection([['some' => 'payload']]))->shouldBeCalledOnce();
+        $builder = $this->createMock(Builder::class);
+        $builder->expects($this->once())
+            ->method('cursor')
+            ->willReturn(new LazyCollection([['some' => 'payload']]));
 
-        $serializer = $this->prophesize(StreamEventSerializer::class);
-        $serializer->unserializeContent(['some' => 'payload'])->willYield([$someEvent])->shouldBeCalledOnce();
+        $serializer = $this->createMock(StreamEventSerializer::class);
 
-        $eventLoader = new EventLoader($serializer->reveal());
+        $serializer->expects($this->once())
+            ->method('unserializeContent')
+            ->with(['some' => 'payload'])
+            ->will($this->returnCallback(function () use ($someEvent) {
+                yield $someEvent;
+
+                return 1;
+            }));
+
+        $eventLoader = new EventLoader($serializer);
 
         $cursorEventLoader = new CursorQueryLoader($eventLoader);
 
-        $generator = $cursorEventLoader->query($builder->reveal(), new StreamName('foo'));
+        $generator = $cursorEventLoader->query($builder, new StreamName('foo'));
 
         $this->assertEquals($someEvent, $generator->current());
 

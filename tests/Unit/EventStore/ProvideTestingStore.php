@@ -7,9 +7,10 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Generator;
 use Illuminate\Database\Connection;
 use Chronhub\Storm\Stream\StreamName;
-use Prophecy\Prophecy\ObjectProphecy;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Contracts\Message\Header;
 use Illuminate\Database\ConnectionInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Chronhub\Larastorm\Tests\Stubs\StoreStub;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
@@ -20,20 +21,16 @@ use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 
 trait ProvideTestingStore
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_can_be_constructed(): void
     {
         $es = $this->eventStore();
 
         $this->assertFalse($es->isDuringCreation());
-        $this->assertSame($this->eventStreamProvider->reveal(), $es->getEventStreamProvider());
+        $this->assertSame($this->eventStreamProvider, $es->getEventStreamProvider());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_serialized_stream_events(): void
     {
         $streamsEvents = [
@@ -48,8 +45,12 @@ trait ProvideTestingStore
             'content' => ['foo' => 'bar'],
         ];
 
-        $this->streamPersistence->serialize($streamsEvents[0])->willReturn($eventAsArray)->shouldBeCalledTimes(2);
-        $this->streamPersistence->serialize($streamsEvents[1])->willReturn($eventAsArray)->shouldBeCalledTimes(2);
+        $this->streamPersistence->expects($this->exactly(2))
+            ->method('serialize')
+            ->willReturnMap([
+                [$streamsEvents[0], $eventAsArray],
+                [$streamsEvents[1], $eventAsArray],
+            ]);
 
         $events = $this->eventStore()->getStreamEventsSerialized($streamsEvents);
 
@@ -83,37 +84,37 @@ trait ProvideTestingStore
     protected function eventStore(?WriteLockStrategy $writeLock = null): StoreStub
     {
         return new StoreStub(
-            $this->connection->reveal(),
-            $this->streamPersistence->reveal(),
-            $this->eventLoader->reveal(),
-            $this->eventStreamProvider->reveal(),
-            $this->streamCategory->reveal(),
-            $writeLock ?? $this->writeLock->reveal(),
+            $this->connection,
+            $this->streamPersistence,
+            $this->eventLoader,
+            $this->eventStreamProvider,
+            $this->streamCategory,
+            $writeLock ?? $this->writeLock,
         );
     }
 
-    protected Connection|ConnectionInterface|ObjectProphecy $connection;
+    protected Connection|ConnectionInterface|MockObject $connection;
 
-    protected StreamPersistence|ObjectProphecy $streamPersistence;
+    protected StreamPersistence|MockObject $streamPersistence;
 
-    protected StreamEventLoaderConnection|ObjectProphecy $eventLoader;
+    protected StreamEventLoaderConnection|MockObject $eventLoader;
 
-    protected EventStreamProvider|ObjectProphecy $eventStreamProvider;
+    protected EventStreamProvider|MockObject $eventStreamProvider;
 
-    protected StreamCategory|ObjectProphecy $streamCategory;
+    protected StreamCategory|MockObject $streamCategory;
 
-    protected WriteLockStrategy|ObjectProphecy $writeLock;
+    protected WriteLockStrategy|MockObject $writeLock;
 
     protected StreamName $streamName;
 
     protected function setUp(): void
     {
-        $this->connection = $this->prophesize(Connection::class);
-        $this->streamPersistence = $this->prophesize(StreamPersistence::class);
-        $this->eventLoader = $this->prophesize(StreamEventLoaderConnection::class);
-        $this->eventStreamProvider = $this->prophesize(EventStreamProvider::class);
-        $this->streamCategory = $this->prophesize(StreamCategory::class);
-        $this->writeLock = $this->prophesize(WriteLockStrategy::class);
+        $this->connection = $this->createMock(Connection::class);
+        $this->streamPersistence = $this->createMock(StreamPersistence::class);
+        $this->eventLoader = $this->createMock(StreamEventLoaderConnection::class);
+        $this->eventStreamProvider = $this->createMock(EventStreamProvider::class);
+        $this->streamCategory = $this->createMock(StreamCategory::class);
+        $this->writeLock = $this->createMock(WriteLockStrategy::class);
         $this->streamName = new StreamName('customer');
     }
 }

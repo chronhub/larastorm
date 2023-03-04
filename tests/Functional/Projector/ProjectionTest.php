@@ -8,6 +8,7 @@ use DateInterval;
 use DateTimeZone;
 use DateTimeImmutable;
 use Chronhub\Storm\Clock\PointInTime;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Projection\Projection;
 use Chronhub\Storm\Projector\ProjectionStatus;
@@ -17,13 +18,14 @@ use Chronhub\Storm\Contracts\Projector\ProjectionModel;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Projection\Projection
+ */
 final class ProjectionTest extends OrchestraTestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_projection(): void
     {
         $projection = new Projection();
@@ -33,9 +35,7 @@ final class ProjectionTest extends OrchestraTestCase
         $this->assertNull($this->findFirstProjection());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_projection(): void
     {
         $projection = new Projection();
@@ -63,9 +63,7 @@ final class ProjectionTest extends OrchestraTestCase
         $this->assertNull($model->lockedUntil());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_update_projection_by_projection_name(): void
     {
         $projection = new Projection();
@@ -108,9 +106,7 @@ final class ProjectionTest extends OrchestraTestCase
         ], $projection->newQuery()->find(1)->toArray());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_if_projection_name_already_exists(): void
     {
         $this->expectException(QueryException::class);
@@ -122,9 +118,7 @@ final class ProjectionTest extends OrchestraTestCase
         $projection->createProjection('account', ProjectionStatus::RUNNING->value);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_projection_exists(): void
     {
         $projection = new Projection();
@@ -136,9 +130,7 @@ final class ProjectionTest extends OrchestraTestCase
         $this->assertTrue($projection->projectionExists('balance'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_find_projection_by_name(): void
     {
         $projection = new Projection();
@@ -149,9 +141,7 @@ final class ProjectionTest extends OrchestraTestCase
         $this->assertInstanceOf(ProjectionModel::class, $projection->retrieve('balance'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_find_projection_by_sorting_names_ascendant(): void
     {
         $projection = new Projection();
@@ -165,9 +155,7 @@ final class ProjectionTest extends OrchestraTestCase
         $this->assertEquals(['account', 'balance'], $projection->filterByNames('balance', 'unknown_stream', 'account'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_delete_projection_by_name(): void
     {
         $projection = new Projection();
@@ -184,9 +172,7 @@ final class ProjectionTest extends OrchestraTestCase
         $this->assertNull($projection->retrieve('balance'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_always_acquire_lock_when_locked_until_is_null(): void
     {
         $projection = new Projection();
@@ -207,9 +193,7 @@ final class ProjectionTest extends OrchestraTestCase
         $this->assertEquals($lockedUntil, $updatedProjection->lockedUntil());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_always_acquire_lock_when_locked_until_from_database_is_less_than_now(): void
     {
         $projection = new Projection();

@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\Support\Supervisor;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\Supervisor\Supervisor
+ */
 final class SupervisorTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_supervisor(): void
     {
         $commands = collect(['foo' => 'bar']);
@@ -26,9 +28,7 @@ final class SupervisorTest extends UnitTestCase
         $this->assertEquals('project', $supervisor->namespace);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_commands_is_empty(): void
     {
         $this->expectException(InvalidArgumentException::class);

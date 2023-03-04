@@ -8,212 +8,205 @@ use Generator;
 use RuntimeException;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
-use Prophecy\Prophecy\ObjectProphecy;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
 use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
+use Chronhub\Larastorm\EventStore\EventStoreConnection;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
 use Chronhub\Larastorm\Tests\Stubs\EventStoreConnectionStub;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 
-class EventStoreConnectionTest extends ProphecyTestCase
+#[CoversClass(EventStoreConnection::class)]
+
+class EventStoreConnectionTest extends UnitTestCase
 {
-    private ObjectProphecy|ChroniclerDB $chronicler;
+    private MockObject|ChroniclerDB $chronicler;
 
     private Stream $stream;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
-        $this->chronicler = $this->prophesize(ChroniclerDB::class);
+        $this->chronicler = $this->createMock(ChroniclerDB::class);
         $this->stream = new Stream(new StreamName('customer'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_stream(): void
     {
-        $this->chronicler->firstCommit($this->stream)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('firstCommit')->with($this->stream);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $es->firstCommit($this->stream);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_update_stream(): void
     {
-        $this->chronicler->amend($this->stream)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('amend')->with($this->stream);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $es->amend($this->stream);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_delete_stream(): void
     {
-        $this->chronicler->delete($this->stream->name())->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('delete')->with($this->stream->name());
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $es->delete($this->stream->name());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideDirection
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideDirection')]
+    #[Test]
     public function it_retrieve_all_stream_events(string $direction): void
     {
-        $identity = $this->prophesize(AggregateIdentity::class)->reveal();
+        $identity = $this->createMock(AggregateIdentity::class);
 
-        $this->chronicler->retrieveAll($this->stream->name(), $identity, $direction)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('retrieveAll')->with($this->stream->name(), $identity, $direction);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $es->retrieveAll($this->stream->name(), $identity, $direction);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_retrieve_filtered_stream_events(): void
     {
-        $queryFilter = $this->prophesize(QueryFilter::class)->reveal();
+        $queryFilter = $this->createMock(QueryFilter::class);
 
-        $this->chronicler->retrieveFiltered($this->stream->name(), $queryFilter)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('retrieveFiltered')->with($this->stream->name(), $queryFilter);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $es->retrieveFiltered($this->stream->name(), $queryFilter);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_stream_names_ordered_by_name(): void
     {
         $barStream = new StreamName('bar');
         $fooStream = new StreamName('foo');
         $zooStream = new StreamName('zoo');
 
-        $this->chronicler->filterStreamNames($zooStream, $barStream, $fooStream)->willReturn([$fooStream, $zooStream])->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())
+            ->method('filterStreamNames')
+            ->with($zooStream, $barStream, $fooStream)
+            ->willReturn([$fooStream, $zooStream]);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $this->assertEquals([$fooStream, $zooStream], $es->filterStreamNames($zooStream, $barStream, $fooStream));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_categories(): void
     {
-        $this->chronicler->filterCategoryNames('transaction')->willReturn(['add', 'subtract'])->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())
+            ->method('filterCategoryNames')
+            ->with('transaction')
+            ->willReturn(['add', 'subtract']);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $this->assertEquals(['add', 'subtract'], $es->filterCategoryNames('transaction'));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideBoolean
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideBoolean')]
+    #[Test]
     public function it_check_stream_exists(bool $isStreamExists): void
     {
-        $this->chronicler->hasStream($this->stream->name())->willReturn($isStreamExists)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())
+            ->method('hasStream')
+            ->with($this->stream->name())
+            ->willReturn($isStreamExists);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $this->assertEquals($isStreamExists, $es->hasStream($this->stream->name()));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_event_stream_provider(): void
     {
-        $provider = $this->prophesize(EventStreamProvider::class)->reveal();
+        $provider = $this->createMock(EventStreamProvider::class);
 
-        $this->chronicler->getEventStreamProvider()->willReturn($provider)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())
+            ->method('getEventStreamProvider')
+            ->willReturn($provider);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $this->assertSame($provider, $es->getEventStreamProvider());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_inner_chronicler(): void
     {
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
-        $this->assertSame($this->chronicler->reveal(), $es->innerChronicler());
+        $this->assertSame($this->chronicler, $es->innerChronicler());
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideBoolean
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideBoolean')]
+    #[Test]
     public function it_check_if_persistence_is_during_creation_of_stream(bool $isCreation): void
     {
-        $this->chronicler->isDuringCreation()->willReturn($isCreation)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())
+            ->method('isDuringCreation')
+            ->willReturn($isCreation);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $this->assertEquals($isCreation, $es->isDuringCreation());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_during_creation(): void
     {
         $exception = new QueryException('some_connection_name', 'some sql', [], new RuntimeException('foo'));
 
-        $this->chronicler->firstCommit($this->stream)->willThrow($exception)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('firstCommit')->with($this->stream)->willThrowException($exception);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $es->firstCommit($this->stream);
 
         $this->assertSame($exception, $es->getRaisedException());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_during_update(): void
     {
         $exception = new QueryException('some_connection_name', 'some sql', [], new RuntimeException('foo'));
 
-        $this->chronicler->amend($this->stream)->willThrow($exception)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('amend')->with($this->stream)->willThrowException($exception);
 
-        $es = new EventStoreConnectionStub($this->chronicler->reveal());
+        $es = new EventStoreConnectionStub($this->chronicler);
 
         $es->amend($this->stream);
 
         $this->assertSame($exception, $es->getRaisedException());
     }
 
-    public function provideDirection(): Generator
+    public static function provideDirection(): Generator
     {
         yield ['asc'];
         yield ['desc'];
     }
 
-    public function provideBoolean(): Generator
+    public static function provideBoolean(): Generator
     {
         yield [true];
         yield [false];

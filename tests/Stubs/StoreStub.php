@@ -6,9 +6,9 @@ namespace Chronhub\Larastorm\Tests\Stubs;
 
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseDatabase;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 
-final class StoreStub extends EventStoreDatabaseDatabase
+final class StoreStub extends EventStoreDatabase
 {
     public function getBuilderForWrite(StreamName $streamName): Builder
     {

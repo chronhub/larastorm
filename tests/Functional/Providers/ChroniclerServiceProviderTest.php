@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
@@ -25,11 +26,12 @@ use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Providers\ChroniclerServiceProvider
+ */
 final class ChroniclerServiceProviderTest extends OrchestraTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_fix_chronicler_configuration(): void
     {
         $this->assertEquals([
@@ -96,9 +98,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
         ], config('chronicler'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_bindings(): void
     {
         $this->assertTrue($this->app->bound(StreamEventSerializer::class));
@@ -118,9 +118,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
         $this->assertTrue($this->app->bound(ConnectionChroniclerProvider::class));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_provides(): void
     {
         $provider = $this->app->getProvider(ChroniclerServiceProvider::class);

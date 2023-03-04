@@ -8,9 +8,10 @@ use stdClass;
 use Generator;
 use RuntimeException;
 use Illuminate\Database\Connection;
-use Prophecy\Prophecy\ObjectProphecy;
-use Illuminate\Database\ConnectionInterface;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamPersistence;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
@@ -20,138 +21,122 @@ use Chronhub\Storm\Chronicler\Exceptions\TransactionAlreadyStarted;
 use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 
-final class StoreTransactionalDatabaseTest extends ProphecyTestCase
+#[CoversClass(EventStoreTransactionalDatabase::class)]
+final class StoreTransactionalDatabaseTest extends UnitTestCase
 {
-    private Connection|ConnectionInterface|ObjectProphecy $connection;
+    private Connection|MockObject $connection;
 
     protected function setUp(): void
     {
-        $this->connection = $this->prophesize(Connection::class);
+        $this->connection = $this->createMock(Connection::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_start_transaction(): void
     {
-        $this->connection->beginTransaction()->shouldBeCalledOnce();
+        $this->connection->expects($this->once())->method('beginTransaction');
 
         $this->eventStore()->beginTransaction();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_transaction_already_started(): void
     {
         $this->expectException(TransactionAlreadyStarted::class);
 
-        $this->connection->beginTransaction()->willThrow(new TransactionAlreadyStarted())->shouldBeCalledOnce();
+        $this->connection->expects($this->once())->method('beginTransaction')->willThrowException(new TransactionAlreadyStarted());
 
         $this->eventStore()->beginTransaction();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_commit_transaction(): void
     {
-        $this->connection->commit()->shouldBeCalledOnce();
+        $this->connection->expects($this->once())->method('commit');
 
         $this->eventStore()->commitTransaction();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_transaction_not_started_on_commit(): void
     {
         $this->expectException(TransactionNotStarted::class);
 
-        $this->connection->commit()->willThrow(new TransactionNotStarted())->shouldBeCalledOnce();
+        $this->connection->expects($this->once())->method('commit')->willThrowException(new TransactionNotStarted());
 
         $this->eventStore()->commitTransaction();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_rollback_transaction(): void
     {
-        $this->connection->rollBack()->shouldBeCalledOnce();
+        $this->connection->expects($this->once())->method('rollBack');
 
         $this->eventStore()->rollbackTransaction();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_transaction_not_started_on_rollback(): void
     {
         $this->expectException(TransactionNotStarted::class);
 
-        $this->connection->rollBack()->willThrow(new TransactionNotStarted())->shouldBeCalledOnce();
+        $this->connection->expects($this->once())->method('rollBack')->willThrowException(new TransactionNotStarted());
 
         $this->eventStore()->rollbackTransaction();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideValue
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideValue')]
+    #[Test]
     public function it_handle_process_fully_transactional(mixed $value): void
     {
-        $this->connection->beginTransaction()->shouldBeCalledOnce();
-        $this->connection->commit()->shouldBeCalledOnce();
+        $this->connection->expects($this->once())->method('beginTransaction');
+        $this->connection->expects($this->once())->method('commit');
 
         $result = $this->eventStore()->transactional(fn (): mixed => $value);
 
         $this->assertEquals($value, $result);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_handle_process_fully_transactional_and_return_true_as_default_when_callback_result_is_null(): void
     {
-        $this->connection->beginTransaction()->shouldBeCalledOnce();
-        $this->connection->commit()->shouldBeCalledOnce();
+        $this->connection->expects($this->once())->method('beginTransaction');
+        $this->connection->expects($this->once())->method('commit');
 
         $result = $this->eventStore()->transactional(fn (): null => null);
 
         $this->assertEquals(true, $result);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_and_rollback_on_fully_transactional(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('foo');
 
-        $this->connection->beginTransaction()->shouldBeCalledOnce();
-        $this->connection->rollBack()->shouldBeCalledOnce();
-        $this->connection->commit()->shouldNotBeCalled();
+        $this->connection->expects($this->once())->method('beginTransaction');
+        $this->connection->expects($this->once())->method('rollBack');
+        $this->connection->expects($this->never())->method('commit');
 
         $exception = new RuntimeException('foo');
         $this->eventStore()->transactional(fn () => throw $exception);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_in_transaction(): void
     {
-        $this->connection->transactionLevel()->willReturn(1)->shouldBeCalled();
+        $this->connection->expects($this->once())->method('transactionLevel')->willReturn(1);
         $this->assertTrue($this->eventStore()->inTransaction());
+    }
 
-        $this->connection->transactionLevel()->willReturn(0)->shouldBeCalled();
+    #[Test]
+    public function it_assert_not_in_transaction(): void
+    {
+        $this->connection->expects($this->any())->method('transactionLevel')->willReturn(0);
         $this->assertFalse($this->eventStore()->inTransaction());
     }
 
-    public function provideValue(): Generator
+    public static function provideValue(): Generator
     {
         yield ['foo'];
         yield [42];
@@ -164,12 +149,12 @@ final class StoreTransactionalDatabaseTest extends ProphecyTestCase
     private function eventStore(): EventStoreTransactionalDatabase
     {
         return new EventStoreTransactionalDatabase(
-            $this->connection->reveal(),
-            $this->prophesize(StreamPersistence::class)->reveal(),
-            $this->prophesize(StreamEventLoaderConnection::class)->reveal(),
-            $this->prophesize(EventStreamProvider::class)->reveal(),
-            $this->prophesize(StreamCategory::class)->reveal(),
-            $this->prophesize(WriteLockStrategy::class)->reveal(),
+            $this->connection,
+            $this->createMock(StreamPersistence::class),
+            $this->createMock(StreamEventLoaderConnection::class),
+            $this->createMock(EventStreamProvider::class),
+            $this->createMock(StreamCategory::class),
+            $this->createMock(WriteLockStrategy::class),
         );
     }
 }

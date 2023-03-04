@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
@@ -11,11 +12,12 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\EventStore\EventStoreResolver
+ */
 final class EventStoreResolverTest extends OrchestraTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_event_store_instance_from_string(): void
     {
         $instance = Chronicle::setDefaultDriver('in_memory')->create('standalone');
@@ -29,9 +31,7 @@ final class EventStoreResolverTest extends OrchestraTestCase
         $this->assertSame($instance, $eventStore);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_event_store_instance_from_array(): void
     {
         $resolver = new EventStoreResolver(fn () => $this->app);
@@ -41,9 +41,7 @@ final class EventStoreResolverTest extends OrchestraTestCase
         $this->assertEquals(StandaloneInMemoryChronicler::class, $eventStore::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_with_invalid_configuration(): void
     {
         $this->expectException(InvalidArgumentException::class);

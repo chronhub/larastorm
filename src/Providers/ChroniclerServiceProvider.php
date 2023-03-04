@@ -57,7 +57,7 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
 
         $this->registerManagers();
 
-        $this->registerChroniclerProvidersIfInConfiguration();
+        $this->registerProviders();
     }
 
     protected function registerBindings(): void
@@ -82,25 +82,19 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         });
     }
 
-    protected function registerChroniclerProvidersIfInConfiguration(): void
+    protected function registerProviders(): void
     {
-        $providers = config('chronicler.defaults.providers', []);
+        $this->app->singleton(
+            ConnectionChroniclerProvider::class,
+            fn (Application $app): ChroniclerProvider => new ConnectionChroniclerProvider(
+                fn () => $app, $app[EventStoreDatabaseFactory::class]
+            )
+        );
 
-        if (isset($providers['connection']) && $providers['connection'] === ConnectionChroniclerProvider::class) {
-            $this->app->singleton(
-                ConnectionChroniclerProvider::class,
-                fn (Application $app): ChroniclerProvider => new ConnectionChroniclerProvider(
-                    fn () => $app, $app[EventStoreDatabaseFactory::class]
-                )
-            );
-        }
-
-        if (isset($providers['in_memory']) && $providers['in_memory'] === InMemoryChroniclerProvider::class) {
-            $this->app->singleton(
-                InMemoryChroniclerProvider::class,
-                fn (Application $app): ChroniclerProvider => new InMemoryChroniclerProvider(fn () => $app)
-            );
-        }
+        $this->app->singleton(
+            InMemoryChroniclerProvider::class,
+            fn (Application $app): ChroniclerProvider => new InMemoryChroniclerProvider(fn () => $app)
+        );
     }
 
     protected function registerManagers(): void

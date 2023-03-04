@@ -6,156 +6,215 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use function iterator_to_array;
 
-final class ReadEventStoreDatabaseTest extends ProphecyTestCase
+#[CoversClass(EventStoreDatabase::class)]
+final class ReadEventStoreDatabaseTest extends UnitTestCase
 {
     use ProvideTestingStore;
 
-    /**
-     * @test
-     *
-     * @dataProvider provideDirection
-     */
+    #[DataProvider('provideDirection')]
+    #[Test]
     public function it_retrieve_all_stream_events_with_single_stream_strategy(string $direction): void
     {
         $tableName = 'read_customer';
+        $builder = $this->createMock(Builder::class);
+        $aggregateId = $this->createMock(AggregateIdentity::class);
 
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $builder = $this->prophesize(Builder::class);
-        $this->connection->table($tableName)->willReturn($builder)->shouldBeCalledOnce();
+        $this->connection->expects($this->once())
+            ->method('table')
+            ->with($tableName)
+            ->willReturn($builder);
 
-        $this->streamPersistence->isAutoIncremented()->willReturn(false)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('isAutoIncremented')
+            ->willReturn(false);
 
-        $builder->orderBy('no', $direction)->willReturn($builder)->shouldBeCalledOnce();
+        $builder->expects($this->once())
+            ->method('orderBy')
+            ->with('no', $direction)
+            ->willReturn($builder);
 
         $expectedStreamsEvents = iterator_to_array($this->provideStreamEvents());
-        $this->eventLoader->query($builder->reveal(), $this->streamName)->willYield($expectedStreamsEvents)->shouldBeCalledOnce();
 
-        $aggregateId = $this->prophesize(AggregateIdentity::class);
-        $aggregateId->toString()->willReturn('123-456')->shouldNotBeCalled();
+        $this->eventLoader->expects($this->once())
+            ->method('query')
+            ->with($builder, $this->streamName)
+            ->will($this->returnCallback(function () use ($expectedStreamsEvents) {
+                yield from $expectedStreamsEvents;
+            }));
 
-        $events = $this->eventStore()->retrieveAll($this->streamName, $aggregateId->reveal(), $direction);
+        $aggregateId->expects($this->never())->method('toString');
+
+        $events = $this->eventStore()->retrieveAll($this->streamName, $aggregateId, $direction);
 
         $this->assertEquals($expectedStreamsEvents, iterator_to_array($events));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideDirection
-     */
+    #[DataProvider('provideDirection')]
+    #[Test]
     public function it_retrieve_all_stream_events_with_one_stream_per_aggregate_strategy(string $direction): void
     {
         $tableName = 'read_customer';
+        $builder = $this->createMock(Builder::class);
+        $aggregateId = $this->createMock(AggregateIdentity::class);
 
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $builder = $this->prophesize(Builder::class);
-        $this->connection->table($tableName)->willReturn($builder)->shouldBeCalledOnce();
+        $this->connection->expects($this->once())
+            ->method('table')
+            ->with($tableName)
+            ->willReturn($builder);
 
-        $this->streamPersistence->isAutoIncremented()->willReturn(true)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('isAutoIncremented')
+            ->willReturn(true);
 
-        $builder->where('aggregate_id', '123-456')->willReturn($builder)->shouldBeCalledOnce();
-        $builder->orderBy('no', $direction)->willReturn($builder)->shouldBeCalledOnce();
+        $builder->expects($this->once())
+            ->method('where')
+            ->with('aggregate_id', '123-456')
+            ->willReturn($builder);
+
+        $builder->expects($this->once())
+            ->method('orderBy')
+            ->with('no', $direction)
+            ->willReturn($builder);
 
         $expectedStreamsEvents = iterator_to_array($this->provideStreamEvents());
-        $this->eventLoader->query($builder->reveal(), $this->streamName)->willYield($expectedStreamsEvents)->shouldBeCalledOnce();
 
-        $aggregateId = $this->prophesize(AggregateIdentity::class);
-        $aggregateId->toString()->willReturn('123-456')->shouldBeCalledOnce();
+        $this->eventLoader->expects($this->once())
+            ->method('query')
+            ->with($builder, $this->streamName)
+            ->will($this->returnCallback(function () use ($expectedStreamsEvents) {
+                yield from $expectedStreamsEvents;
+            }));
 
-        $events = $this->eventStore()->retrieveAll($this->streamName, $aggregateId->reveal(), $direction);
+        $aggregateId->expects($this->once())
+            ->method('toString')
+            ->willReturn('123-456');
+
+        $events = $this->eventStore()->retrieveAll($this->streamName, $aggregateId, $direction);
 
         $this->assertEquals($expectedStreamsEvents, iterator_to_array($events));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_retrieve_filtered_stream_events(): void
     {
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
+        $builder = $this->createMock(Builder::class);
+        $queryFilter = $this->createMock(QueryFilter::class);
 
-        $builder = $this->prophesize(Builder::class);
-        $this->connection->table($tableName)->willReturn($builder)->shouldBeCalledOnce();
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $this->streamPersistence->isAutoIncremented()->shouldNotBeCalled();
+        $this->connection->expects($this->once())
+            ->method('table')
+            ->with($tableName)
+            ->willReturn($builder);
+
+        $this->streamPersistence->expects($this->never())->method('isAutoIncremented');
 
         $expectedStreamsEvents = iterator_to_array($this->provideStreamEvents());
-        $this->eventLoader->query($builder->reveal(), $this->streamName)->willYield($expectedStreamsEvents)->shouldBeCalledOnce();
+
+        $this->eventLoader->expects($this->once())
+            ->method('query')
+            ->with($builder, $this->streamName)
+            ->will($this->returnCallback(function () use ($expectedStreamsEvents) {
+                yield from $expectedStreamsEvents;
+            }));
 
         $callback = function (Builder $query) use ($builder): void {
-            $this->assertSame($query, $builder->reveal());
+            $this->assertSame($query, $builder);
         };
 
-        $queryFilter = $this->prophesize(QueryFilter::class);
-        $queryFilter->apply()->willReturn($callback)->shouldBeCalledOnce();
+        $queryFilter->expects($this->once())
+            ->method('apply')
+            ->willReturn($callback);
 
-        $events = $this->eventStore()->retrieveFiltered($this->streamName, $queryFilter->reveal());
+        $events = $this->eventStore()->retrieveFiltered($this->streamName, $queryFilter);
 
         $this->assertEquals($expectedStreamsEvents, iterator_to_array($events));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_stream_names(): void
     {
         $streams = [new StreamName('foo'), new StreamName('bar'), new StreamName('foo_bar')];
 
-        $this->eventStreamProvider->filterByStreams($streams)->willReturn(['foo', 'bar'])->shouldBeCalledOnce();
+        $this->eventStreamProvider->expects($this->once())
+            ->method('filterByStreams')
+            ->with($streams)
+            ->willReturn(['foo', 'bar']);
 
         $filteredStreams = $this->eventStore()->filterStreamNames(...$streams);
 
         $this->assertEquals([$streams[0], $streams[1]], $filteredStreams);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_categories(): void
     {
         $categories = ['foo', 'bar', 'foo_bar'];
 
-        $this->eventStreamProvider->filterByCategories($categories)->willReturn(['foo', 'bar'])->shouldBeCalledOnce();
+        $this->eventStreamProvider->expects($this->once())
+            ->method('filterByCategories')
+            ->with($categories)
+            ->willReturn(['foo', 'bar']);
 
         $filteredStreams = $this->eventStore()->filterCategoryNames(...$categories);
 
         $this->assertEquals([$categories[0], $categories[1]], $filteredStreams);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideBoolean
-     */
+    #[DataProvider('provideBoolean')]
+    #[Test]
     public function it_check_stream_exists(bool $streamExists): void
     {
-        $this->eventStreamProvider->hasRealStreamName($this->streamName->name)->willReturn($streamExists)->shouldBeCalledOnce();
+        $this->eventStreamProvider->expects($this->once())
+            ->method('hasRealStreamName')
+            ->with($this->streamName->name)
+            ->willReturn($streamExists);
 
         $this->assertEquals($streamExists, $this->eventStore()->hasStream($this->streamName));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_read_query_builder(): void
     {
         $tableName = 'read_customer';
-        $this->streamPersistence->tableName($this->streamName)->willReturn($tableName)->shouldBeCalledOnce();
 
-        $builder = $this->prophesize(Builder::class);
+        $this->streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
 
-        $this->connection->table($tableName)->willReturn($builder->reveal())->shouldBeCalledOnce();
+        $builder = $this->createMock(Builder::class);
+
+        $this->connection->expects($this->once())
+            ->method('table')
+            ->with($tableName)
+            ->willReturn($builder);
 
         $queryBuilder = $this->eventStore()->getBuilderforRead($this->streamName);
 
-        $this->assertSame($builder->reveal(), $queryBuilder);
+        $this->assertSame($builder, $queryBuilder);
     }
 }

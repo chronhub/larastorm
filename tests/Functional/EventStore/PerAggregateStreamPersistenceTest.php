@@ -6,14 +6,15 @@ namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
 use Generator;
 use Symfony\Component\Uid\Uuid;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Stream\StreamName;
-use Prophecy\Prophecy\ObjectProphecy;
 use Illuminate\Support\Facades\Schema;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Contracts\Message\Header;
+use PHPUnit\Framework\MockObject\MockObject;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Storm\Serializer\SerializeToJson;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Message\EventHeader;
 use Chronhub\Storm\Serializer\JsonSerializerFactory;
@@ -26,22 +27,17 @@ use function array_keys;
 
 final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
 {
-    use ProphecyTrait;
-
-    private StreamEventSerializer|ObjectProphecy $serializer;
+    private StreamEventSerializer|MockObject $serializer;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->serializer = $this->prophesize(StreamEventSerializer::class);
+        $this->serializer = $this->createMock(StreamEventSerializer::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStreamName
-     */
+    #[DataProvider('provideStreamName')]
+    #[Test]
     public function it_produce_table_name_from_stream_name(string $streamName): void
     {
         $expectedTableName = '_'.$streamName;
@@ -54,11 +50,8 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
         $this->assertNotInstanceOf(StreamPersistenceWithQueryHint::class, $streamPersistence);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStreamName
-     */
+    #[DataProvider('provideStreamName')]
+    #[Test]
     public function it_up_stream_table(string $streamName): void
     {
         $tableName = '_'.$streamName;
@@ -91,9 +84,7 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
         $this->assertArrayHasKey($tableName.'_aggregate_version_unique', $indexes);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_serialize_domain_event_with_no(): void
     {
         $factory = new JsonSerializerFactory(fn () => $this->app);
@@ -140,28 +131,24 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals($jsonSerializer->encode($content), $serializedEvent['content']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_true_is_support_one_stream_per_aggregate(): void
     {
         $this->assertFalse($this->newInstance()->isAutoIncremented());
     }
 
-    /**
-     * @test
-     */
-    public function it_serialize_event(): void
+    #[Test]
+    public function it_serialize_event(): never
     {
         $this->markTestSkipped('todo');
     }
 
     private function newInstance(?StreamEventSerializer $serializer = null): PerAggregateStreamPersistence
     {
-        return new PerAggregateStreamPersistence($serializer ?? $this->serializer->reveal());
+        return new PerAggregateStreamPersistence($serializer ?? $this->serializer);
     }
 
-    public function provideStreamName(): Generator
+    public static function provideStreamName(): Generator
     {
         yield ['foo'];
         yield ['foo_bar'];

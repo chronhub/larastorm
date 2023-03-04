@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
 use Generator;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Storm\Chronicler\EventChronicler;
 use Chronhub\Storm\Contracts\Tracker\Listener;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Illuminate\Container\EntryNotFoundException;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
@@ -23,14 +25,17 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseDatabase;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\PerAggregateStreamPersistence;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\EventStore\EventStoreManager
+ */
 final class EventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;
@@ -45,11 +50,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals('connection', config('chronicler.defaults.provider'));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_transactional_eventable_instance(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -72,11 +74,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(TransactionalEventChronicler::class, $eventStore::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_eventable_instance(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -102,14 +101,11 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(ChroniclerDecorator::class, $decoratorEventStore);
 
         $concreteEventStore = $decoratorEventStore->innerChronicler();
-        $this->assertInstanceOf(EventStoreDatabaseDatabase::class, $concreteEventStore);
+        $this->assertInstanceOf(EventStoreDatabase::class, $concreteEventStore);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_subscribe_to_eventable_instance(string $storeDriver): void
     {
         $noOpStreamSubscriber = new class() implements StreamSubscriber
@@ -162,11 +158,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         );
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_standalone_instance(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -188,14 +181,11 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertNotInstanceOf(TransactionalChronicler::class, $eventStore);
         $this->assertNotInstanceOf(EventableChronicler::class, $eventStore);
         $this->assertInstanceOf(ChroniclerDecorator::class, $eventStore);
-        $this->assertEquals(EventStoreDatabaseDatabase::class, $eventStore->innerChronicler()::class);
+        $this->assertEquals(EventStoreDatabase::class, $eventStore->innerChronicler()::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_transactional_standalone_instance(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -220,11 +210,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(EventStoreTransactionalDatabase::class, $eventStore->innerChronicler()::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_raise_exception_when_missing_is_transactional_key_in_config_to_return_standalone_instance(string $storeDriver): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -248,11 +235,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
             ->create('write');
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_instance_with_tracker_id_resolved_from_container(string $storeDriver): void
     {
         $trackerInstance = new TrackTransactionalStream();
@@ -281,11 +265,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertSame($trackerInstance, $tracker);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_raise_exception_when_tracker_id_can_not_be_resolved_from_container(string $storeDriver): void
     {
         $this->expectException(EntryNotFoundException::class);
@@ -306,11 +287,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->manager->create('write');
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideFakeWriteLockForConfig
-     */
+    #[DataProvider('provideFakeWriteLockForConfig')]
+    #[Test]
     public function it_return_instance_with_fake_lock_for_pgsql(bool|string $writeLockForConfig): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -338,11 +316,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(FakeWriteLock::class, $writeLock::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideFakeWriteLockForConfig
-     */
+    #[DataProvider('provideFakeWriteLockForConfig')]
+    #[Test]
     public function it_return_instance_with_fake_lock_for_mysql(bool|string $writeLockForConfig): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -370,11 +345,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(FakeWriteLock::class, $writeLock::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_fake_lock_when_write_lock_is_not_defined(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -393,11 +365,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->manager->create('write');
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_fake_lock_when_write_lock_is_null(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -416,11 +385,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->manager->create('write');
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_instance_with_per_aggregate_stream_persistence(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -447,11 +413,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(PerAggregateStreamPersistence::class, $streamPersistence::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_instance_with_cursor_query_loader_with_missing_key(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -480,11 +443,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(CursorQueryLoader::class, $eventLoader::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_instance_with_lazy_query_loader(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -513,11 +473,8 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(LazyQueryLoader::class, $eventLoader::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStoreDriver
-     */
+    #[DataProvider('provideStoreDriver')]
+    #[Test]
     public function it_return_instance_with_lazy_query_loader_and_defined_chunk_size(string $storeDriver): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
@@ -547,9 +504,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(10, $eventLoader->chunkSize);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_config_store_is_not_supported(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -571,13 +526,13 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->manager->create('write');
     }
 
-    public function provideFakeWriteLockForConfig(): Generator
+    public static function provideFakeWriteLockForConfig(): Generator
     {
         yield [false];
         yield [FakeWriteLock::class];
     }
 
-    public function provideStoreDriver(): Generator
+    public static function provideStoreDriver(): Generator
     {
         yield ['mysql'];
         yield ['pgsql'];

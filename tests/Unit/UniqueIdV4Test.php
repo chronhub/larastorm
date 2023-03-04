@@ -7,14 +7,16 @@ namespace Chronhub\Larastorm\Tests\Unit;
 use Stringable;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV4;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Larastorm\Support\UniqueId\UniqueIdV4;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\UniqueId\UniqueIdV4
+ */
 final class UniqueIdV4Test extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_generate_unique_id_as_string(): void
     {
         $instance = new UniqueIdV4();
@@ -26,9 +28,7 @@ final class UniqueIdV4Test extends UnitTestCase
         $this->assertInstanceOf(UuidV4::class, Uuid::fromString($uuid));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_cast_unique_id_to_string(): void
     {
         $instance = new UniqueIdV4();

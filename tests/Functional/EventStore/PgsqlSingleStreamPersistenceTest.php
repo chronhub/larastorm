@@ -6,14 +6,15 @@ namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
 use Generator;
 use Symfony\Component\Uid\Uuid;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Stream\StreamName;
-use Prophecy\Prophecy\ObjectProphecy;
 use Illuminate\Support\Facades\Schema;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Contracts\Message\Header;
+use PHPUnit\Framework\MockObject\MockObject;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Storm\Serializer\SerializeToJson;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Message\EventHeader;
 use Chronhub\Storm\Serializer\JsonSerializerFactory;
@@ -26,22 +27,17 @@ use function array_keys;
 
 final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
 {
-    use ProphecyTrait;
-
-    private StreamEventSerializer|ObjectProphecy $serializer;
+    private StreamEventSerializer|MockObject $serializer;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->serializer = $this->prophesize(StreamEventSerializer::class);
+        $this->serializer = $this->createMock(StreamEventSerializer::class);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideStreamName
-     */
+    #[DataProvider('provideStreamName')]
+    #[Test]
     public function it_produce_table_name_from_stream_name(string $streamName): void
     {
         $expectedTableName = '_'.$streamName;
@@ -53,9 +49,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals($expectedTableName, $tableName);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_up_stream_table(): void
     {
         $tableName = '_'.'foo_bar';
@@ -90,9 +84,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertArrayHasKey('_foo_bar_aggregate_type_aggregate_id_aggregate_version_unique', $indexes);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_serialize_domain_event(): void
     {
         $factory = new JsonSerializerFactory(fn () => $this->app);
@@ -134,9 +126,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals($jsonSerializer->encode($content), $serializedEvent['content']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_is_auto_incremented(): void
     {
         $this->assertTrue($this->newInstance()->isAutoIncremented());
@@ -144,14 +134,14 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
 
     private function newInstance(?StreamEventSerializer $serializer = null): PgsqlSingleStreamPersistence
     {
-        $instance = new PgsqlSingleStreamPersistence($serializer ?? $this->serializer->reveal());
+        $instance = new PgsqlSingleStreamPersistence($serializer ?? $this->serializer);
 
         $this->assertNotInstanceOf(StreamPersistenceWithQueryHint::class, $instance);
 
         return $instance;
     }
 
-    public function provideStreamName(): Generator
+    public static function provideStreamName(): Generator
     {
         yield ['foo'];
         yield ['foo_bar'];

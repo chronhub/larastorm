@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
@@ -13,11 +14,12 @@ use Chronhub\Storm\Contracts\Chronicler\InMemoryChronicler;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\Facade\Chronicle
+ */
 final class ChronicleFacadeTest extends OrchestraTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_root(): void
     {
         $root = Chronicle::getFacadeRoot();
@@ -26,9 +28,7 @@ final class ChronicleFacadeTest extends OrchestraTestCase
         $this->assertEquals(EventStoreManager::class, $root::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_instance(): void
     {
         $manager = Chronicle::shouldUse('in_memory', InMemoryChroniclerProvider::class);
@@ -39,9 +39,7 @@ final class ChronicleFacadeTest extends OrchestraTestCase
         $this->assertEquals(StandaloneInMemoryChronicler::class, $eventStore::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_set_and_get_default_driver(): void
     {
         Chronicle::setDefaultDriver('foo');
@@ -55,9 +53,7 @@ final class ChronicleFacadeTest extends OrchestraTestCase
         $this->assertEquals('bar', config('chronicler.defaults.provider'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_fix_facade_service_id(): void
     {
         $this->assertEquals('chronicler.manager', Chronicle::SERVICE_ID);

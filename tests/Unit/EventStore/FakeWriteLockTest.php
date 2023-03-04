@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Generator;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\EventStore\WriteLock\FakeWriteLock;
 
+#[CoversClass(FakeWriteLock::class)]
 final class FakeWriteLockTest extends UnitTestCase
 {
-    /**
-     * @test
-     *
-     * @dataProvider provideTableName
-     */
+    #[DataProvider('provideTableName')]
+    #[Test]
     public function it_always_acquire_lock(string $tableName): void
     {
         $writeLock = new FakeWriteLock();
@@ -22,11 +23,8 @@ final class FakeWriteLockTest extends UnitTestCase
         $this->assertTrue($writeLock->acquireLock($tableName));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideTableName
-     */
+    #[DataProvider('provideTableName')]
+    #[Test]
     public function it_always_release_lock(string $tableName): void
     {
         $writeLock = new FakeWriteLock();
@@ -34,7 +32,7 @@ final class FakeWriteLockTest extends UnitTestCase
         $this->assertTrue($writeLock->releaseLock($tableName));
     }
 
-    public function provideTableName(): Generator
+    public static function provideTableName(): Generator
     {
         yield [''];
         yield ['customer'];

@@ -7,30 +7,32 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use stdClass;
 use Illuminate\Support\Collection;
 use Chronhub\Storm\Stream\StreamName;
-use Prophecy\Prophecy\ObjectProphecy;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
+use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
-final class StreamEventLoaderTest extends ProphecyTestCase
+#[CoversClass(StreamEventLoader::class)]
+final class StreamEventLoaderTest extends UnitTestCase
 {
-    private StreamEventSerializer|ObjectProphecy $serializer;
+    private StreamEventSerializer|MockObject $serializer;
 
     private StreamName $streamName;
 
     protected function setUp(): void
     {
-        $this->serializer = $this->prophesize(StreamEventSerializer::class);
+        $this->serializer = $this->createMock(StreamEventSerializer::class);
         $this->streamName = new StreamName('customer');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_yield_domain_events(): void
     {
         $event = new stdClass();
@@ -41,32 +43,34 @@ final class StreamEventLoaderTest extends ProphecyTestCase
         $streamEvents = new Collection([$event]);
 
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
-        $this->serializer->unserializeContent((array) $event)->willYield([$expectedEvent])->shouldBeCalledOnce();
 
-        $eventLoader = new EventLoader($this->serializer->reveal());
+        $this->serializer->expects($this->once())
+            ->method('unserializeContent')
+            ->with((array) $event)
+            ->will($this->returnCallback(function () use ($expectedEvent) {
+                yield $expectedEvent;
+            }));
+
+        $eventLoader = new EventLoader($this->serializer);
 
         $generator = $eventLoader($streamEvents, $this->streamName);
 
         $this->assertEquals($generator->current(), $expectedEvent);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_no_stream_event_has_been_yield(): void
     {
         $this->expectException(StreamNotFound::class);
 
-        $this->serializer->unserializeContent([])->willYield([])->shouldNotBeCalled();
+        $this->serializer->expects($this->never())->method('unserializeContent');
 
-        $eventLoader = new EventLoader($this->serializer->reveal());
+        $eventLoader = new EventLoader($this->serializer);
 
         $eventLoader(new Collection([]), $this->streamName)->current();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_stream_name_not_found_in_database(): void
     {
         $this->expectException(StreamNotFound::class);
@@ -82,20 +86,24 @@ final class StreamEventLoaderTest extends ProphecyTestCase
 
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
 
-        $this->serializer->unserializeContent((array) $event)->willYield([$expectedEvent])->shouldBeCalledTimes(2);
+        $this->serializer->expects($this->once())
+            ->method('unserializeContent')
+            ->with((array) $event)
+            ->will($this->returnCallback(function () use ($expectedEvent) {
+                yield $expectedEvent;
+            }));
 
-        $this->serializer->unserializeContent((array) $event)
-            ->willThrow($queryException)
-            ->shouldBeCalledOnce();
+        $this->serializer->expects($this->once())
+            ->method('unserializeContent')
+            ->with((array) $event)
+            ->will($this->throwException($queryException));
 
-        $eventLoader = new EventLoader($this->serializer->reveal());
+        $eventLoader = new EventLoader($this->serializer);
 
         $eventLoader($streamEvents, $this->streamName)->current();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_on_query_exception_when_no_row_has_been_affected(): void
     {
         $this->expectException(ConnectionQueryFailure::class);
@@ -111,10 +119,19 @@ final class StreamEventLoaderTest extends ProphecyTestCase
 
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
 
-        $this->serializer->unserializeContent((array) $event)->willReturn($expectedEvent)->shouldBeCalledTimes(2);
-        $this->serializer->unserializeContent((array) $event)->willThrow($queryException)->shouldBeCalledOnce();
+        $this->serializer->expects($this->once())
+            ->method('unserializeContent')
+            ->with((array) $event)
+            ->will($this->returnCallback(function () use ($expectedEvent) {
+                yield $expectedEvent;
+            }));
 
-        $eventLoader = new EventLoader($this->serializer->reveal());
+        $this->serializer->expects($this->once())
+            ->method('unserializeContent')
+            ->with((array) $event)
+            ->will($this->throwException($queryException));
+
+        $eventLoader = new EventLoader($this->serializer);
 
         $eventLoader($streamEvents, $this->streamName)->current();
     }

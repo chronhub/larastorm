@@ -15,7 +15,7 @@ use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 use function count;
 use function array_map;
 
-class EventStoreDatabaseDatabase extends AbstractEventStoreDatabase
+class EventStoreDatabase extends AbstractEventStoreDatabase
 {
     /**
      * @throws QueryException

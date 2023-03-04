@@ -8,9 +8,12 @@ use Generator;
 use InvalidArgumentException;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Artisan;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Storm\Projector\ProjectionStatus;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
@@ -20,8 +23,10 @@ use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Projector\InMemoryProjectionQueryScope;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Contracts\Projector\PersistentProjector;
+use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
 use function str_starts_with;
 
+#[CoversClass(WriteProjectionCommand::class)]
 final class WriteProjectionCommandTest extends OrchestraTestCase
 {
     private ProjectorManager $projector;
@@ -50,11 +55,8 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
         $this->streamName = new StreamName('transaction');
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideOperation
-     */
+    #[DataProvider('provideOperation')]
+    #[Test]
     public function it_mark_projection(string $operation, ProjectionStatus $status): void
     {
         $projection = $this->setUpProjection();
@@ -80,11 +82,8 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
         }
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideOperation
-     */
+    #[DataProvider('provideOperation')]
+    #[Test]
     public function it_print_error_when_projection_not_found(string $operation): void
     {
         $this->artisan(
@@ -95,11 +94,8 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
             ->run();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideOperation
-     */
+    #[DataProvider('provideOperation')]
+    #[Test]
     public function it_abort_operation_on_answering_question(string $operation): void
     {
         $this->setUpProjection();
@@ -115,9 +111,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
             ->run();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_with_invalid_operation(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -133,11 +127,8 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
             ->run();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideOperation
-     */
+    #[DataProvider('provideOperation')]
+    #[Test]
     public function it_raise_exception_with_invalid_projector(string $operation): void
     {
         $this->expectException(\Chronhub\Storm\Projector\Exceptions\InvalidArgumentException::class);
@@ -169,7 +160,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
         return $projection;
     }
 
-    public function provideOperation(): Generator
+    public static function provideOperation(): Generator
     {
         yield ['stop', ProjectionStatus::STOPPING];
         yield ['reset', ProjectionStatus::RESETTING];

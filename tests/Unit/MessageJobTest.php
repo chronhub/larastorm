@@ -6,17 +6,19 @@ namespace Chronhub\Larastorm\Tests\Unit;
 
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Queue;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Message\Header;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Larastorm\Tests\Double\SomeCommand;
 use Chronhub\Larastorm\Support\Producer\MessageJob;
 
-final class MessageJobTest extends ProphecyTestCase
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\Producer\MessageJob
+ */
+final class MessageJobTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_default_properties(): void
     {
         $job = new MessageJob([]);
@@ -30,9 +32,7 @@ final class MessageJobTest extends ProphecyTestCase
         $this->assertNull($job->backoff);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_set_properties(): void
     {
         $job = new MessageJob(
@@ -59,9 +59,7 @@ final class MessageJobTest extends ProphecyTestCase
         $this->assertEquals(10, $job->backoff);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_display_name_from_payload_headers_event_type(): void
     {
         $job = new MessageJob(
@@ -74,9 +72,7 @@ final class MessageJobTest extends ProphecyTestCase
         $this->assertEquals(SomeCommand::class, $job->displayName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_queue_job(): void
     {
         $payload = [
@@ -89,15 +85,16 @@ final class MessageJobTest extends ProphecyTestCase
 
         $job = new MessageJob($payload);
 
-        $laravelQueue = $this->prophesize(Queue::class);
-        $laravelQueue->pushOn('account', $job)->shouldBeCalledOnce();
+        $laravelQueue = $this->createMock(Queue::class);
 
-        $job->queue($laravelQueue->reveal(), $job);
+        $laravelQueue->expects($this->once())
+            ->method('pushOn')
+            ->with('account', $job);
+
+        $job->queue($laravelQueue, $job);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_handle_job(): void
     {
         $payload = [
@@ -111,10 +108,13 @@ final class MessageJobTest extends ProphecyTestCase
 
         $container = Container::getInstance();
         $container->bind('reporter.command', function () use ($payload): Reporter {
-            $reporter = $this->prophesize(Reporter::class);
-            $reporter->relay($payload)->shouldBeCalledOnce();
+            $reporter = $this->createMock(Reporter::class);
 
-            return $reporter->reveal();
+            $reporter->expects($this->once())
+                ->method('relay')
+                ->with($payload);
+
+            return $reporter;
         });
 
         $job = new MessageJob($payload);

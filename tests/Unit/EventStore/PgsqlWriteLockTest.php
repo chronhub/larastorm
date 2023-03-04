@@ -5,57 +5,56 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Generator;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Illuminate\Database\ConnectionInterface;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\EventStore\WriteLock\PgsqlWriteLock;
 
-final class PgsqlWriteLockTest extends ProphecyTestCase
+#[CoversClass(PgsqlWriteLock::class)]
+final class PgsqlWriteLockTest extends UnitTestCase
 {
-    /**
-     * @test
-     *
-     * @dataProvider provideBoolean
-     */
+    #[DataProvider('provideBoolean')]
+    #[Test]
     public function it_acquire_lock(bool $isLocked): void
     {
         $tableName = 'operation';
         $lockName = '_'.$tableName.'_write_lock';
 
-        $connection = $this->prophesize(ConnectionInterface::class);
-
-        $lock = new PgsqlWriteLock($connection->reveal());
+        $connection = $this->createMock(ConnectionInterface::class);
 
         $connection
-            ->statement('select pg_advisory_lock( hashtext(\''.$lockName.'\') )')
-            ->shouldBeCalledOnce()
+            ->expects($this->once())
+            ->method('statement')
+            ->with('select pg_advisory_lock( hashtext(\''.$lockName.'\') )')
             ->willReturn($isLocked);
+
+        $lock = new PgsqlWriteLock($connection);
 
         $this->assertSame($isLocked, $lock->acquireLock($tableName));
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideBoolean
-     */
+    #[DataProvider('provideBoolean')]
+    #[Test]
     public function it_release_lock(bool $isReleased): void
     {
         $tableName = 'operation';
         $lockName = '_'.$tableName.'_write_lock';
 
-        $connection = $this->prophesize(ConnectionInterface::class);
-
-        $lock = new PgsqlWriteLock($connection->reveal());
-
+        $connection = $this->createMock(ConnectionInterface::class);
         $connection
-            ->statement('select pg_advisory_unlock( hashtext(\''.$lockName.'\') )')
-            ->shouldBeCalledOnce()
+            ->expects($this->once())
+            ->method('statement')
+            ->with('select pg_advisory_unlock( hashtext(\''.$lockName.'\') )')
             ->willReturn($isReleased);
+
+        $lock = new PgsqlWriteLock($connection);
 
         $this->assertSame($isReleased, $lock->releaseLock($tableName));
     }
 
-    public function provideBoolean(): Generator
+    public static function provideBoolean(): Generator
     {
         yield [true];
         yield [false];

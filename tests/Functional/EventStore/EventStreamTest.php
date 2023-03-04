@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\EventStream;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 
+#[CoversClass(EventStream::class)]
 final class EventStreamTest extends OrchestraTestCase
 {
     use RefreshDatabase;
@@ -29,9 +32,7 @@ final class EventStreamTest extends OrchestraTestCase
         return [ChroniclerServiceProvider::class];
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_event_stream(): void
     {
         $streamName = 'transaction';
@@ -61,9 +62,7 @@ final class EventStreamTest extends OrchestraTestCase
         $this->assertEquals('event_streams', $model->getTable());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_event_stream_with_category(): void
     {
         $streamName = 'add';
@@ -84,9 +83,7 @@ final class EventStreamTest extends OrchestraTestCase
         $this->assertEquals('transaction', $model->category());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_delete_event_stream_by_stream_name(): void
     {
         $streamName = 'transaction';
@@ -105,9 +102,7 @@ final class EventStreamTest extends OrchestraTestCase
         $this->assertFalse($this->eventStream->hasRealStreamName($streamName));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_and_order_by_stream_names(): void
     {
         $category = null;
@@ -126,9 +121,7 @@ final class EventStreamTest extends OrchestraTestCase
         $this->assertEquals($expectedStreamNames, $this->eventStream->filterByStreams($streamNames));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_and_order_by_stream_names_2(): void
     {
         $category = null;
@@ -150,9 +143,7 @@ final class EventStreamTest extends OrchestraTestCase
         $this->assertEquals($expectedStreamNames, $this->eventStream->filterByStreams($streamNames));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_and_order_by_stream_names_3(): void
     {
         $category = null;
@@ -174,9 +165,7 @@ final class EventStreamTest extends OrchestraTestCase
         $this->assertEquals($expectedStreamNames, $this->eventStream->filterByStreams($streamNames));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_filter_by_categories(): void
     {
         $category = 'transaction';
@@ -197,9 +186,7 @@ final class EventStreamTest extends OrchestraTestCase
         $this->assertEquals($expectedCategories, $this->eventStream->filterByCategories(['transaction']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_fetch_all_stream_without_internal_stream_beginning_with_dollar_sign(): void
     {
         $category = 'transaction';

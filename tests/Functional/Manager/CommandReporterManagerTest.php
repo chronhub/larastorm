@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Manager;
 
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Storm\Tracker\TrackMessage;
 use Chronhub\Storm\Reporter\ReportCommand;
@@ -12,9 +13,7 @@ final class CommandReporterManagerTest extends CqrsManagerTest
 {
     private DomainType $domainType = DomainType::COMMAND;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_command_reporter(): void
     {
         $reporterName = 'default';
@@ -32,9 +31,7 @@ final class CommandReporterManagerTest extends CqrsManagerTest
         $this->assertNotSame($reporter, $sameReporter);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_same_command_reporter_under_one_group_type(): void
     {
         $group = $this->registrar->make($this->domainType, 'default');
@@ -56,9 +53,7 @@ final class CommandReporterManagerTest extends CqrsManagerTest
         $this->assertSame($anotherGroup, $this->registrar->get($this->domainType, 'another'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_different_command_reporter_under_one_group_type(): void
     {
         $group = $this->registrar->make($this->domainType, 'default');

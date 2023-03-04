@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Aggregate;
 
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Stream\OneStreamPerAggregate;
 use Chronhub\Storm\Stream\SingleStreamPerAggregate;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Larastorm\Aggregate\StreamProducerFactory;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 
+#[CoversClass(StreamProducerFactory::class)]
 final class StreamProducerFactoryTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_single_stream_producer(): void
     {
         $factory = new StreamProducerFactory();
@@ -29,9 +30,7 @@ final class StreamProducerFactoryTest extends UnitTestCase
         $this->assertEquals('some_stream_name', $streamName->name);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_per_aggregate_stream_producer(): void
     {
         $factory = new StreamProducerFactory();
@@ -45,9 +44,7 @@ final class StreamProducerFactoryTest extends UnitTestCase
         $this->assertEquals('some_stream_name', $streamName->name);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_with_unknown_strategy(): void
     {
         $this->expectException(InvalidArgumentException::class);

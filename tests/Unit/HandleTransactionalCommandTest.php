@@ -4,42 +4,39 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit;
 
-use Generator;
 use RuntimeException;
 use Chronhub\Storm\Message\Message;
-use Prophecy\Prophecy\ObjectProphecy;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Tracker\TrackMessage;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Larastorm\Tests\Double\SomeCommand;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
-use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
-use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
-use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Larastorm\Support\Bridge\HandleTransactionalCommand;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalEventableChronicler;
 
-final class HandleTransactionalCommandTest extends ProphecyTestCase
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\Bridge\HandleTransactionalCommand
+ */
+final class HandleTransactionalCommandTest extends UnitTestCase
 {
-    private TransactionalEventableChronicler|ObjectProphecy $chronicler;
+    private TransactionalEventableChronicler|MockObject $chronicler;
 
     private Message $message;
 
     public function setup(): void
     {
-        $this->chronicler = $this->prophesize(TransactionalEventableChronicler::class);
-        $this->message = new Message(SomeCommand::fromContent(['name' => 'stephbug']));
+        $this->chronicler = $this->createMock(TransactionalEventableChronicler::class);
+        $this->message = new Message(SomeCommand::fromContent(['name' => 'steph bug']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_begin_transaction_on_dispatch_command(): void
     {
-        $this->chronicler->beginTransaction()->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('beginTransaction');
 
-        $subscriber = new HandleTransactionalCommand($this->chronicler->reveal());
+        $subscriber = new HandleTransactionalCommand($this->chronicler);
 
         $tracker = new TrackMessage();
         $story = $tracker->newStory(Reporter::DISPATCH_EVENT);
@@ -50,15 +47,13 @@ final class HandleTransactionalCommandTest extends ProphecyTestCase
         $tracker->disclose($story);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_commit_transaction_on_finalize_when_no_exception_found_in_context_and_chronicler_in_transaction(): void
     {
-        $this->chronicler->inTransaction()->willReturn(true)->shouldBeCalled();
-        $this->chronicler->commitTransaction()->shouldBeCalled();
+        $this->chronicler->expects($this->once())->method('inTransaction')->willReturn(true);
+        $this->chronicler->expects($this->once())->method('commitTransaction');
 
-        $subscriber = new HandleTransactionalCommand($this->chronicler->reveal());
+        $subscriber = new HandleTransactionalCommand($this->chronicler);
 
         $tracker = new TrackMessage();
         $story = $tracker->newStory(Reporter::FINALIZE_EVENT);
@@ -71,15 +66,13 @@ final class HandleTransactionalCommandTest extends ProphecyTestCase
         $tracker->disclose($story);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_does_not_commit_transaction_when_chronicler_not_in_transaction(): void
     {
-        $this->chronicler->inTransaction()->willReturn(false)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('inTransaction')->willReturn(false);
+        $this->chronicler->expects($this->never())->method('commitTransaction');
 
-        $this->chronicler->commitTransaction()->shouldNotBeCalled();
-        $subscriber = new HandleTransactionalCommand($this->chronicler->reveal());
+        $subscriber = new HandleTransactionalCommand($this->chronicler);
 
         $tracker = new TrackMessage();
         $story = $tracker->newStory(Reporter::FINALIZE_EVENT);
@@ -92,17 +85,14 @@ final class HandleTransactionalCommandTest extends ProphecyTestCase
         $tracker->disclose($story);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_rollback_transaction_when_context_has_exception(): void
     {
-        $this->chronicler->inTransaction()->willReturn(true)->shouldBeCalledOnce();
+        $this->chronicler->expects($this->once())->method('inTransaction')->willReturn(true);
+        $this->chronicler->expects($this->once())->method('rollbackTransaction');
+        $this->chronicler->expects($this->never())->method('commitTransaction');
 
-        $this->chronicler->commitTransaction()->shouldNotBeCalled();
-        $this->chronicler->rollbackTransaction()->shouldBeCalledOnce();
-
-        $subscriber = new HandleTransactionalCommand($this->chronicler->reveal());
+        $subscriber = new HandleTransactionalCommand($this->chronicler);
 
         $tracker = new TrackMessage();
         $context = $tracker->newStory(Reporter::FINALIZE_EVENT);
@@ -114,14 +104,12 @@ final class HandleTransactionalCommandTest extends ProphecyTestCase
         $tracker->disclose($context);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideNotHandledEventStore
-     */
-    public function it_does_not_commit_transaction_if_chronicler_is_not_transactional_and_eventable(Chronicler $chronicler): void
+    #[Test]
+    public function it_does_not_commit_transaction_if_chronicler_is_not_transactional_and_eventable(): void
     {
-        $subscriber = new HandleTransactionalCommand($chronicler);
+        $subscriber = new HandleTransactionalCommand(
+            $this->createMock(Chronicler::class)
+        );
 
         $tracker = new TrackMessage();
         $story = $tracker->newStory(Reporter::FINALIZE_EVENT);
@@ -132,14 +120,5 @@ final class HandleTransactionalCommandTest extends ProphecyTestCase
         $subscriber->attachToReporter($tracker);
 
         $tracker->disclose($story);
-    }
-
-    public function provideNotHandledEventStore(): Generator
-    {
-        yield [$this->prophesize(Chronicler::class)->reveal()];
-        yield [$this->prophesize(ChroniclerDecorator::class)->reveal()];
-        yield [$this->prophesize(ChroniclerConnection::class)->reveal()];
-        yield [$this->prophesize(ChroniclerDB::class)->reveal()];
-        yield [$this->prophesize(TransactionalChronicler::class)->reveal()];
     }
 }

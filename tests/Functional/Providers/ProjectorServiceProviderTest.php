@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Artisan;
 use Chronhub\Larastorm\Projection\Projection;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Projector\ProjectorOption;
@@ -24,11 +26,10 @@ use Chronhub\Larastorm\Support\Console\Generator\MakeReadModelProjectionCommand;
 use Chronhub\Larastorm\Support\Console\Generator\MakePersistentProjectionCommand;
 use Chronhub\Larastorm\Support\Supervisor\Command\CheckSupervisedProjectionStatusCommand;
 
+#[CoversClass(ProjectorServiceProvider::class)]
 final class ProjectorServiceProviderTest extends OrchestraTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_config(): void
     {
         $this->assertEquals([
@@ -92,9 +93,7 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
         ], $this->app['config']['projector']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_bindings(): void
     {
         $this->assertTrue($this->app->bound(ProjectorServiceManager::class));
@@ -102,9 +101,7 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
         $this->assertTrue($this->app->bound(Project::SERVICE_ID));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_provides(): void
     {
         $serviceProvider = $this->app->getProvider(ProjectorServiceProvider::class);
@@ -115,9 +112,7 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
         ], $serviceProvider->provides());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_assert_console_commands_registered(): void
     {
         $commands = Artisan::all();

@@ -8,8 +8,11 @@ use Generator;
 use InvalidArgumentException;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Artisan;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
@@ -19,7 +22,9 @@ use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Projector\InMemoryProjectionQueryScope;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
+use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
 
+#[CoversClass(ReadProjectionCommand::class)]
 final class ReadProjectionCommandTest extends OrchestraTestCase
 {
     private ProjectorManager $projector;
@@ -49,11 +54,8 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
         $this->streamName = new StreamName('transaction');
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideField
-     */
+    #[DataProvider('provideField')]
+    #[Test]
     public function it_read_projection(string $field): void
     {
         $this->setUpProjection();
@@ -67,11 +69,8 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
             ->run();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideField
-     */
+    #[DataProvider('provideField')]
+    #[Test]
     public function it_raise_exception_when_projection_not_found(string $field): void
     {
         $this->expectException(ProjectionNotFound::class);
@@ -83,9 +82,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
             ->run();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_with_invalid_field(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -102,11 +99,8 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
             ->run();
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider provideField
-     */
+    #[DataProvider('provideField')]
+    #[Test]
     public function it_raise_exception_with_invalid_projector(string $field): void
     {
         $this->expectException(\Chronhub\Storm\Projector\Exceptions\InvalidArgumentException::class);
@@ -136,7 +130,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
             ->run(false);
     }
 
-    public function provideField(): Generator
+    public static function provideField(): Generator
     {
         yield ['state'];
         yield ['positions'];

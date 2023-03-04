@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
@@ -18,6 +19,9 @@ use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 use Chronhub\Storm\Chronicler\InMemory\TransactionalInMemoryChronicler;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalInMemoryChronicler as TransactionalInMemory;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\EventStore\EventStoreManager
+ */
 final class InMemoryEventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;
@@ -33,9 +37,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals('in_memory', config('chronicler.defaults.provider'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_standalone_instance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerProvider::class);
@@ -45,9 +47,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(StandaloneInMemoryChronicler::class, $eventStore);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_transactional_instance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerProvider::class);
@@ -57,9 +57,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(TransactionalInMemoryChronicler::class, $eventStore);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_eventable_instance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerProvider::class);
@@ -70,9 +68,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(StandaloneInMemoryChronicler::class, $eventStore->innerChronicler());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_transactional_eventable_instance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerProvider::class);
@@ -84,9 +80,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(TransactionalInMemory::class, $eventStore->innerChronicler());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_always_return_same_instance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerProvider::class);
@@ -98,9 +92,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertSame($eventStore, $this->manager->create('standalone'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_should_use_provider_given(): void
     {
         $this->app['config']->set('chronicler.providers.foo',
@@ -116,9 +108,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals('foo', $this->manager->getDefaultDriver());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_extends_manager_and_return_chronicler_instance(): void
     {
         $chronicler = $this->manager
@@ -139,9 +129,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertSame($chronicler, $this->manager->create('standalone'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_name_is_not_defined(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -150,9 +138,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->manager->create('foo');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_when_provider_driver_is_unknown(): void
     {
         $this->expectException(InvalidArgumentException::class);

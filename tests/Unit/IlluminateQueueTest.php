@@ -4,33 +4,34 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit;
 
-use Prophecy\Argument;
 use Chronhub\Storm\Message\Message;
-use Prophecy\Prophecy\ObjectProphecy;
-use Chronhub\Larastorm\Tests\ProphecyTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Chronhub\Larastorm\Tests\Double\SomeCommand;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Chronhub\Larastorm\Support\Producer\MessageJob;
 use Chronhub\Larastorm\Support\Producer\IlluminateQueue;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 
-final class IlluminateQueueTest extends ProphecyTestCase
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\Producer\IlluminateQueue
+ */
+final class IlluminateQueueTest extends UnitTestCase
 {
-    private ObjectProphecy|QueueingDispatcher $queue;
+    private MockObject|QueueingDispatcher $queue;
 
-    private ObjectProphecy|MessageSerializer $serializer;
+    private MockObject|MessageSerializer $serializer;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->queue = $this->prophesize(QueueingDispatcher::class);
-        $this->serializer = $this->prophesize(MessageSerializer::class);
+        $this->queue = $this->createMock(QueueingDispatcher::class);
+        $this->serializer = $this->createMock(MessageSerializer::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_dispatch_serialize_message_to_queue(): void
     {
         $message = new Message(SomeCommand::fromContent(['name' => 'steph bug']));
@@ -40,21 +41,25 @@ final class IlluminateQueueTest extends ProphecyTestCase
             'content' => 'steph bug',
         ];
 
-        $this->serializer->serializeMessage($message)->willReturn($payload)->shouldBeCalledOnce();
-        $this->queue->dispatchToQueue(Argument::that(function (MessageJob $job) use ($payload): array {
-            $this->assertEquals($job->payload, $payload);
+        $this->serializer->expects($this->once())
+            ->method('serializeMessage')
+            ->with($message)
+            ->willReturn($payload);
 
-            return $payload;
-        }))->shouldBeCalledOnce();
+        $this->queue->expects($this->once())
+            ->method('dispatchToQueue')
+            ->with($this->callback(function (MessageJob $job) use ($payload): bool {
+                $this->assertEquals($job->payload, $payload);
 
-        $illuminateQueue = new IlluminateQueue($this->queue->reveal(), $this->serializer->reveal());
+                return true;
+            }));
+
+        $illuminateQueue = new IlluminateQueue($this->queue, $this->serializer);
 
         $illuminateQueue->toQueue($message);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_add_queue_options_to_header(): void
     {
         $queueOptions = ['connection' => 'rabbitmq', 'name' => 'customer'];
@@ -67,27 +72,30 @@ final class IlluminateQueueTest extends ProphecyTestCase
             'queue' => $queueOptions,
         ];
 
-        $this->serializer->serializeMessage(Argument::that(function (Message $message) use ($queueOptions): Message {
-            $this->assertArrayHasKey('queue', $message->headers());
-            $this->assertEquals($queueOptions, $message->header('queue'));
+        $this->serializer->expects($this->once())
+            ->method('serializeMessage')
+            ->with($this->callback(function (Message $message) use ($queueOptions): bool {
+                $this->assertArrayHasKey('queue', $message->headers());
+                $this->assertEquals($queueOptions, $message->header('queue'));
 
-            return $message;
-        }))->willReturn($payload)->shouldBeCalledOnce();
+                return true;
+            }))
+            ->willReturn($payload);
 
-        $this->queue->dispatchToQueue(Argument::that(function (MessageJob $job) use ($payload): array {
-            $this->assertEquals($job->payload, $payload);
+        $this->queue->expects($this->once())
+            ->method('dispatchToQueue')
+            ->with($this->callback(function (MessageJob $job) use ($payload): bool {
+                $this->assertEquals($job->payload, $payload);
 
-            return $payload;
-        }))->shouldBeCalledOnce();
+                return true;
+            }));
 
-        $illuminateQueue = new IlluminateQueue($this->queue->reveal(), $this->serializer->reveal(), $queueOptions);
+        $illuminateQueue = new IlluminateQueue($this->queue, $this->serializer, $queueOptions);
 
         $illuminateQueue->toQueue($message);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_does_not_override_queue_header_if_already_exists_in_message(): void
     {
         $queueOptions = ['connection' => 'rabbitmq', 'name' => 'customer'];
@@ -100,20 +108,25 @@ final class IlluminateQueueTest extends ProphecyTestCase
             'queue' => ['name' => 'redis'],
         ];
 
-        $this->serializer->serializeMessage(Argument::that(function (Message $message): Message {
-            $this->assertArrayHasKey('queue', $message->headers());
-            $this->assertEquals('redis', $message->header('queue')['name']);
+        $this->serializer->expects($this->once())
+            ->method('serializeMessage')
+            ->with($this->callback(function (Message $message): bool {
+                $this->assertArrayHasKey('queue', $message->headers());
+                $this->assertEquals('redis', $message->header('queue')['name']);
 
-            return $message;
-        }))->willReturn($payload)->shouldBeCalledOnce();
+                return true;
+            }))
+            ->willReturn($payload);
 
-        $this->queue->dispatchToQueue(Argument::that(function (MessageJob $job) use ($payload): array {
-            $this->assertEquals($job->payload, $payload);
+        $this->queue->expects($this->once())
+            ->method('dispatchToQueue')
+            ->with($this->callback(function (MessageJob $job) use ($payload): bool {
+                $this->assertEquals($job->payload, $payload);
 
-            return $payload;
-        }))->shouldBeCalledOnce();
+                return true;
+            }));
 
-        $illuminateQueue = new IlluminateQueue($this->queue->reveal(), $this->serializer->reveal(), $queueOptions);
+        $illuminateQueue = new IlluminateQueue($this->queue, $this->serializer, $queueOptions);
 
         $illuminateQueue->toQueue($message);
     }

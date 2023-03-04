@@ -8,11 +8,15 @@ use stdClass;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV4;
 use Chronhub\Storm\Message\Message;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Message\Header;
 use Chronhub\Larastorm\Support\UniqueId\UniqueIdV4;
 use Chronhub\Larastorm\Support\MessageDecorator\EventId;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\MessageDecorator\EventId
+ */
 final class EventIdTest extends UnitTestCase
 {
     private UniqueIdV4 $uniqueId;
@@ -24,9 +28,7 @@ final class EventIdTest extends UnitTestCase
         $this->uniqueId = new UniqueIdV4();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_set_event_id_to_message_headers(): void
     {
         $messageDecorator = new EventId($this->uniqueId);
@@ -45,16 +47,12 @@ final class EventIdTest extends UnitTestCase
         $this->assertInstanceOf(UuidV4::class, Uuid::fromString($uidString));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_does_not_set_event_id_to_message_headers_if_already_exists(): void
     {
         $messageDecorator = new EventId($this->uniqueId);
 
-        $message = new Message(new stdClass(), [
-            Header::EVENT_ID => 'some_event_id',
-        ]);
+        $message = new Message(new stdClass(), [Header::EVENT_ID => 'some_event_id']);
 
         $decoratedMessage = $messageDecorator->decorate($message);
 

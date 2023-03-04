@@ -7,6 +7,7 @@ namespace Chronhub\Larastorm\Tests\Functional\Support;
 use Symfony\Component\Uid\Uuid;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\Schema\Blueprint;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
@@ -20,9 +21,7 @@ final class ReadModelConnectionTest extends OrchestraTestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_insert_data(): void
     {
         $connection = $this->app->make('db')->connection();
@@ -51,9 +50,7 @@ final class ReadModelConnectionTest extends OrchestraTestCase
         $this->assertEquals('chronhubgit@gmail.com', $result->email);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_reset_table(): void
     {
         $connection = $this->app->make('db')->connection();
@@ -86,9 +83,7 @@ final class ReadModelConnectionTest extends OrchestraTestCase
         $this->assertEmpty($connection->table('read_customer')->get());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_delete_table(): void
     {
         $connection = $this->app->make('db')->connection();

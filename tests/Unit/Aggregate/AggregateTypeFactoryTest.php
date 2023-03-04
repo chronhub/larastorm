@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\Aggregate;
 
 use Illuminate\Container\Container;
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Aggregate\AggregateType;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Larastorm\Aggregate\AggregateTypeFactory;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootChildStub;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootFinalStub;
 
+#[CoversClass(AggregateTypeFactory::class)]
 final class AggregateTypeFactoryTest extends UnitTestCase
 {
     private Container $container;
@@ -21,9 +24,7 @@ final class AggregateTypeFactoryTest extends UnitTestCase
         $this->container = Container::getInstance();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_aggregate_type_from_string_aggregate_root_class_name(): void
     {
         $factory = new AggregateTypeFactory(fn () => $this->container);
@@ -35,9 +36,7 @@ final class AggregateTypeFactoryTest extends UnitTestCase
         $this->assertEquals(AggregateRootStub::class, $aggregateType->current());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_aggregate_type_from_string_service_id(): void
     {
         $instance = new AggregateType(AggregateRootStub::class);
@@ -53,9 +52,7 @@ final class AggregateTypeFactoryTest extends UnitTestCase
         $this->assertEquals(AggregateRootStub::class, $aggregateType->current());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_return_aggregate_type_from_array(): void
     {
         $factory = new AggregateTypeFactory(fn () => $this->container);

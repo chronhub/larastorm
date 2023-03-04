@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Manager;
 
+use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Storm\Reporter\ReportEvent;
 use Chronhub\Storm\Tracker\TrackMessage;
@@ -12,9 +13,7 @@ final class EventReporterManagerTest extends CqrsManagerTest
 {
     private DomainType $domainType = DomainType::EVENT;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_event_reporter(): void
     {
         $reporterName = 'default';
@@ -32,9 +31,7 @@ final class EventReporterManagerTest extends CqrsManagerTest
         $this->assertNotSame($reporter, $sameReporter);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_same_event_reporter_under_one_group_type(): void
     {
         $group = $this->registrar->make($this->domainType, 'default');
@@ -57,9 +54,7 @@ final class EventReporterManagerTest extends CqrsManagerTest
         $this->assertSame($anotherGroup, $this->registrar->get($this->domainType, 'another'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_create_different_event_reporter_under_one_group_type(): void
     {
         $group = $this->registrar->make($this->domainType, 'default');

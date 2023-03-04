@@ -75,13 +75,13 @@ abstract class AbstractEventStoreDatabase implements ChroniclerDB
 
     protected function serializeStreamEvents(iterable $streamEvents): array
     {
-        $events = [];
+        return tap([], function (array &$events) use ($streamEvents) {
+            foreach ($streamEvents as $streamEvent) {
+                $events[] = $this->streamPersistence->serialize($streamEvent);
+            }
 
-        foreach ($streamEvents as $streamEvent) {
-            $events[] = $this->streamPersistence->serialize($streamEvent);
-        }
-
-        return $events;
+            return $events;
+        });
     }
 
     /**

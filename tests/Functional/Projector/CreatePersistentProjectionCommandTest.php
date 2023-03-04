@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Projector;
 
 use Illuminate\Database\Connection;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Artisan;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
@@ -14,6 +15,9 @@ use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 
+/**
+ * @coversDefaultClass \Chronhub\Larastorm\Support\Console\CreatePersistentProjectionCommand
+ */
 final class CreatePersistentProjectionCommandTest extends OrchestraTestCase
 {
     use RefreshDatabase;
@@ -29,9 +33,7 @@ final class CreatePersistentProjectionCommandTest extends OrchestraTestCase
         $this->assertTrue($this->connection->getSchemaBuilder()->hasTable('event_streams'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_if_projection_table_is_not_set(): void
     {
         $this->connection->getSchemaBuilder()->dropAllTables();
@@ -45,9 +47,7 @@ final class CreatePersistentProjectionCommandTest extends OrchestraTestCase
         $command->run();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_raise_exception_if_projector_name_is_not_defined(): void
     {
         $this->expectException(InvalidArgumentException::class);

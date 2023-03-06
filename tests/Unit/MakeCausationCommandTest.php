@@ -133,6 +133,34 @@ final class MakeCausationCommandTest extends UnitTestCase
         $this->assertNull(ReflectionProperty::getProperty($subscriber, 'currentCommand'));
     }
 
+    #[Test]
+    public function it_can_be_detach_from_event_store_and_reporter(): void
+    {
+        $messageTracker = new TrackMessage();
+        $streamTracker = new TrackStream();
+
+        $this->assertTrue($messageTracker->listeners()->isEmpty());
+        $this->assertTrue($streamTracker->listeners()->isEmpty());
+
+        $chronicler = $this->createMock(Chronicler::class);
+
+        $eventChronicler = new EventChronicler($chronicler, $streamTracker);
+        $this->assertCount(9, $streamTracker->listeners());
+
+        $subscriber = new MakeCausationCommand();
+        $subscriber->attachToReporter($messageTracker);
+        $subscriber->attachToChronicler($eventChronicler);
+
+        $this->assertCount(2, $messageTracker->listeners());
+        $this->assertCount(11, $streamTracker->listeners());
+
+        $subscriber->detachFromReporter($messageTracker);
+        $subscriber->detachFromChronicler($eventChronicler);
+
+        $this->assertTrue($messageTracker->listeners()->isEmpty());
+        $this->assertCount(9, $streamTracker->listeners());
+    }
+
     public static function provideStreamEventName(): Generator
     {
         yield [EventableChronicler::FIRST_COMMIT_EVENT];

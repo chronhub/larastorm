@@ -23,7 +23,17 @@ abstract class AbstractStreamPersistence implements StreamPersistence
     }
 
     /**
-     * @return array{"event_id": string, "event_type": string, "aggregate_id": string, "aggregate_type": string, "aggregate_version": int, "headers": string, "content": string, "created_at": string, "no"?: int}
+     * @return array{
+     *      "event_id": non-empty-string,
+     *      "event_type": non-empty-string,
+     *      "aggregate_id": non-empty-string,
+     *      "aggregate_type": non-empty-string,
+     *      "aggregate_version": positive-int,
+     *      "headers": non-empty-string,
+     *      "content": non-empty-string,
+     *      "created_at": non-empty-string,
+     *      "no"?: positive-int
+     * }
      */
     public function serialize(DomainEvent $event): array
     {

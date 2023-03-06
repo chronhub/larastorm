@@ -38,7 +38,7 @@ final class AggregateRepositoryManager implements Manager
     private array $repositories = [];
 
     /**
-     * @var array<string, callable(Container, string, array): AggregateRepository>
+     * @var array<non-empty-string, callable(Container, non-empty-string, array): AggregateRepository>
      */
     private array $customCreators = [];
 
@@ -51,13 +51,16 @@ final class AggregateRepositoryManager implements Manager
         $this->streamProducerFactory = new StreamProducerFactory();
     }
 
+    /**
+     * @param  non-empty-string  $streamName
+     */
     public function create(string $streamName): Repository
     {
         return $this->repositories[$streamName] ?? $this->repositories[$streamName] = $this->resolve($streamName);
     }
 
     /**
-     * @param  callable(Container, string, array): AggregateRepository  $aggregateRepository
+     * @param  callable(Container, non-empty-string, array): AggregateRepository  $aggregateRepository
      */
     public function extends(string $streamName, callable $aggregateRepository): void
     {

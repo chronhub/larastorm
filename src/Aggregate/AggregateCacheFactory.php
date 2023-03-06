@@ -13,6 +13,9 @@ final class AggregateCacheFactory
 {
     /**
      * @param  class-string  $aggregateRoot
+     * @param  int<0, max>|null  $size
+     * @param  non-empty-string|null  $tag
+     * @param  non-empty-string|null  $driver
      */
     public function createCache(string $aggregateRoot,
                                 ?int $size,

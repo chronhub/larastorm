@@ -15,9 +15,9 @@ use function json_encode;
 final class ReadProjectionCommand extends Command
 {
     protected $signature = 'projector:read 
-                                {field : available state,status,positions}
-                                {stream : stream projection name}
-                                {projector : projector name}';
+                            { field     : available state,status,positions }
+                            { stream    : stream projection name }
+                            { projector : projector name }';
 
     protected $description = 'read state/positions/status of projection by stream name';
 

@@ -15,9 +15,9 @@ use function in_array;
 final class WriteProjectionCommand extends Command
 {
     protected $signature = 'projector:write 
-                                {operation : available stop, reset, delete, deleteIncl} 
-                                {stream : projection name} 
-                                {projector : projector name}';
+                            { operation : available stop, reset, delete, deleteIncl } 
+                            { stream    : projection name } 
+                            { projector : projector name }';
 
     protected array $operationAvailable = ['stop', 'reset', 'delete', 'deleteIncl'];
 
@@ -29,18 +29,20 @@ final class WriteProjectionCommand extends Command
 
         $this->projector = Project::create($this->argument('projector'));
 
-        if (! $this->confirmOperation($streamName, $this->operationArgument())) {
+        $operation = $this->operationArgument();
+
+        if (! $this->confirmOperation($streamName, $operation)) {
             return;
         }
 
-        $this->processProjection($streamName->name);
+        $this->processProjection($streamName->name, $operation);
 
         $this->info("Operation {$this->operationArgument()} on $streamName projection successful");
     }
 
-    private function processProjection(string $streamName): void
+    private function processProjection(string $streamName, string $operation): void
     {
-        match ($this->operationArgument()) {
+        match ($operation) {
             'stop' => $this->projector->stop($streamName),
             'reset' => $this->projector->reset($streamName),
             'delete' => $this->projector->delete($streamName, false),

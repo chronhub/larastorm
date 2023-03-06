@@ -6,6 +6,7 @@ namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
 use Generator;
 use Symfony\Component\Uid\Uuid;
+use Illuminate\Database\Connection;
 use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Support\Facades\Schema;
@@ -124,6 +125,33 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
 
         $this->assertIsString($serializedEvent['content']);
         $this->assertEquals($jsonSerializer->encode($content), $serializedEvent['content']);
+    }
+
+    #[Test]
+    public function it_assert_callback(): void
+    {
+        $tableName = '_'.'foo_bar';
+
+        $streamPersistence = $this->newInstance();
+
+        $addConstraints = $streamPersistence->up($tableName);
+
+        $this->assertIsCallable($addConstraints);
+
+        $connection = $this->createMock(Connection::class);
+
+        $connection
+            ->expects($this->exactly(3))
+            ->method('statement')
+            ->willReturnMap(
+                [
+                    ['ALTER TABLE '.$tableName.' ADD CONSTRAINT event_id_not_null CHECK ( (headers->\'__event_id\') is not null )'],
+                    ['ALTER TABLE '.$tableName.' ADD CONSTRAINT event_type_not_null CHECK ( (headers->\'__event_type\') is not null )'],
+                    ['ALTER TABLE '.$tableName.' ADD CONSTRAINT aggregate_version_not_null CHECK ( (headers->\'__aggregate_version\') is not null )'],
+                ]
+            );
+
+        $addConstraints($connection);
     }
 
     #[Test]

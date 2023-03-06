@@ -15,11 +15,13 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
+use Chronhub\Larastorm\Tests\Stubs\InvalidEventStore;
 use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
 use Chronhub\Larastorm\EventStore\EventStoreConnection;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
 use Chronhub\Larastorm\Tests\Stubs\EventStoreConnectionStub;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 
 #[CoversClass(EventStoreConnection::class)]
 class EventStoreConnectionTest extends UnitTestCase
@@ -35,6 +37,15 @@ class EventStoreConnectionTest extends UnitTestCase
     {
         $this->chronicler = $this->createMock(ChroniclerDB::class);
         $this->stream = new Stream(new StreamName('customer'));
+    }
+
+    #[Test]
+    public function it_raise_exception_with_event_store_decorator_given(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Chronicle given can not be a decorator:');
+
+        new EventStoreConnectionStub($this->createMock(InvalidEventStore::class));
     }
 
     #[Test]

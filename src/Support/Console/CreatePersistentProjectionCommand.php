@@ -15,6 +15,9 @@ use Symfony\Component\Console\Command\SignalableCommandInterface;
 use function is_string;
 use function pcntl_async_signals;
 
+/**
+ * @deprecated
+ */
 abstract class CreatePersistentProjectionCommand extends Command implements SignalableCommandInterface
 {
     protected null|ProjectorBuilder|PersistentProjector $projector = null;
@@ -54,11 +57,15 @@ abstract class CreatePersistentProjectionCommand extends Command implements Sign
         return [SIGINT];
     }
 
-    public function handleSignal(int $signal): void
+    public function handleSignal(int $signal)
     {
         if ($this->shouldDispatchSignal()) {
             $this->projector->stop();
+
+            return self::SUCCESS;
         }
+
+        return false;
     }
 
     protected function shouldDispatchSignal(): bool

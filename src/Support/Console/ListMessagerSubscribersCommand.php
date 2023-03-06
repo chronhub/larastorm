@@ -17,7 +17,7 @@ use function array_merge;
 
 final class ListMessagerSubscribersCommand extends Command
 {
-    protected $signature = 'messager:list 
+    protected $signature = 'messager:subscribers 
                            { name : reporter name }
                            { type : reporter type }';
 

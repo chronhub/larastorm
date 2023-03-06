@@ -151,7 +151,7 @@ final readonly class CqrsManager implements ReporterManager
     private function resolveServices(array ...$services): array
     {
         return array_map(
-            fn($service) => is_string($service) ? $this->container[$service] : $service,
+            fn ($service) => is_string($service) ? $this->container[$service] : $service,
             Arr::flatten($services)
         );
     }

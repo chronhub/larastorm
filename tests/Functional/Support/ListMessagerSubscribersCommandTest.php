@@ -38,7 +38,7 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
     {
         parent::setUp();
 
-        $this->assertArrayNotHasKey('messager:list', Artisan::all());
+        $this->assertArrayNotHasKey('subscribers:list', Artisan::all());
 
         Artisan::registerCommand(new ListMessagerSubscribersCommand());
     }
@@ -67,7 +67,7 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
             [$genericListener, $consumerFqn, 'dispatch_event', 0],
         ];
 
-        $this->artisan('messager:list', ['type' => $name, 'name' => 'default'])
+        $this->artisan('messager:subscribers', ['type' => $name, 'name' => 'default'])
             ->expectsTable($headers, $rows)
             ->assertSuccessful()
             ->run();
@@ -79,7 +79,7 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
         $this->expectException(RoutingViolation::class);
 
         $this->expectExceptionMessage('Group with type command and name undefined not defined');
-        $this->artisan('messager:list', ['type' => 'command', 'name' => 'undefined'])->run();
+        $this->artisan('messager:subscribers', ['type' => 'command', 'name' => 'undefined'])->run();
     }
 
     #[Test]
@@ -125,7 +125,7 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
             [$genericListener, $dispatchedEvents::class, 'finalize_event', -100],
         ];
 
-        $this->artisan('messager:list', ['type' => 'event', 'name' => 'default'])
+        $this->artisan('messager:subscribers', ['type' => 'event', 'name' => 'default'])
             ->expectsTable($headers, $rows)
             ->assertSuccessful()
             ->run();

@@ -12,8 +12,8 @@ use Chronhub\Larastorm\Support\Facade\Chronicle;
 final class CreateEventStreamCommand extends Command
 {
     protected $signature = 'stream:create
-                                {stream : stream name}
-                                {chronicler : chronicler name}';
+                            {stream     : stream name}
+                            {chronicler : chronicler name}';
 
     protected $description = 'Create first commit for one stream for single stream strategy';
 

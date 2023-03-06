@@ -55,6 +55,10 @@ final class EventLoaderTest extends UnitTestCase
         $generator = $eventLoader($streamEvents, $this->streamName);
 
         $this->assertEquals($generator->current(), $expectedEvent);
+
+        $generator->next();
+
+        $this->assertEquals(1, $generator->getReturn());
     }
 
     #[Test]

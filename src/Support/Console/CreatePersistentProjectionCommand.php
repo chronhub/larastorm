@@ -54,11 +54,15 @@ abstract class CreatePersistentProjectionCommand extends Command implements Sign
         return [SIGINT];
     }
 
-    public function handleSignal(int $signal): void
+    public function handleSignal(int $signal): false|int
     {
         if ($this->shouldDispatchSignal()) {
             $this->projector->stop();
+
+            return self::SUCCESS;
         }
+
+        return false;
     }
 
     protected function shouldDispatchSignal(): bool

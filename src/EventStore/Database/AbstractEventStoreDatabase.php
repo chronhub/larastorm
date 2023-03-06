@@ -49,7 +49,7 @@ abstract class AbstractEventStoreDatabase implements ChroniclerDB
     {
         $tableName = $this->streamPersistence->tableName($streamName);
 
-        $builder = $this->connection->table($tableName);
+        $builder = $this->connection->table($tableName)->useWritePdo();
 
         if ($this->writeLock instanceof MysqlWriteLock) {
             return $builder->lockForUpdate();

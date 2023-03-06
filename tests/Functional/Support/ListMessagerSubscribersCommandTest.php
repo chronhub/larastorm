@@ -15,12 +15,16 @@ use Chronhub\Storm\Reporter\ReportCommand;
 use Chronhub\Storm\Tracker\GenericListener;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Symfony\Component\Console\Helper\TableCell;
+use Chronhub\Storm\Reporter\DetachMessageListener;
+use Chronhub\Storm\Contracts\Tracker\MessageTracker;
 use Chronhub\Storm\Reporter\Subscribers\MakeMessage;
 use Chronhub\Larastorm\Providers\CqrsServiceProvider;
 use Chronhub\Storm\Reporter\Subscribers\ConsumeEvent;
 use Chronhub\Storm\Reporter\Subscribers\ConsumeQuery;
+use Chronhub\Storm\Contracts\Tracker\MessageSubscriber;
 use Chronhub\Storm\Reporter\Subscribers\ConsumeCommand;
 use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
@@ -76,6 +80,55 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
 
         $this->expectExceptionMessage('Group with type command and name undefined not defined');
         $this->artisan('messager:list', ['type' => 'command', 'name' => 'undefined'])->run();
+    }
+
+    #[Test]
+    public function it_sort_listeners_per_event_and_descendant_priority(): void
+    {
+        $dispatchedEvents = new class() implements MessageSubscriber
+        {
+            use DetachMessageListener;
+
+            public function attachToReporter(MessageTracker $tracker): void
+            {
+                $tracker->watch(Reporter::DISPATCH_EVENT, fn () => null, 100);
+                $tracker->watch(Reporter::DISPATCH_EVENT, fn () => null, -100);
+                $tracker->watch(Reporter::DISPATCH_EVENT, fn () => null);
+                $tracker->watch(Reporter::FINALIZE_EVENT, fn () => null, 100);
+                $tracker->watch(Reporter::FINALIZE_EVENT, fn () => null, -100);
+                $tracker->watch(Reporter::FINALIZE_EVENT, fn () => null);
+            }
+        };
+
+        $this->app->resolving(Registrar::class, function (Registrar $registrar) use ($dispatchedEvents): void {
+            $registrar
+                ->make(DomainType::from('event'), 'default')
+                ->withProducerStrategy('sync')
+                ->withMessageSubscribers(ConsumeEvent::class, $dispatchedEvents);
+        });
+
+        $genericListener = class_basename(GenericListener::class);
+
+        $headers = ['Listener', 'Subscriber class', 'On Event', 'Priority'];
+
+        $rows = [
+            [new TableCell(ReportEvent::class, ['colspan' => 4, 'rowspan' => 1, 'style' => null])],
+            [$genericListener, MakeMessage::class, 'dispatch_event', 100000],
+            [$genericListener, NameReporterService::class, 'dispatch_event', 99999],
+            [$genericListener, DecorateMessage::class, 'dispatch_event', 90000],
+            [$genericListener, HandleRoute::class, 'dispatch_event', 20000],
+            [$genericListener, $dispatchedEvents::class, 'dispatch_event', 100],
+            [$genericListener, ConsumeEvent::class, 'dispatch_event', 0],
+            [$genericListener, $dispatchedEvents::class, 'dispatch_event', 0],
+            [$genericListener, $dispatchedEvents::class, 'dispatch_event', -100],
+            [$genericListener, $dispatchedEvents::class, 'finalize_event', 0],
+            [$genericListener, $dispatchedEvents::class, 'finalize_event', -100],
+        ];
+
+        $this->artisan('messager:list', ['type' => 'event', 'name' => 'default'])
+            ->expectsTable($headers, $rows)
+            ->assertSuccessful()
+            ->run();
     }
 
     public static function provideReporter(): Generator

@@ -11,12 +11,11 @@ use Chronhub\Storm\Message\Message;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Message\Header;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\UniqueId\UniqueIdV4;
 use Chronhub\Larastorm\Support\MessageDecorator\EventId;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\MessageDecorator\EventId
- */
+#[CoversClass(EventId::class)]
 final class EventIdTest extends UnitTestCase
 {
     private UniqueIdV4 $uniqueId;

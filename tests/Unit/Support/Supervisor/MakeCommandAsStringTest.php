@@ -6,12 +6,11 @@ namespace Chronhub\Larastorm\Tests\Unit\Support\Supervisor;
 
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Supervisor\PhpBinary;
 use Chronhub\Larastorm\Support\Supervisor\MakeCommandAsString;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\Supervisor\MakeCommandAsString
- */
+#[CoversClass(MakeCommandAsString::class)]
 final class MakeCommandAsStringTest extends UnitTestCase
 {
     #[Test]

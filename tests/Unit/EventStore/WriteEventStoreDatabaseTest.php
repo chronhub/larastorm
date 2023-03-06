@@ -25,9 +25,11 @@ use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
+use Chronhub\Larastorm\EventStore\Database\AbstractEventStoreDatabase;
 use function iterator_to_array;
 
 #[CoversClass(EventStoreDatabase::class)]
+#[CoversClass(AbstractEventStoreDatabase::class)]
 final class WriteEventStoreDatabaseTest extends UnitTestCase
 {
     use ProvideTestingStore;
@@ -49,6 +51,10 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
             ->with($tableName)
             ->willReturn($builder);
 
+        $builder->expects($this->once())
+            ->method('useWritePdo')
+            ->willReturn($builder);
+
         $queryBuilder = $this->eventStore($writeLock)->getBuilderforWrite($this->streamName);
 
         $this->assertSame($builder, $queryBuilder);
@@ -59,6 +65,10 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
     {
         $tableName = 'read_customer';
         $builder = $this->createMock(Builder::class);
+
+        $builder->expects($this->once())
+            ->method('useWritePdo')
+            ->willReturn($builder);
 
         $this->streamPersistence->expects($this->once())
             ->method('tableName')
@@ -82,7 +92,6 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
     #[Test]
     public function it_create_first_stream(): void
     {
-        // create event stream table
         $tableName = 'read_customer';
         $this->streamPersistence->expects($this->exactly(2))
             ->method('tableName')
@@ -234,6 +243,10 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
 
         $builder = $this->createMock(Builder::class);
 
+        $builder->expects($this->once())
+            ->method('useWritePdo')
+            ->willReturn($builder);
+
         $this->connection->expects($this->once())
             ->method('table')
             ->with($tableName)
@@ -326,6 +339,10 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
             ->willReturn(true);
 
         $builder = $this->createMock(Builder::class);
+
+        $builder->expects($this->once())
+            ->method('useWritePdo')
+            ->willReturn($builder);
 
         $this->connection->expects($this->once())
             ->method('table')

@@ -16,11 +16,10 @@ use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
-#[CoversClass(StreamEventLoader::class)]
-final class StreamEventLoaderTest extends UnitTestCase
+#[CoversClass(EventLoader::class)]
+final class EventLoaderTest extends UnitTestCase
 {
     private StreamEventSerializer|MockObject $serializer;
 

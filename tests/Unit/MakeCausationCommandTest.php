@@ -13,6 +13,7 @@ use Chronhub\Storm\Tracker\TrackMessage;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Storm\Contracts\Message\Header;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Storm\Chronicler\EventChronicler;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -24,9 +25,7 @@ use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Larastorm\Support\Bridge\MakeCausationCommand;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\Bridge\MakeCausationCommand
- */
+#[CoversClass(MakeCausationCommand::class)]
 final class MakeCausationCommandTest extends UnitTestCase
 {
     #[DataProvider('provideStreamEventName')]

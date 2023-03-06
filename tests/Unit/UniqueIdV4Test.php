@@ -9,11 +9,10 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV4;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\UniqueId\UniqueIdV4;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\UniqueId\UniqueIdV4
- */
+#[CoversClass(UniqueIdV4::class)]
 final class UniqueIdV4Test extends UnitTestCase
 {
     #[Test]

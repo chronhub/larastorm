@@ -11,6 +11,7 @@ use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Projector\ProjectQuery;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use Chronhub\Storm\Projector\ProjectReadModel;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
@@ -31,9 +32,7 @@ use Chronhub\Storm\Projector\Options\DefaultProjectorOption;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 use Chronhub\Larastorm\Projection\ConnectionProjectorManager;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Projection\ConnectionProjectorManager
- */
+#[CoversClass(ConnectionProjectorManager::class)]
 final class ConnectionProjectorManagerTest extends UnitTestCase
 {
     #[Test]

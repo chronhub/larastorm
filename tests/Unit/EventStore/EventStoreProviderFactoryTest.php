@@ -28,7 +28,6 @@ use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 
 #[CoversClass(EventStoreDatabaseFactory::class)]
-
 final class EventStoreProviderFactoryTest extends UnitTestCase
 {
     private Container $container;

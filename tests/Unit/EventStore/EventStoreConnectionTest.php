@@ -22,7 +22,6 @@ use Chronhub\Larastorm\Tests\Stubs\EventStoreConnectionStub;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 
 #[CoversClass(EventStoreConnection::class)]
-
 class EventStoreConnectionTest extends UnitTestCase
 {
     private MockObject|ChroniclerDB $chronicler;

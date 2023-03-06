@@ -8,15 +8,14 @@ use Chronhub\Storm\Message\Message;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Double\SomeCommand;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Chronhub\Larastorm\Support\Producer\MessageJob;
 use Chronhub\Larastorm\Support\Producer\IlluminateQueue;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\Producer\IlluminateQueue
- */
+#[CoversClass(IlluminateQueue::class)]
 final class IlluminateQueueTest extends UnitTestCase
 {
     private MockObject|QueueingDispatcher $queue;

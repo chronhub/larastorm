@@ -13,9 +13,11 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
+use Chronhub\Larastorm\EventStore\Database\AbstractEventStoreDatabase;
 use function iterator_to_array;
 
 #[CoversClass(EventStoreDatabase::class)]
+#[CoversClass(AbstractEventStoreDatabase::class)]
 final class ReadEventStoreDatabaseTest extends UnitTestCase
 {
     use ProvideTestingStore;

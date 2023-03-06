@@ -9,10 +9,12 @@ use Illuminate\Database\Query\Builder;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 
+#[CoversClass(ConnectionProjectionQueryScope::class)]
 final class ConnectionProjectionQueryScopeTest extends UnitTestCase
 {
     private MockObject|Builder $builder;

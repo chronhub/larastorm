@@ -9,13 +9,12 @@ use Chronhub\Storm\Message\Message;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Tracker\TrackMessage;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Storm\Contracts\Message\MessageDecorator;
 use Chronhub\Larastorm\Support\MessageDecorator\DecorateMessage;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\MessageDecorator\DecorateMessage
- */
+#[CoversClass(DecorateMessage::class)]
 final class DecorateMessageTest extends UnitTestCase
 {
     #[Test]

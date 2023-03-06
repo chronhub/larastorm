@@ -9,8 +9,10 @@ use Chronhub\Storm\Message\Message;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Message\Header;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\MessageDecorator\EventType;
 
+#[CoversClass(EventType::class)]
 final class EventTypeTest extends UnitTestCase
 {
     #[Test]

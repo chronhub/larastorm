@@ -7,10 +7,10 @@ namespace Chronhub\Larastorm\Tests\Unit\Support\Supervisor;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Chronhub\Larastorm\Support\Supervisor\Supervisor;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\Supervisor\Supervisor
- */
+#[CoversClass(Supervisor::class)]
 final class SupervisorTest extends UnitTestCase
 {
     #[Test]

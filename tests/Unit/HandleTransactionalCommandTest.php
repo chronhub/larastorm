@@ -10,15 +10,14 @@ use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Tracker\TrackMessage;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Larastorm\Tests\Double\SomeCommand;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Larastorm\Support\Bridge\HandleTransactionalCommand;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalEventableChronicler;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\Bridge\HandleTransactionalCommand
- */
+#[CoversClass(HandleTransactionalCommand::class)]
 final class HandleTransactionalCommandTest extends UnitTestCase
 {
     private TransactionalEventableChronicler|MockObject $chronicler;

@@ -8,12 +8,11 @@ use PDOException;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException
- */
+#[CoversClass(ConnectionConcurrencyException::class)]
 final class ConnectionConcurrencyExceptionTest extends UnitTestCase
 {
     #[Test]

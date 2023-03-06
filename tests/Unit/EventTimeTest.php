@@ -13,12 +13,11 @@ use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Message\Header;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Larastorm\Support\MessageDecorator\EventTime;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\MessageDecorator\EventTime
- */
+#[CoversClass(EventTime::class)]
 final class EventTimeTest extends UnitTestCase
 {
     private MockObject|SystemClock $clock;

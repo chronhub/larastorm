@@ -8,12 +8,11 @@ use PDOException;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed
- */
+#[CoversClass(ConnectionProjectionFailed::class)]
 final class ConnectionProjectionFailedTest extends UnitTestCase
 {
     #[Test]

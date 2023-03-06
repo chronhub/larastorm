@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Contracts\Message\Header;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Storm\Serializer\SerializeToJson;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -25,6 +26,7 @@ use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 use Chronhub\Larastorm\EventStore\Persistence\PerAggregateStreamPersistence;
 use function array_keys;
 
+#[CoversClass(PerAggregateStreamPersistence::class)]
 final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
 {
     private StreamEventSerializer|MockObject $serializer;

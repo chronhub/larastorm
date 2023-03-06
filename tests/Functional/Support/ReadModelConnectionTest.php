@@ -9,6 +9,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\Schema\Blueprint;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Double\SomeEvent;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Projector\ReadModel;
@@ -17,6 +18,7 @@ use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Support\ReadModel\ReadModelConnection;
 
+#[CoversClass(ReadModelConnection::class)]
 final class ReadModelConnectionTest extends OrchestraTestCase
 {
     use RefreshDatabase;

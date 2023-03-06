@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
 use Chronhub\Storm\Tracker\TrackMessage;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Routing\Registrar;
@@ -17,6 +18,7 @@ use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 
+#[CoversClass(CqrsManager::class)]
 class CqrsManagerTest extends OrchestraTestCase
 {
     protected Registrar $registrar;

@@ -6,6 +6,7 @@ namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Container\Container;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
@@ -19,9 +20,7 @@ use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 use Chronhub\Storm\Chronicler\InMemory\TransactionalInMemoryChronicler;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalInMemoryChronicler as TransactionalInMemory;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\EventStore\EventStoreManager
- */
+#[CoversClass(EventStoreManager::class)]
 final class InMemoryEventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;

@@ -6,6 +6,7 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Chronicler\TrackStream;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Storm\Stream\DetermineStreamCategory;
@@ -26,9 +27,7 @@ use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Providers\ChroniclerServiceProvider
- */
+#[CoversClass(ChroniclerServiceProvider::class)]
 final class ChroniclerServiceProviderTest extends OrchestraTestCase
 {
     #[Test]

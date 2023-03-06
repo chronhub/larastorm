@@ -16,7 +16,6 @@ use Chronhub\Larastorm\Aggregate\AggregateTaggedCache;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
 
 #[CoversClass(AggregateTaggedCache::class)]
-
 final class AggregateTaggedCacheTest extends OrchestraTestCase
 {
     private AggregateIdentity $aggregateId;

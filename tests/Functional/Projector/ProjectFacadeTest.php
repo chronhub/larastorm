@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Projector;
 
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
@@ -14,6 +15,7 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
 use Chronhub\Larastorm\Projection\ProvideProjectorServiceManager;
 
+#[CoversClass(Project::class)]
 final class ProjectFacadeTest extends OrchestraTestCase
 {
     #[Test]

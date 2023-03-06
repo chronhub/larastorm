@@ -6,9 +6,12 @@ namespace Chronhub\Larastorm\Tests\Functional\Manager;
 
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Reporter\DomainType;
+use Chronhub\Larastorm\Cqrs\CqrsManager;
 use Chronhub\Storm\Reporter\ReportEvent;
 use Chronhub\Storm\Tracker\TrackMessage;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(CqrsManager::class)]
 final class EventReporterManagerTest extends CqrsManagerTest
 {
     private DomainType $domainType = DomainType::EVENT;

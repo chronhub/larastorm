@@ -7,6 +7,7 @@ namespace Chronhub\Larastorm\Tests\Functional\Projector;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Container\Container;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
@@ -17,6 +18,7 @@ use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
 use Chronhub\Larastorm\Projection\ProvideProjectorServiceManager;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 
+#[CoversClass(ProvideProjectorServiceManager::class)]
 final class InMemoryProvideProjectorServiceManagerTest extends OrchestraTestCase
 {
     private ProvideProjectorServiceManager $serviceManager;

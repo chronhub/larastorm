@@ -7,6 +7,7 @@ namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 use Illuminate\Database\Connection;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Chronicler\TrackStream;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Chronicler\EventChronicler;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\EventStore\MysqlEventStore;
@@ -30,9 +31,7 @@ use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\EventStore\EventStoreManager
- */
+#[CoversClass(EventStoreManager::class)]
 final class MysqlEventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;

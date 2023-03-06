@@ -12,15 +12,14 @@ use Chronhub\Storm\Reporter\ReportQuery;
 use Chronhub\Storm\Tracker\TrackMessage;
 use Chronhub\Storm\Reporter\ReportCommand;
 use Chronhub\Larastorm\Support\Facade\Report;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Larastorm\Providers\CqrsServiceProvider;
 use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\Facade\Report
- */
+#[CoversClass(Report::class)]
 final class ReportFacadeTest extends OrchestraTestCase
 {
     private Registrar $registrar;

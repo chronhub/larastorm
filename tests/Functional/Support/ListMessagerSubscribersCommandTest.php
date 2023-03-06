@@ -13,6 +13,7 @@ use Chronhub\Storm\Reporter\ReportEvent;
 use Chronhub\Storm\Reporter\ReportQuery;
 use Chronhub\Storm\Reporter\ReportCommand;
 use Chronhub\Storm\Tracker\GenericListener;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
@@ -32,6 +33,7 @@ use Chronhub\Storm\Reporter\Subscribers\NameReporterService;
 use Chronhub\Larastorm\Support\MessageDecorator\DecorateMessage;
 use Chronhub\Larastorm\Support\Console\ListMessagerSubscribersCommand;
 
+#[CoversClass(ListMessagerSubscribersCommand::class)]
 final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
 {
     public function setUp(): void

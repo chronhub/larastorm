@@ -11,6 +11,7 @@ use Chronhub\Storm\Clock\PointInTime;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Projection\Projection;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,9 +19,7 @@ use Chronhub\Storm\Contracts\Projector\ProjectionModel;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Projection\Projection
- */
+#[CoversClass(Projection::class)]
 final class ProjectionTest extends OrchestraTestCase
 {
     use RefreshDatabase;

@@ -7,6 +7,7 @@ namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 use Generator;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Chronicler\TrackStream;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Chronicler\EventChronicler;
 use Chronhub\Storm\Contracts\Tracker\Listener;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -33,9 +34,7 @@ use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\PerAggregateStreamPersistence;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\EventStore\EventStoreManager
- */
+#[CoversClass(EventStoreManager::class)]
 final class EventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;

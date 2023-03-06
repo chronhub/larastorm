@@ -8,16 +8,16 @@ use Illuminate\Database\Connection;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Artisan;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
+use Chronhub\Larastorm\Support\Console\CreatePersistentProjectionCommand;
 
-/**
- * @coversDefaultClass \Chronhub\Larastorm\Support\Console\CreatePersistentProjectionCommand
- */
+#[CoversClass(CreatePersistentProjectionCommand::class)]
 final class CreatePersistentProjectionCommandTest extends OrchestraTestCase
 {
     use RefreshDatabase;

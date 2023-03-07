@@ -59,9 +59,6 @@ final class AggregateRepositoryManager implements Manager
         return $this->repositories[$streamName] ?? $this->repositories[$streamName] = $this->resolve($streamName);
     }
 
-    /**
-     * @param  callable(Container, non-empty-string, array): AggregateRepository  $aggregateRepository
-     */
     public function extends(string $streamName, callable $aggregateRepository): void
     {
         $this->customCreators[$streamName] = $aggregateRepository;

@@ -95,16 +95,16 @@ final class IlluminateQueueTest extends UnitTestCase
     }
 
     #[Test]
-    public function it_does_not_override_queue_header_if_already_exists_in_message(): void
+    public function it_merge_message_queue_options_into_group_queue_options(): void
     {
-        $queueOptions = ['connection' => 'rabbitmq', 'name' => 'customer'];
+        $queueOptions = ['connection' => 'rabbitmq', 'name' => 'default'];
 
         $message = new Message(SomeCommand::fromContent(['name' => 'steph bug']), ['queue' => ['name' => 'redis']]);
 
         $payload = [
             'headers' => [],
             'content' => 'steph bug',
-            'queue' => ['name' => 'redis'],
+            'queue' => ['connection' => 'rabbitmq', 'name' => 'redis'],
         ];
 
         $this->serializer->expects($this->once())
@@ -112,6 +112,7 @@ final class IlluminateQueueTest extends UnitTestCase
             ->with($this->callback(function (Message $message): bool {
                 $this->assertArrayHasKey('queue', $message->headers());
                 $this->assertEquals('redis', $message->header('queue')['name']);
+                $this->assertEquals('rabbitmq', $message->header('queue')['connection']);
 
                 return true;
             }))

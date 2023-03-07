@@ -8,8 +8,8 @@ use Chronhub\Storm\Message\Message;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Chronhub\Storm\Contracts\Producer\MessageQueue;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
-use function count;
 use function is_array;
+use function array_merge;
 
 final readonly class IlluminateQueue implements MessageQueue
 {
@@ -21,8 +21,10 @@ final readonly class IlluminateQueue implements MessageQueue
 
     public function toQueue(Message $message): void
     {
-        if (is_array($this->groupQueueOptions) && count($this->groupQueueOptions) > 0 && $message->hasNot('queue')) {
-            $message = $message->withHeader('queue', $this->groupQueueOptions);
+        if (is_array($this->groupQueueOptions)) {
+            $options = $message->header('queue') ?? [];
+
+            $message = $message->withHeader('queue', array_merge($this->groupQueueOptions, $options));
         }
 
         $payload = $this->messageSerializer->serializeMessage($message);

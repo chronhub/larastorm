@@ -21,7 +21,7 @@ class SuperviseProjectionCommand extends Command implements SignalableCommandInt
 
     protected Supervisor $supervisor;
 
-    public function handle(Supervisor $supervisor): void
+    public function handle(Supervisor $supervisor): int
     {
         $this->supervisor = $supervisor;
 
@@ -30,6 +30,8 @@ class SuperviseProjectionCommand extends Command implements SignalableCommandInt
         $this->supervisor->monitor();
 
         $this->loop();
+
+        return self::SUCCESS;
     }
 
     public function getSubscribedSignals(): array
@@ -37,17 +39,11 @@ class SuperviseProjectionCommand extends Command implements SignalableCommandInt
         return [SIGINT];
     }
 
-    public function handleSignal(int $signal): false|int
+    public function handleSignal(int $signal)
     {
-        if ($signal !== SIGINT) {
-            return false;
-        }
-
         $this->warn('Stopping projections...');
 
         $this->supervisor->stop();
-
-        return self::SUCCESS;
     }
 
     protected function loop(): void

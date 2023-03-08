@@ -41,9 +41,15 @@ class SuperviseProjectionCommand extends Command implements SignalableCommandInt
 
     public function handleSignal(int $signal)
     {
-        $this->warn('Stopping projections...');
+        if ($signal === SIGINT) {
+            $this->warn('Stopping projections...');
 
-        $this->supervisor->stop();
+            $this->supervisor->stop();
+
+            return self::SUCCESS;
+        }
+
+        return false;
     }
 
     protected function loop(): void

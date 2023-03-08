@@ -13,6 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
+use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 use Chronhub\Larastorm\EventStore\Database\AbstractEventStoreDatabase;
 use function iterator_to_array;
 
@@ -61,6 +62,61 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
         $aggregateId->expects($this->never())->method('toString');
 
         $events = $this->eventStore()->retrieveAll($this->streamName, $aggregateId, $direction);
+
+        $this->assertEquals($expectedStreamsEvents, iterator_to_array($events));
+    }
+
+    #[DataProvider('provideDirection')]
+    #[Test]
+    public function it_retrieve_all_stream_events_with_single_stream_strategy_with_query_hint(string $direction): void
+    {
+        $tableName = 'read_customer';
+        $indexName = 'ix_foo';
+        $builder = $this->createMock(Builder::class);
+        $aggregateId = $this->createMock(AggregateIdentity::class);
+
+        $streamPersistence = $this->createMock(StreamPersistenceWithQueryHint::class);
+
+        $streamPersistence->expects($this->once())
+            ->method('tableName')
+            ->with($this->streamName)
+            ->willReturn($tableName);
+
+        $streamPersistence->expects($this->once())
+            ->method('indexName')
+            ->with($tableName)
+            ->willReturn($indexName);
+
+        $this->connection->expects($this->once())
+            ->method('query')
+            ->willReturn($builder);
+
+        $builder->expects($this->once())
+            ->method('fromRaw')
+            ->with("`$tableName` USE INDEX($indexName)")
+            ->willReturn($builder);
+
+        $streamPersistence->expects($this->once())
+            ->method('isAutoIncremented')
+            ->willReturn(false);
+
+        $builder->expects($this->once())
+            ->method('orderBy')
+            ->with('no', $direction)
+            ->willReturn($builder);
+
+        $expectedStreamsEvents = iterator_to_array($this->provideStreamEvents());
+
+        $this->eventLoader->expects($this->once())
+            ->method('query')
+            ->with($builder, $this->streamName)
+            ->will($this->returnCallback(function () use ($expectedStreamsEvents) {
+                yield from $expectedStreamsEvents;
+            }));
+
+        $aggregateId->expects($this->never())->method('toString');
+
+        $events = $this->eventStore(null, $streamPersistence)->retrieveAll($this->streamName, $aggregateId, $direction);
 
         $this->assertEquals($expectedStreamsEvents, iterator_to_array($events));
     }

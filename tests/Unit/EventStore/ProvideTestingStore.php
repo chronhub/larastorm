@@ -84,11 +84,11 @@ trait ProvideTestingStore
         return 4;
     }
 
-    protected function eventStore(?WriteLockStrategy $writeLock = null): StoreStub
+    protected function eventStore(?WriteLockStrategy $writeLock = null, ?StreamPersistence $streamPersistence = null): StoreStub
     {
         return new StoreStub(
             $this->connection,
-            $this->streamPersistence,
+            $streamPersistence ?? $this->streamPersistence,
             $this->eventLoader,
             $this->eventStreamProvider,
             $this->streamCategory,

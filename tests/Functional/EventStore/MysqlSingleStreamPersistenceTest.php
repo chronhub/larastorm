@@ -23,10 +23,12 @@ use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
+use Chronhub\Larastorm\EventStore\Persistence\AbstractStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 use function array_keys;
 
 #[CoversClass(MysqlSingleStreamPersistence::class)]
+#[CoversClass(AbstractStreamPersistence::class)]
 final class MysqlSingleStreamPersistenceTest extends OrchestraTestCase
 {
     private StreamEventSerializer|MockObject $serializer;

@@ -24,9 +24,11 @@ use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
+use Chronhub\Larastorm\EventStore\Persistence\AbstractStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use function array_keys;
 
+#[CoversClass(AbstractStreamPersistence::class)]
 #[CoversClass(PgsqlSingleStreamPersistence::class)]
 final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
 {

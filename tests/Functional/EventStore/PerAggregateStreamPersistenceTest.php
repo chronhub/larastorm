@@ -141,12 +141,6 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
         $this->assertFalse($this->newInstance()->isAutoIncremented());
     }
 
-    #[Test]
-    public function it_serialize_event(): never
-    {
-        $this->markTestSkipped('todo');
-    }
-
     private function newInstance(?StreamEventSerializer $serializer = null): PerAggregateStreamPersistence
     {
         return new PerAggregateStreamPersistence($serializer ?? $this->serializer);

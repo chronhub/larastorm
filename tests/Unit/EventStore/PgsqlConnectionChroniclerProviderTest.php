@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Chronicler\EventChronicler;
 use Chronhub\Storm\Contracts\Tracker\Listener;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\EventStore\MysqlEventStore;
+use Chronhub\Larastorm\EventStore\PgsqlEventStore;
 use Chronhub\Larastorm\EventStore\EventStoreConnection;
 use Chronhub\Storm\Chronicler\TrackTransactionalStream;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
@@ -21,15 +21,16 @@ use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
-use Chronhub\Larastorm\EventStore\MysqlTransactionalEventStore;
+use Chronhub\Larastorm\EventStore\PgsqlTransactionalEventStore;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalEventableChronicler;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
+use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 
 #[CoversClass(ConnectionChroniclerProvider::class)]
-class ConnectionChroniclerProviderTest extends OrchestraTestCase
+class PgsqlConnectionChroniclerProviderTest extends OrchestraTestCase
 {
     #[Test]
     public function it_create_mysql_event_store(): void
@@ -38,14 +39,14 @@ class ConnectionChroniclerProviderTest extends OrchestraTestCase
 
         $eventStore = $provider->resolve('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
-            'store' => 'mysql',
+            'store' => 'pgsql',
             'is_transactional' => false,
             'tracking' => [
                 'subscribers' => [],
             ],
         ]);
 
-        $this->assertInstanceOf(MysqlEventStore::class, $eventStore);
+        $this->assertInstanceOf(PgsqlEventStore::class, $eventStore);
         $this->assertEquals(EventStoreDatabase::class, $eventStore->innerChronicler()::class);
     }
 
@@ -55,15 +56,15 @@ class ConnectionChroniclerProviderTest extends OrchestraTestCase
         $provider = $this->newInstance();
 
         $eventStore = $provider->resolve('default', [
-            'strategy' => MysqlSingleStreamPersistence::class,
-            'store' => 'mysql',
+            'strategy' => PgsqlSingleStreamPersistence::class,
+            'store' => 'pgsql',
             'is_transactional' => true,
             'tracking' => [
                 'subscribers' => [],
             ],
         ]);
 
-        $this->assertInstanceOf(MysqlTransactionalEventStore::class, $eventStore);
+        $this->assertInstanceOf(PgsqlTransactionalEventStore::class, $eventStore);
         $this->assertEquals(EventStoreTransactionalDatabase::class, $eventStore->innerChronicler()::class);
     }
 
@@ -74,7 +75,7 @@ class ConnectionChroniclerProviderTest extends OrchestraTestCase
 
         $eventStore = $provider->resolve('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
-            'store' => 'mysql',
+            'store' => 'pgsql',
             'tracking' => [
                 'tracker_id' => TrackStream::class,
                 'subscribers' => [],
@@ -85,7 +86,7 @@ class ConnectionChroniclerProviderTest extends OrchestraTestCase
         $this->assertInstanceOf(EventableChronicler::class, $eventStore);
 
         $store = $eventStore->innerChronicler();
-        $this->assertEquals(MysqlEventStore::class, $store::class);
+        $this->assertEquals(PgsqlEventStore::class, $store::class);
         $this->assertInstanceOf(EventStoreConnection::class, $store);
 
         $database = $store->innerChronicler();
@@ -99,7 +100,7 @@ class ConnectionChroniclerProviderTest extends OrchestraTestCase
 
         $eventStore = $provider->resolve('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
-            'store' => 'mysql',
+            'store' => 'pgsql',
             'tracking' => [
                 'tracker_id' => TrackTransactionalStream::class,
                 'subscribers' => [],
@@ -111,7 +112,7 @@ class ConnectionChroniclerProviderTest extends OrchestraTestCase
         $this->assertInstanceOf(ChroniclerDecorator::class, $eventStore);
 
         $store = $eventStore->innerChronicler();
-        $this->assertEquals(MysqlTransactionalEventStore::class, $store::class);
+        $this->assertEquals(PgsqlTransactionalEventStore::class, $store::class);
         $this->assertInstanceOf(EventStoreConnection::class, $store);
 
         $database = $store->innerChronicler();
@@ -127,8 +128,8 @@ class ConnectionChroniclerProviderTest extends OrchestraTestCase
         $provider = $this->newInstance();
 
         $provider->resolve('default', [
-            'strategy' => MysqlSingleStreamPersistence::class,
-            'store' => 'mysql',
+            'strategy' => PgsqlSingleStreamPersistence::class,
+            'store' => 'pgsql',
             'tracking' => [
                 'tracker_id' => 'tracker.stream.default',
                 'subscribers' => [
@@ -165,7 +166,7 @@ class ConnectionChroniclerProviderTest extends OrchestraTestCase
 
         $provider->resolve('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
-            'store' => 'mysql',
+            'store' => 'pgsql',
             'tracking' => [
                 'tracker_id' => null,
                 'subscribers' => [],

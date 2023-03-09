@@ -113,7 +113,7 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
     {
         $chronicler = $this->eventStoreResolver->resolve($config['chronicler']);
 
-        return new $manager(
+        $projectorManager = new $manager(
             $chronicler,
             $chronicler->getEventStreamProvider(),
             $this->determineProjectionProvider($config['provider'] ?? null),
@@ -122,6 +122,12 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
             new ProjectorJsonSerializer(),
             $this->determineProjectorOptions($config['options']),
         );
+
+        if (true === ($config['dispatcher'] ?? false)) {
+            $projectorManager->setEventDispatcher($this->container['events']);
+        }
+
+        return $projectorManager;
     }
 
     private function determineProjectionProvider(?string $providerKey): ProjectionProvider

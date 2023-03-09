@@ -30,6 +30,7 @@ return [
     | Each projector is bound to an event store
     |
     |       chronicler:     chronicler configuration keys or service registered in ioc
+    |       dispatcher:     dispatch laravel events when projection status changed
     |       options:        options key
     |       provider:       projection provider key
     |       scope:          projection query scope
@@ -41,6 +42,7 @@ return [
 
             'default' => [
                 'chronicler' => ['connection', 'write'],
+                'dispatcher' => true,
                 'options' => 'default',
                 'provider' => 'eloquent',
                 'scope' => \Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope::class,
@@ -48,6 +50,7 @@ return [
 
             'emit' => [
                 'chronicler' => ['connection', 'read'],
+                'dispatcher' => true,
                 'options' => 'default',
                 'provider' => 'eloquent',
                 'scope' => \Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope::class,

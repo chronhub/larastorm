@@ -44,12 +44,14 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
                 'connection' => [
                     'default' => [
                         'chronicler' => ['connection', 'write'],
+                        'dispatcher' => true,
                         'options' => 'default',
                         'provider' => 'eloquent',
                         'scope' => ConnectionProjectionQueryScope::class,
                     ],
                     'emit' => [
                         'chronicler' => ['connection', 'read'],
+                        'dispatcher' => true,
                         'options' => 'default',
                         'provider' => 'eloquent',
                         'scope' => ConnectionProjectionQueryScope::class,

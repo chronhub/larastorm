@@ -8,10 +8,12 @@ use InvalidArgumentException;
 use Illuminate\Console\Command;
 use Chronhub\Storm\Stream\StreamName;
 use Chronhub\Larastorm\Support\Facade\Project;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
 use function count;
 use function json_encode;
 
+#[AsCommand(name: 'projector:read', description: 'read state/positions/status of projection by stream name')]
 final class ReadProjectionCommand extends Command
 {
     protected $signature = 'projector:read 

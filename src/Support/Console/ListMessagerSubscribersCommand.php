@@ -6,15 +6,16 @@ namespace Chronhub\Larastorm\Support\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Enumerable;
 use Chronhub\Storm\Tracker\GenericListener;
 use Chronhub\Larastorm\Support\Facade\Report;
 use Chronhub\Storm\Contracts\Tracker\Listener;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Laravel\SerializableClosure\Support\ReflectionClosure;
 use function array_merge;
 
+#[AsCommand(name: 'messager:subscribers', description: 'Display reporter listeners per type')]
 final class ListMessagerSubscribersCommand extends Command
 {
     protected $signature = 'messager:subscribers 
@@ -59,12 +60,7 @@ final class ListMessagerSubscribersCommand extends Command
     {
         $reporter = Report::create($this->argument('type'), $this->argument('name'));
 
-        /** @var Collection $listeners */
         $listeners = $reporter->tracker()->listeners();
-
-        if (! $listeners instanceof Enumerable) {
-            $listeners = new Collection($listeners);
-        }
 
         return [
             $reporter::class,

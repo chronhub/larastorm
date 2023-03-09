@@ -8,7 +8,9 @@ use Illuminate\Console\Command;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(name: 'stream:create', description: 'create first commit for one stream for single stream strategy')]
 final class CreateEventStreamCommand extends Command
 {
     protected $signature = 'stream:create

@@ -8,10 +8,12 @@ use InvalidArgumentException;
 use Illuminate\Console\Command;
 use Chronhub\Storm\Stream\StreamName;
 use Chronhub\Larastorm\Support\Facade\Project;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
 use function in_array;
 
+#[AsCommand(name: 'projector:write', description: 'write operation on projection by stream name')]
 final class WriteProjectionCommand extends Command
 {
     protected $signature = 'projector:write 

@@ -9,7 +9,7 @@ use Chronhub\Storm\Contracts\Projector\ProjectionQueryFilter;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use Chronhub\Larastorm\Support\Contracts\ProjectionQueryScopeConnection;
 
-class ConnectionProjectionQueryScope implements ProjectionQueryScopeConnection
+class ConnectionQueryScope implements ProjectionQueryScopeConnection
 {
     public function fromIncludedPosition(): ProjectionQueryFilter
     {

@@ -10,20 +10,20 @@ use Chronhub\Larastorm\Projection\Projection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Projection\ConnectionQueryScope;
 use Chronhub\Storm\Contracts\Projector\ProjectorOption;
+use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Projector\InMemoryProjectionQueryScope;
 use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
 use Chronhub\Storm\Projector\Options\InMemoryProjectorOption;
 use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
-use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
-use Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope;
-use Chronhub\Larastorm\Projection\ProvideProjectorServiceManager;
 use Chronhub\Storm\Projector\Provider\InMemoryProjectionProvider;
 use Chronhub\Larastorm\Support\Console\Generator\MakeQueryProjectionCommand;
 use Chronhub\Larastorm\Support\Supervisor\Command\SuperviseProjectionCommand;
 use Chronhub\Larastorm\Support\Console\Generator\MakeReadModelProjectionCommand;
 use Chronhub\Larastorm\Support\Console\Generator\MakePersistentProjectionCommand;
+use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
 use Chronhub\Larastorm\Support\Supervisor\Command\CheckSupervisedProjectionStatusCommand;
 
 #[CoversClass(ProjectorServiceProvider::class)]
@@ -47,14 +47,14 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
                         'dispatcher' => true,
                         'options' => 'default',
                         'provider' => 'eloquent',
-                        'scope' => ConnectionProjectionQueryScope::class,
+                        'scope' => ConnectionQueryScope::class,
                     ],
                     'emit' => [
                         'chronicler' => ['connection', 'read'],
                         'dispatcher' => true,
                         'options' => 'default',
                         'provider' => 'eloquent',
-                        'scope' => ConnectionProjectionQueryScope::class,
+                        'scope' => ConnectionQueryScope::class,
                     ],
                 ],
                 'in_memory' => [
@@ -98,8 +98,8 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
     #[Test]
     public function it_assert_bindings(): void
     {
-        $this->assertTrue($this->app->bound(ProjectorServiceManager::class));
-        $this->assertEquals(ProvideProjectorServiceManager::class, $this->app[ProjectorServiceManager::class]::class);
+        $this->assertTrue($this->app->bound(ServiceManager::class));
+        $this->assertEquals(ProjectorServiceManager::class, $this->app[ServiceManager::class]::class);
         $this->assertTrue($this->app->bound(Project::SERVICE_ID));
     }
 
@@ -109,7 +109,7 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
         $serviceProvider = $this->app->getProvider(ProjectorServiceProvider::class);
 
         $this->assertEquals([
-            ProjectorServiceManager::class,
+            ServiceManager::class,
             Project::SERVICE_ID,
         ], $serviceProvider->provides());
     }

@@ -12,8 +12,7 @@ use Chronhub\Storm\Projector\InMemoryProjectorManager;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
-use Chronhub\Larastorm\Projection\ProvideProjectorServiceManager;
+use Chronhub\Larastorm\Projection\ProjectorServiceManager as ServiceManager;
 
 #[CoversClass(Project::class)]
 final class ProjectFacadeTest extends OrchestraTestCase
@@ -23,8 +22,8 @@ final class ProjectFacadeTest extends OrchestraTestCase
     {
         $root = Project::getFacadeRoot();
 
-        $this->assertInstanceOf(ProjectorServiceManager::class, $root);
-        $this->assertEquals(ProvideProjectorServiceManager::class, $root::class);
+        $this->assertInstanceOf(ServiceManager::class, $root);
+        $this->assertEquals(ServiceManager::class, $root::class);
     }
 
     #[Test]

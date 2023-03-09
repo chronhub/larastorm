@@ -45,7 +45,7 @@ return [
                 'dispatcher' => true,
                 'options' => 'default',
                 'provider' => 'eloquent',
-                'scope' => \Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope::class,
+                'scope' => \Chronhub\Larastorm\Projection\ConnectionQueryScope::class,
             ],
 
             'emit' => [
@@ -53,7 +53,7 @@ return [
                 'dispatcher' => true,
                 'options' => 'default',
                 'provider' => 'eloquent',
-                'scope' => \Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope::class,
+                'scope' => \Chronhub\Larastorm\Projection\ConnectionQueryScope::class,
             ],
         ],
 

@@ -12,23 +12,23 @@ use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
-use Chronhub\Larastorm\Projection\ProvideProjectorServiceManager;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
 
-#[CoversClass(ProvideProjectorServiceManager::class)]
+#[CoversClass(ProjectorServiceManager::class)]
 final class InMemoryProvideProjectorServiceManagerTest extends OrchestraTestCase
 {
-    private ProvideProjectorServiceManager $serviceManager;
+    private ProjectorServiceManager $serviceManager;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->serviceManager = $this->app[ProjectorServiceManager::class];
-        $this->assertEquals(ProvideProjectorServiceManager::class, $this->serviceManager::class);
+        $this->serviceManager = $this->app[ServiceManager::class];
+        $this->assertEquals(ProjectorServiceManager::class, $this->serviceManager::class);
     }
 
     #[Test]

@@ -11,10 +11,10 @@ use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Projection\ConnectionProjectionQueryScope;
+use Chronhub\Larastorm\Projection\ConnectionQueryScope;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 
-#[CoversClass(ConnectionProjectionQueryScope::class)]
+#[CoversClass(ConnectionQueryScope::class)]
 final class ConnectionProjectionQueryScopeTest extends UnitTestCase
 {
     private MockObject|Builder $builder;
@@ -33,7 +33,7 @@ final class ConnectionProjectionQueryScopeTest extends UnitTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Position must be greater than 0, current is '.$invalidPosition);
 
-        $scope = new ConnectionProjectionQueryScope();
+        $scope = new ConnectionQueryScope();
 
         $query = $scope->fromIncludedPosition();
         $query->setCurrentPosition($invalidPosition);
@@ -47,7 +47,7 @@ final class ConnectionProjectionQueryScopeTest extends UnitTestCase
         $this->builder->expects($this->once())->method('where')->with('no', '>=', 20)->willReturn($this->builder);
         $this->builder->expects($this->once())->method('orderBy')->with('no')->willReturn($this->builder);
 
-        $scope = new ConnectionProjectionQueryScope();
+        $scope = new ConnectionQueryScope();
 
         $query = $scope->fromIncludedPosition();
         $query->setCurrentPosition(20);
@@ -62,7 +62,7 @@ final class ConnectionProjectionQueryScopeTest extends UnitTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Position must be greater than 0, current is '.$invalidPosition);
 
-        $scope = new ConnectionProjectionQueryScope();
+        $scope = new ConnectionQueryScope();
 
         $query = $scope->fromIncludedPositionWithLimit();
         $query->setCurrentPosition($invalidPosition);
@@ -77,7 +77,7 @@ final class ConnectionProjectionQueryScopeTest extends UnitTestCase
         $this->builder->expects($this->once())->method('orderBy')->with('no')->willReturn($this->builder);
         $this->builder->expects($this->once())->method('limit')->with(100)->willReturn($this->builder);
 
-        $scope = new ConnectionProjectionQueryScope();
+        $scope = new ConnectionQueryScope();
 
         $query = $scope->fromIncludedPositionWithLimit(100);
         $query->setCurrentPosition(20);

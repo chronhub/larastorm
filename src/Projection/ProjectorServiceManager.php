@@ -13,13 +13,13 @@ use Chronhub\Storm\Serializer\ProjectorJsonSerializer;
 use Chronhub\Storm\Contracts\Projector\ProjectorOption;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
-use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
 use function ucfirst;
 use function is_array;
 use function is_string;
 
-final class ProvideProjectorServiceManager implements ProjectorServiceManager
+final class ProjectorServiceManager implements ServiceManager
 {
     private Container $container;
 
@@ -49,7 +49,7 @@ final class ProvideProjectorServiceManager implements ProjectorServiceManager
     /**
      * @param  callable(Container, string, array): ProjectorManager  $callback
      */
-    public function extend(string $name, callable $callback): ProjectorServiceManager
+    public function extend(string $name, callable $callback): ServiceManager
     {
         $this->customCreators[$name] = $callback;
 

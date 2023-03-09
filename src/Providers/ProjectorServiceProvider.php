@@ -8,8 +8,8 @@ use Illuminate\Support\ServiceProvider;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
-use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
-use Chronhub\Larastorm\Projection\ProvideProjectorServiceManager;
+use Chronhub\Larastorm\Projection\ProjectorServiceManager;
+use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
 
 class ProjectorServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -38,17 +38,17 @@ class ProjectorServiceProvider extends ServiceProvider implements DeferrableProv
         $this->mergeConfigFrom($this->projectorPath, 'projector');
 
         $this->app->singleton(
-            ProjectorServiceManager::class,
-            fn (Application $app): ProjectorServiceManager => new ProvideProjectorServiceManager(fn (): Application => $app)
+            ServiceManager::class,
+            fn (Application $app): ServiceManager => new ProjectorServiceManager(fn (): Application => $app)
         );
 
-        $this->app->alias(ProjectorServiceManager::class, Project::SERVICE_ID);
+        $this->app->alias(ServiceManager::class, Project::SERVICE_ID);
     }
 
     public function provides(): array
     {
         return [
-            ProjectorServiceManager::class,
+            ServiceManager::class,
             Project::SERVICE_ID,
         ];
     }

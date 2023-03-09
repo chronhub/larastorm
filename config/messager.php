@@ -53,7 +53,7 @@ return [
     | The default provided only check if event name is a valid class name
     | two other types is provided:
     |       - AliasFromInflector \Foo\Bar\RegisterCustomer to "register-customer"
-    |       - AliasFromMap  [your_service_name => FQCN, [...]]
+    |       - AliasFromMap  [your_service_name => FQN, [...]]
     */
 
     'alias' => \Chronhub\Storm\Message\AliasFromClassName::class,

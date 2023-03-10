@@ -19,7 +19,6 @@ return [
         |--------------------------------------------------------------------------
         |
         | if false, you must provide decorators in next event decorators
-        | Decorate domain event/ aggregate changed for each AR
         |
         */
 

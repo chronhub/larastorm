@@ -14,7 +14,7 @@ use Chronhub\Larastorm\Projection\ConnectionQueryScope;
 use Chronhub\Storm\Contracts\Projector\ProjectorOption;
 use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
-use Chronhub\Storm\Projector\InMemoryProjectionQueryScope;
+use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
 use Chronhub\Storm\Projector\Options\InMemoryProjectorOption;
 use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
@@ -62,7 +62,7 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
                         'chronicler' => ['in_memory', 'standalone'],
                         'provider' => 'in_memory',
                         'options' => 'in_memory',
-                        'scope' => InMemoryProjectionQueryScope::class,
+                        'scope' => InMemoryQueryScope::class,
                     ],
                 ],
             ],

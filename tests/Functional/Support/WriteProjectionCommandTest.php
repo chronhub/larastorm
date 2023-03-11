@@ -20,7 +20,7 @@ use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
-use Chronhub\Storm\Projector\InMemoryProjectionQueryScope;
+use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Contracts\Projector\PersistentProjector;
 use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
@@ -48,7 +48,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
             'chronicler' => 'es.in_memory',
             'provider' => 'in_memory',
             'options' => 'in_memory',
-            'scope' => InMemoryProjectionQueryScope::class,
+            'scope' => InMemoryQueryScope::class,
         ]);
 
         $this->projector = Project::setDefaultDriver('in_memory')->create('testing');

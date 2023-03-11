@@ -62,7 +62,7 @@ return [
                 'chronicler' => ['in_memory', 'standalone'],
                 'provider' => 'in_memory',
                 'options' => 'in_memory',
-                'scope' => \Chronhub\Storm\Projector\InMemoryProjectionQueryScope::class,
+                'scope' => \Chronhub\Storm\Projector\InMemoryQueryScope::class,
             ],
         ],
     ],

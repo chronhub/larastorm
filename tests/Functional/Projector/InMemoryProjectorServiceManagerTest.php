@@ -19,7 +19,7 @@ use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
 
 #[CoversClass(ProjectorServiceManager::class)]
-final class InMemoryProvideProjectorServiceManagerTest extends OrchestraTestCase
+final class InMemoryProjectorServiceManagerTest extends OrchestraTestCase
 {
     private ProjectorServiceManager $serviceManager;
 

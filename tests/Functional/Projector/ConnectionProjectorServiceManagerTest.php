@@ -25,7 +25,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
     {
         parent::setUp();
 
-        // remove subs from chronicler config for basic test
+        // we remove subscribers from chronicler config for basic test
         $this->app['config']->set('chronicler.providers.connection.publish.tracking.subscribers', []);
 
         $this->serviceManager = $this->app[ServiceManager::class];

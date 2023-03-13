@@ -11,6 +11,7 @@ class LaraStormServiceProvider extends AggregateServiceProvider
     protected $providers = [
         MessagerServiceProvider::class,
         CqrsServiceProvider::class,
+        ChroniclerServiceProvider::class,
         AggregateRepositoryServiceProvider::class,
         ProjectorServiceProvider::class,
     ];

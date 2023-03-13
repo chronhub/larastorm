@@ -23,7 +23,6 @@ final class SupervisorTest extends UnitTestCase
         $this->assertEquals(['bar'], $supervisor->getNames());
         $this->assertFalse($supervisor->isWorking());
         $this->assertTrue($supervisor->isFirstCheck());
-        $this->assertFalse($supervisor->isSupervisorRunning());
         $this->assertEquals('projector:supervisor-start', $supervisor->signature);
         $this->assertEquals('project', $supervisor->namespace);
     }

@@ -20,6 +20,7 @@ use Chronhub\Storm\Stream\SingleStreamPerAggregate;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Larastorm\Aggregate\AggregateTaggedCache;
+use Chronhub\Larastorm\Providers\AggregateServiceProvider;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootChildStub;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootFinalStub;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
@@ -309,6 +310,9 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
 
     protected function getPackageProviders($app): array
     {
-        return [ChroniclerServiceProvider::class];
+        return [
+            ChroniclerServiceProvider::class,
+            AggregateServiceProvider::class,
+        ];
     }
 }

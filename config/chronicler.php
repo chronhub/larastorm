@@ -26,6 +26,7 @@ return [
 
     'defaults' => [
         'provider' => 'connection',
+
         'providers' => [
             'connection' => \Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider::class,
             'in_memory' => \Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider::class,
@@ -37,8 +38,9 @@ return [
     | Event Store
     |--------------------------------------------------------------------------
     |
-    |   query loader: (optional : default cursor)
-    |       cursor: CursorQueryLoader
+    |   store: laravel configuration connection name
+    |
+    |   cursor: CursorQueryLoader
     |       lazy: LazyQueryLoader or lazy:1000 to configure chunkSize
     |       or your own string service id
     |
@@ -58,11 +60,6 @@ return [
 
     'providers' => [
 
-        /**
-         * Connection
-         *
-         * available pgsql and mysql with default mysql, mariadb, percona engines
-         */
         'connection' => [
             'write' => [
                 'store' => 'pgsql',

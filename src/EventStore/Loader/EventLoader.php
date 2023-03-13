@@ -11,6 +11,7 @@ use Illuminate\Database\QueryException;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
+use Chronhub\Storm\Chronicler\Exceptions\NoStreamEventReturn;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
 final readonly class EventLoader implements StreamEventLoader
@@ -33,13 +34,13 @@ final readonly class EventLoader implements StreamEventLoader
                     $streamEvent = (array) $streamEvent;
                 }
 
-                yield $this->serializer->unserializeContent($streamEvent)->current();
+                yield $this->serializer->deserializePayload($streamEvent);
 
                 $count++;
             }
 
             if (0 === $count) {
-                throw StreamNotFound::withStreamName($streamName);
+                throw NoStreamEventReturn::withStreamName($streamName);
             }
 
             return $count;

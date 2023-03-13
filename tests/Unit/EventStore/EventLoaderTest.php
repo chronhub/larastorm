@@ -16,6 +16,7 @@ use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
+use Chronhub\Storm\Chronicler\Exceptions\NoStreamEventReturn;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
 #[CoversClass(EventLoader::class)]
@@ -44,11 +45,9 @@ final class EventLoaderTest extends UnitTestCase
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
 
         $this->serializer->expects($this->once())
-            ->method('unserializeContent')
+            ->method('deserializePayload')
             ->with((array) $event)
-            ->will($this->returnCallback(function () use ($expectedEvent) {
-                yield $expectedEvent;
-            }));
+            ->willReturn($expectedEvent);
 
         $eventLoader = new EventLoader($this->serializer);
 
@@ -64,9 +63,9 @@ final class EventLoaderTest extends UnitTestCase
     #[Test]
     public function it_raise_exception_when_no_stream_event_has_been_yield(): void
     {
-        $this->expectException(StreamNotFound::class);
+        $this->expectException(NoStreamEventReturn::class);
 
-        $this->serializer->expects($this->never())->method('unserializeContent');
+        $this->serializer->expects($this->never())->method('deserializePayload');
 
         $eventLoader = new EventLoader($this->serializer);
 
@@ -90,14 +89,12 @@ final class EventLoaderTest extends UnitTestCase
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
 
         $this->serializer->expects($this->once())
-            ->method('unserializeContent')
+            ->method('deserializePayload')
             ->with((array) $event)
-            ->will($this->returnCallback(function () use ($expectedEvent) {
-                yield $expectedEvent;
-            }));
+            ->willReturn($expectedEvent);
 
         $this->serializer->expects($this->once())
-            ->method('unserializeContent')
+            ->method('deserializePayload')
             ->with((array) $event)
             ->will($this->throwException($queryException));
 
@@ -123,14 +120,12 @@ final class EventLoaderTest extends UnitTestCase
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
 
         $this->serializer->expects($this->once())
-            ->method('unserializeContent')
+            ->method('deserializePayload')
             ->with((array) $event)
-            ->will($this->returnCallback(function () use ($expectedEvent) {
-                yield $expectedEvent;
-            }));
+            ->willReturn($expectedEvent);
 
         $this->serializer->expects($this->once())
-            ->method('unserializeContent')
+            ->method('deserializePayload')
             ->with((array) $event)
             ->will($this->throwException($queryException));
 

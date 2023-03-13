@@ -34,13 +34,9 @@ final class LazyQueryLoaderTest extends UnitTestCase
 
         $serializer = $this->createMock(StreamEventSerializer::class);
         $serializer->expects($this->once())
-            ->method('unserializeContent')
+            ->method('deserializePayload')
             ->with(['some' => 'payload'])
-            ->will($this->returnCallback(function () use ($someEvent) {
-                yield $someEvent;
-
-                return 1;
-            }));
+            ->willReturn($someEvent);
 
         $eventLoader = new EventLoader($serializer);
 

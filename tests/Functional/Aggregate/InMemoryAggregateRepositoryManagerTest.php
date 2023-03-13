@@ -20,12 +20,12 @@ use Chronhub\Storm\Stream\SingleStreamPerAggregate;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Larastorm\Aggregate\AggregateTaggedCache;
-use Chronhub\Larastorm\Providers\AggregateServiceProvider;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootChildStub;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootFinalStub;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Larastorm\Providers\AggregateRepositoryServiceProvider;
 use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as AggregateRepositoryContract;
@@ -312,7 +312,7 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
     {
         return [
             ChroniclerServiceProvider::class,
-            AggregateServiceProvider::class,
+            AggregateRepositoryServiceProvider::class,
         ];
     }
 }

@@ -32,7 +32,7 @@ class EventStoreDatabaseFactory
             $connection,
             $this->container[$streamPersistence],
             $this->eventLoaderFactory->createEventLoader($queryLoader),
-            $this->determineEventStreamProvider(),
+            $this->determineEventStreamProvider($connection),
             $this->container[StreamCategory::class],
             $this->lockFactory->createLock($connection, $lock),
         ];
@@ -47,10 +47,15 @@ class EventStoreDatabaseFactory
         $this->container = $container;
     }
 
-    protected function determineEventStreamProvider(): EventStreamProvider
+    protected function determineEventStreamProvider(Connection $connection): EventStreamProvider
     {
-        return $this->container->bound(EventStreamProvider::class)
-            ? $this->container[EventStreamProvider::class]
-            : new EventStream();
+        if ($this->container->bound(EventStreamProvider::class)) {
+            return $this->container[EventStreamProvider::class];
+        }
+
+        $model = new EventStream();
+        $model->setConnection($connection->getName());
+
+        return $model;
     }
 }

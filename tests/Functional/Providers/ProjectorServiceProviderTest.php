@@ -6,15 +6,14 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Artisan;
-use Chronhub\Larastorm\Projection\Projection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Larastorm\Projection\ConnectionQueryScope;
 use Chronhub\Storm\Contracts\Projector\ProjectorOption;
 use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
-use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
 use Chronhub\Storm\Projector\Options\InMemoryProjectorOption;
 use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
@@ -37,7 +36,9 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
                 'projector' => 'connection',
             ],
             'providers' => [
-                'eloquent' => Projection::class,
+                'eloquent' => [
+                    'connection' => 'pgsql',
+                ],
                 'in_memory' => InMemoryProjectionProvider::class,
             ],
             'projectors' => [

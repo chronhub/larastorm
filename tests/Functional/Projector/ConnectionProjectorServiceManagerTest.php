@@ -71,7 +71,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
     public function it_raise_exception_if_projection_provider_key_is_not_defined(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Projector provider key is not defined');
+        $this->expectExceptionMessage('Projection provider is not defined');
 
         $this->assertEquals('eloquent', $this->app['config']->get('projector.projectors.connection.default.provider'));
 

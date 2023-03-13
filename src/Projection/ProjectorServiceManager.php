@@ -134,11 +134,24 @@ final class ProjectorServiceManager implements ServiceManager
     {
         $projectionProvider = $this->container['config']["projector.providers.$providerKey"] ?? null;
 
-        if (! is_string($projectionProvider)) {
-            throw new InvalidArgumentException('Projector provider key is not defined');
+        if ($projectionProvider === null) {
+            throw new InvalidArgumentException('Projection provider is not defined');
         }
 
-        return $this->container[$projectionProvider];
+        if (is_string($projectionProvider)) {
+            return $this->container[$projectionProvider];
+        }
+
+        $connectionName = $projectionProvider['connection'] ?? null;
+
+        if ($connectionName === null) {
+            throw new InvalidArgumentException('Projection provider connection name is not defined');
+        }
+
+        $model = new Projection();
+        $model->setConnection($connectionName);
+
+        return $model;
     }
 
     private function determineProjectorOptions(?string $optionKey): array|ProjectorOption

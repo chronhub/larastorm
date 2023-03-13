@@ -17,24 +17,19 @@ use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
-use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
-use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 
 class ChroniclerServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     protected string $chroniclerPath = __DIR__.'/../../config/chronicler.php';
 
-    protected string $repositoryPath = __DIR__.'/../../config/aggregate.php';
-
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([$this->chroniclerPath => config_path('chronicler.php')]);
-            $this->publishes([$this->repositoryPath => config_path('aggregate.php')]);
 
             $loadMigration = config('chronicler.console.load_migration');
 
@@ -49,13 +44,12 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
     public function register(): void
     {
         $this->mergeConfigFrom($this->chroniclerPath, 'chronicler');
-        $this->mergeConfigFrom($this->repositoryPath, 'aggregate');
 
         $this->registerSerializer();
 
         $this->registerBindings();
 
-        $this->registerManagers();
+        $this->registerManager();
 
         $this->registerProviders();
     }
@@ -97,7 +91,7 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         );
     }
 
-    protected function registerManagers(): void
+    protected function registerManager(): void
     {
         $this->app->singleton(ChroniclerManager::class, function (Application $app): ChroniclerManager {
             $eventStoreManager = new EventStoreManager(fn (): Container => $app);
@@ -110,11 +104,6 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
         });
 
         $this->app->alias(ChroniclerManager::class, Chronicle::SERVICE_ID);
-
-        $this->app->singleton(
-            RepositoryManager::class,
-            fn (Application $app): RepositoryManager => new AggregateRepositoryManager(fn () => $app)
-        );
     }
 
     public function provides(): array
@@ -124,7 +113,6 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             StreamCategory::class,
             ChroniclerManager::class,
             Chronicle::SERVICE_ID,
-            RepositoryManager::class,
             InMemoryChroniclerProvider::class,
             ConnectionChroniclerProvider::class,
         ];

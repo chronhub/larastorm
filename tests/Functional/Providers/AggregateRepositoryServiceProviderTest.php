@@ -7,12 +7,12 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\Providers\AggregateServiceProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
+use Chronhub\Larastorm\Providers\AggregateRepositoryServiceProvider;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 
-#[CoversClass(AggregateServiceProvider::class)]
-class AggregateServiceProviderTest extends OrchestraTestCase
+#[CoversClass(AggregateRepositoryServiceProvider::class)]
+class AggregateRepositoryServiceProviderTest extends OrchestraTestCase
 {
     public function it_fix_configuration(): void
     {
@@ -50,7 +50,7 @@ class AggregateServiceProviderTest extends OrchestraTestCase
     #[Test]
     public function it_assert_provides(): void
     {
-        $provider = $this->app->getProvider(AggregateServiceProvider::class);
+        $provider = $this->app->getProvider(AggregateRepositoryServiceProvider::class);
 
         $this->assertEquals([RepositoryManager::class], $provider->provides());
     }
@@ -58,7 +58,7 @@ class AggregateServiceProviderTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            AggregateServiceProvider::class,
+            AggregateRepositoryServiceProvider::class,
         ];
     }
 }

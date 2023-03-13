@@ -10,7 +10,7 @@ use Illuminate\Contracts\Support\DeferrableProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 
-class AggregateServiceProvider extends ServiceProvider implements DeferrableProvider
+class AggregateRepositoryServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     protected string $repositoryPath = __DIR__.'/../../config/aggregate.php';
 

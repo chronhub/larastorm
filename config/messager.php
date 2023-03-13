@@ -6,18 +6,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | System Clock
-    |--------------------------------------------------------------------------
-    |
-    | Default provide datetime immutable and UTC Timezone which is basically a requirement
-    | It use the monotonic clock from Symfony to generate time instance
-    |
-    */
-
-    'clock' => \Chronhub\Storm\Clock\PointInTime::class,
-
-    /*
-    |--------------------------------------------------------------------------
     | Unique identifier
     |--------------------------------------------------------------------------
     |

@@ -13,9 +13,9 @@ use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
 use Chronhub\Storm\Serializer\DomainEventSerializer;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Publisher\EventPublisherSubscriber;
 use Chronhub\Storm\Chronicler\TrackTransactionalStream;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
@@ -46,7 +46,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             ],
             'providers' => [
                 'connection' => [
-                    'write' => [
+                    'publish' => [
                         'store' => 'pgsql',
                         'tracking' => [
                             'tracker_id' => TrackTransactionalStream::class,
@@ -130,7 +130,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            MessagerServiceProvider::class,
+            ClockServiceProvider::class,
             ChroniclerServiceProvider::class,
         ];
     }

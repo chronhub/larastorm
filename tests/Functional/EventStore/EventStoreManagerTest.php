@@ -15,9 +15,9 @@ use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Illuminate\Container\EntryNotFoundException;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Chronicler\TrackTransactionalStream;
 use Chronhub\Larastorm\EventStore\Loader\LazyQueryLoader;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Storm\Contracts\Chronicler\StreamSubscriber;
 use Chronhub\Larastorm\EventStore\WriteLock\FakeWriteLock;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
@@ -540,7 +540,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            MessagerServiceProvider::class, // required for datetime normalizer
+            ClockServiceProvider::class,
             ChroniclerServiceProvider::class,
         ];
     }

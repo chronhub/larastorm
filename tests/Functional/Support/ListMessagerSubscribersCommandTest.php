@@ -25,6 +25,7 @@ use Chronhub\Storm\Reporter\Subscribers\MakeMessage;
 use Chronhub\Larastorm\Providers\CqrsServiceProvider;
 use Chronhub\Storm\Reporter\Subscribers\ConsumeEvent;
 use Chronhub\Storm\Reporter\Subscribers\ConsumeQuery;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Contracts\Tracker\MessageSubscriber;
 use Chronhub\Storm\Reporter\Subscribers\ConsumeCommand;
 use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
@@ -142,6 +143,10 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
 
     protected function getPackageProviders($app): array
     {
-        return [MessagerServiceProvider::class, CqrsServiceProvider::class];
+        return [
+            ClockServiceProvider::class,
+            MessagerServiceProvider::class,
+            CqrsServiceProvider::class,
+        ];
     }
 }

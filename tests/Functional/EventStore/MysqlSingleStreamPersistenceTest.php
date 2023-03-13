@@ -20,7 +20,7 @@ use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Message\EventHeader;
 use Chronhub\Storm\Serializer\JsonSerializerFactory;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 use Chronhub\Larastorm\EventStore\Persistence\AbstractStreamPersistence;
@@ -164,6 +164,6 @@ final class MysqlSingleStreamPersistenceTest extends OrchestraTestCase
 
     protected function getPackageProviders($app): array
     {
-        return [MessagerServiceProvider::class];
+        return [ClockServiceProvider::class];
     }
 }

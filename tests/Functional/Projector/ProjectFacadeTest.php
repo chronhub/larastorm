@@ -8,8 +8,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Projection\ProjectorServiceManager as ServiceManager;
@@ -59,7 +59,7 @@ final class ProjectFacadeTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            MessagerServiceProvider::class,
+            ClockServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

@@ -9,9 +9,9 @@ use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Container\Container;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
@@ -111,7 +111,7 @@ final class InMemoryProvideProjectorServiceManagerTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            MessagerServiceProvider::class,
+            ClockServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

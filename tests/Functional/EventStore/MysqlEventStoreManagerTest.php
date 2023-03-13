@@ -14,8 +14,8 @@ use Chronhub\Larastorm\EventStore\MysqlEventStore;
 use Chronhub\Storm\Stream\DetermineStreamCategory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Chronicler\TrackTransactionalStream;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\EventStore\Persistence\EventStream;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
@@ -180,7 +180,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            MessagerServiceProvider::class,
+            ClockServiceProvider::class,
             ChroniclerServiceProvider::class,
         ];
     }

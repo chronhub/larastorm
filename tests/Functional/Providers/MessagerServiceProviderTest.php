@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
-use Chronhub\Storm\Clock\PointInTime;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Message\MessageFactory;
-use Chronhub\Larastorm\Support\Facade\Clock;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Contracts\Message\UniqueId;
 use Chronhub\Storm\Message\AliasFromClassName;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
 use Chronhub\Storm\Serializer\MessagingSerializer;
 use Chronhub\Larastorm\Support\UniqueId\UniqueIdV4;
 use Chronhub\Storm\Reporter\Subscribers\MakeMessage;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\Support\MessageDecorator\EventId;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Support\MessageDecorator\EventTime;
@@ -54,10 +52,6 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
     #[Test]
     public function it_assert_bindings(): void
     {
-        $this->assertTrue($this->app->bound(SystemClock::class));
-        $this->assertTrue($this->app->bound(Clock::SERVICE_ID));
-        $this->assertInstanceOf(PointInTime::class, $this->app[SystemClock::class]);
-
         $this->assertTrue($this->app->bound(Factory::class));
         $this->assertInstanceOf(MessageFactory::class, $this->app[Factory::class]);
 
@@ -77,8 +71,6 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
         $provider = $this->app->getProvider(MessagerServiceProvider::class);
 
         $this->assertEquals([
-            SystemClock::class,
-            Clock::SERVICE_ID,
             Factory::class,
             MessageSerializer::class,
             MessageAlias::class,
@@ -88,6 +80,9 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
 
     protected function getPackageProviders($app): array
     {
-        return [MessagerServiceProvider::class];
+        return [
+            ClockServiceProvider::class,
+            MessagerServiceProvider::class,
+        ];
     }
 }

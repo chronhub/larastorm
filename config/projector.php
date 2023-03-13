@@ -48,7 +48,7 @@ return [
         'connection' => [
 
             'default' => [
-                'chronicler' => ['connection', 'write'],
+                'chronicler' => ['connection', 'publish'],
                 'dispatcher' => true,
                 'options' => 'default',
                 'provider' => 'eloquent',

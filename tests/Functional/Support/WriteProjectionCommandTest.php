@@ -16,11 +16,11 @@ use Chronhub\Storm\Projector\ProjectionStatus;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
-use Chronhub\Storm\Contracts\Projector\ProjectorManager;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
-use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Projector\InMemoryQueryScope;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
+use Chronhub\Storm\Contracts\Projector\ProjectorManager;
+use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Contracts\Projector\PersistentProjector;
 use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
@@ -171,7 +171,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return[
-            MessagerServiceProvider::class,
+            ClockServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

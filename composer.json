@@ -52,13 +52,16 @@
   },
   "extra": {
     "laravel": {
+      "providers" : [
+        "Chronhub\\Larastorm\\Providers\\ClockServiceProvider"
+      ],
       "dont-discover": [
-        "\\Chronhub\\Larastorm\\Providers\\MessagerServiceProvider",
-        "\\Chronhub\\Larastorm\\Providers\\CqrsServiceProvider",
-        "\\Chronhub\\Larastorm\\Providers\\ChroniclerServiceProvider",
-        "\\Chronhub\\Larastorm\\Providers\\AggregateRepositoryServiceProvider",
-        "\\Chronhub\\Larastorm\\Providers\\ProjectorServiceProvider",
-        "\\Chronhub\\Larastorm\\Providers\\LarastormServiceProvider"
+        "Chronhub\\Larastorm\\Providers\\MessagerServiceProvider",
+        "Chronhub\\Larastorm\\Providers\\CqrsServiceProvider",
+        "Chronhub\\Larastorm\\Providers\\ChroniclerServiceProvider",
+        "Chronhub\\Larastorm\\Providers\\AggregateRepositoryServiceProvider",
+        "Chronhub\\Larastorm\\Providers\\ProjectorServiceProvider",
+        "Chronhub\\Larastorm\\Providers\\LarastormServiceProvider"
       ]
     }
   },

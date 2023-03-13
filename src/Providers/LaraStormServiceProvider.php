@@ -9,6 +9,7 @@ use Illuminate\Support\AggregateServiceProvider;
 class LaraStormServiceProvider extends AggregateServiceProvider
 {
     protected $providers = [
+        ClockServiceProvider::class,
         MessagerServiceProvider::class,
         CqrsServiceProvider::class,
         ChroniclerServiceProvider::class,

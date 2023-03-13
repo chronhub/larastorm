@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Support\Facade\Clock;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 
 #[CoversClass(Clock::class)]
 final class ClockFacadeTest extends OrchestraTestCase
@@ -72,6 +72,6 @@ final class ClockFacadeTest extends OrchestraTestCase
 
     protected function getPackageProviders($app): array
     {
-        return [MessagerServiceProvider::class];
+        return [ClockServiceProvider::class];
     }
 }

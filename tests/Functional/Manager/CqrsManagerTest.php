@@ -14,6 +14,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Larastorm\Providers\CqrsServiceProvider;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
@@ -86,6 +87,7 @@ class CqrsManagerTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
+            ClockServiceProvider::class,
             MessagerServiceProvider::class,
             CqrsServiceProvider::class,
         ];

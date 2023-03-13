@@ -15,11 +15,11 @@ use Chronhub\Larastorm\Support\Facade\Project;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
-use Chronhub\Storm\Contracts\Projector\ProjectorManager;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
-use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Projector\InMemoryQueryScope;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
+use Chronhub\Storm\Contracts\Projector\ProjectorManager;
+use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
 use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
@@ -140,7 +140,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return[
-            MessagerServiceProvider::class,
+            ClockServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

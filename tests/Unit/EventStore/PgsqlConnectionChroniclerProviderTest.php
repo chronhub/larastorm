@@ -11,9 +11,9 @@ use Chronhub\Storm\Chronicler\EventChronicler;
 use Chronhub\Storm\Contracts\Tracker\Listener;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\EventStore\PgsqlEventStore;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\EventStore\EventStoreConnection;
 use Chronhub\Storm\Chronicler\TrackTransactionalStream;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Storm\Contracts\Chronicler\StreamSubscriber;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
@@ -202,7 +202,7 @@ class PgsqlConnectionChroniclerProviderTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            MessagerServiceProvider::class,
+            ClockServiceProvider::class,
             ChroniclerServiceProvider::class,
         ];
     }

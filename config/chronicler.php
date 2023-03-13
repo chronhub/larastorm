@@ -61,7 +61,7 @@ return [
     'providers' => [
 
         'connection' => [
-            'write' => [
+            'publish' => [
                 'store' => 'pgsql',
                 'tracking' => [
                     'tracker_id' => \Chronhub\Storm\Chronicler\TrackTransactionalStream::class,

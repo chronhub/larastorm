@@ -16,6 +16,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Larastorm\Providers\CqrsServiceProvider;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 
@@ -112,6 +113,7 @@ final class ReportFacadeTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
+            ClockServiceProvider::class,
             MessagerServiceProvider::class,
             CqrsServiceProvider::class,
         ];

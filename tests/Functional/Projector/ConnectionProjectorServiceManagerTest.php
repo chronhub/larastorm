@@ -8,8 +8,8 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
@@ -26,7 +26,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
         parent::setUp();
 
         // remove subs from chronicler config for basic test
-        $this->app['config']->set('chronicler.providers.connection.write.tracking.subscribers', []);
+        $this->app['config']->set('chronicler.providers.connection.publish.tracking.subscribers', []);
 
         $this->serviceManager = $this->app[ServiceManager::class];
         $this->assertEquals(ProjectorServiceManager::class, $this->serviceManager::class);
@@ -113,7 +113,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            MessagerServiceProvider::class,
+            ClockServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

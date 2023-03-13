@@ -83,4 +83,18 @@ return [
     'subscribers' => [
         \Chronhub\Storm\Reporter\Subscribers\MakeMessage::class,
     ],
+
+    /*
+   |--------------------------------------------------------------------------
+   | Console
+   |--------------------------------------------------------------------------
+   |
+   */
+
+    'console' => [
+
+        'commands' => [
+            \Chronhub\Larastorm\Support\Console\ListMessagerSubscribersCommand::class,
+        ],
+    ],
 ];

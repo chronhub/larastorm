@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use PHPUnit\Framework\Attributes\Test;
+use Illuminate\Support\Facades\Artisan;
 use Chronhub\Storm\Message\MessageFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Contracts\Message\UniqueId;
@@ -22,6 +23,7 @@ use Chronhub\Larastorm\Support\MessageDecorator\EventType;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Chronhub\Storm\Contracts\Message\MessageFactory as Factory;
+use Chronhub\Larastorm\Support\Console\ListMessagerSubscribersCommand;
 
 #[CoversClass(MessagerServiceProvider::class)]
 final class MessagerServiceProviderTest extends OrchestraTestCase
@@ -46,6 +48,11 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
             'subscribers' => [
                 MakeMessage::class,
             ],
+            'console' => [
+                'commands' => [
+                    ListMessagerSubscribersCommand::class,
+                ],
+            ],
         ], config('messager'));
     }
 
@@ -63,6 +70,8 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
 
         $this->assertTrue($this->app->bound(UniqueId::class));
         $this->assertInstanceOf(UniqueIdV4::class, $this->app[UniqueId::class]);
+
+        $this->assertArrayHasKey('messager:subscribers', Artisan::all());
     }
 
     #[Test]

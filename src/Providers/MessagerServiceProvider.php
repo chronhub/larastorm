@@ -21,6 +21,8 @@ class MessagerServiceProvider extends ServiceProvider implements DeferrableProvi
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([$this->messagerPath => config_path('messager.php')]);
+
+            $this->commands(config('messager.console.commands', []));
         }
     }
 

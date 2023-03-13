@@ -32,7 +32,6 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
     public function it_fix_messager_configuration(): void
     {
         $this->assertEquals([
-            'clock' => PointInTime::class,
             'unique_id' => UniqueIdV4::class,
             'factory' => MessageFactory::class,
             'alias' => AliasFromClassName::class,

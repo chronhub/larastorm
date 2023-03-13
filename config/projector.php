@@ -17,7 +17,7 @@ return [
     |
     | Eloquent: use default projection model as projection provider
     |           connection: database connection name (laravel config)
-    |                       must match with chronicler connection
+    |                       should match with chronicler connection
     |
     | passing a service id instead of array will be resolved from ioc
     */

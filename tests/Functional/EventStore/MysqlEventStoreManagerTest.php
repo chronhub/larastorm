@@ -32,6 +32,7 @@ use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 
 #[CoversClass(EventStoreManager::class)]
+#[CoversClass(EventStoreConnectionProvider::class)]
 final class MysqlEventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;

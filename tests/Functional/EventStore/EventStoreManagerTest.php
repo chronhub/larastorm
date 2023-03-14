@@ -35,6 +35,7 @@ use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\PerAggregateStreamPersistence;
 
 #[CoversClass(EventStoreManager::class)]
+#[CoversClass(EventStoreConnectionProvider::class)]
 final class EventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;

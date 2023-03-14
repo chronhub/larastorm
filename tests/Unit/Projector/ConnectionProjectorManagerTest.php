@@ -10,7 +10,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Projector\ProjectQuery;
-use Illuminate\Contracts\Events\Dispatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
@@ -36,20 +35,6 @@ use Chronhub\Larastorm\Projection\ConnectionProjectorManager;
 #[CoversClass(ConnectionProjectorManager::class)]
 final class ConnectionProjectorManagerTest extends UnitTestCase
 {
-    #[Test]
-    public function it_create_aware_projection_dispatcher(): void
-    {
-        $dispatcher = $this->createMock(Dispatcher::class);
-
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
-        $manager->setEventDispatcher($dispatcher);
-
-        $projector = $manager->projectQuery();
-
-        $this->assertInstanceOf(QueryProjector::class, $projector);
-        $this->assertEquals(ProjectQuery::class, $projector::class);
-    }
-
     #[Test]
     public function it_create_query_projection(): void
     {

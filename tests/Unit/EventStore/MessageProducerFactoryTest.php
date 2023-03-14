@@ -43,7 +43,7 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $container->instance('message_producer.service', $instance);
 
         $group = new CommandGroup('default', $this->routes);
-        $group->withProducerServiceId('message_producer.service');
+        $group->withProducerId('message_producer.service');
 
         $factory = new MessageProducerFactory(fn () => $container);
 
@@ -56,7 +56,7 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $container = $this->createMock(Container::class);
 
         $group = new CommandGroup('default', $this->routes);
-        $this->assertNull($group->producerServiceId());
+        $this->assertNull($group->producerId());
 
         $container->expects($this->exactly(3))
             ->method('offsetGet')
@@ -89,7 +89,7 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $group = new CommandGroup('default', $this->routes);
         $group->withQueue(['foo' => 'bar']);
 
-        $this->assertNull($group->producerServiceId());
+        $this->assertNull($group->producerId());
 
         $container->expects($this->exactly(3))
             ->method('offsetGet')

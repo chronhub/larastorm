@@ -22,7 +22,7 @@ final class CommandReporterManagerTest extends CqrsManagerTest
         $reporterName = 'default';
 
         $group = $this->registrar->make($this->domainType, 'default');
-        $group->withProducerStrategy('sync');
+        $group->withStrategy('sync');
 
         $reporter = $this->manager->create($this->domainType->value, $reporterName);
 
@@ -40,8 +40,8 @@ final class CommandReporterManagerTest extends CqrsManagerTest
         $group = $this->registrar->make($this->domainType, 'default');
         $anotherGroup = $this->registrar->make($this->domainType, 'another');
 
-        $group->withProducerStrategy('sync');
-        $anotherGroup->withProducerStrategy('sync');
+        $group->withStrategy('sync');
+        $anotherGroup->withStrategy('sync');
 
         $reporter = $this->manager->create($this->domainType->value, 'default');
         $anotherReporter = $this->manager->create($this->domainType->value, 'another');
@@ -63,12 +63,12 @@ final class CommandReporterManagerTest extends CqrsManagerTest
         $anotherGroup = $this->registrar->make($this->domainType, 'another');
 
         $group
-            ->withReporterServiceId('reporter.default')
-            ->withProducerStrategy('sync');
+            ->withReporterId('reporter.default')
+            ->withStrategy('sync');
 
         $anotherGroup
-            ->withReporterServiceId('reporter.another')
-            ->withProducerStrategy('sync');
+            ->withReporterId('reporter.another')
+            ->withStrategy('sync');
 
         $reporter = $this->manager->create($this->domainType->value, 'default');
         $anotherReporter = $this->manager->command('another');

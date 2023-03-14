@@ -25,7 +25,7 @@ class MessageProducerFactory
 
     public function createMessageProducer(Group $group): MessageProducer
     {
-        $producerId = $group->producerServiceId();
+        $producerId = $group->producerId();
 
         if (is_string($producerId)) {
             return $this->container[$producerId];

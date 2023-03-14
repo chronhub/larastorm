@@ -47,8 +47,8 @@ class CqrsManagerTest extends OrchestraTestCase
         $group = $this->registrar->make($domainType, 'default');
 
         $group
-            ->withTrackerId('reporter.tracker')
-            ->withProducerStrategy('sync');
+            ->withStrategy('sync')
+            ->withTrackerId('reporter.tracker');
 
         $reporter = $this->manager->create($domainType->value, 'default');
 

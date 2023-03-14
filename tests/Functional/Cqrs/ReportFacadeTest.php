@@ -46,7 +46,7 @@ final class ReportFacadeTest extends OrchestraTestCase
     {
         $this->registrar
             ->make(DomainType::COMMAND, 'default')
-            ->withProducerStrategy('sync');
+            ->withStrategy('sync');
 
         $reporter = Report::create('command', 'default');
 
@@ -61,7 +61,7 @@ final class ReportFacadeTest extends OrchestraTestCase
     {
         $this->registrar
             ->make(DomainType::COMMAND, 'default')
-            ->withProducerStrategy('sync');
+            ->withStrategy('sync');
 
         $reporter = Report::command('default');
 
@@ -73,7 +73,7 @@ final class ReportFacadeTest extends OrchestraTestCase
     {
         $this->registrar
             ->make(DomainType::EVENT, 'default')
-            ->withProducerStrategy('sync');
+            ->withStrategy('sync');
 
         $reporter = Report::event('default');
 
@@ -85,7 +85,7 @@ final class ReportFacadeTest extends OrchestraTestCase
     {
         $this->registrar
             ->make(DomainType::QUERY, 'default')
-            ->withProducerStrategy('sync');
+            ->withStrategy('sync');
 
         $reporter = Report::query('default');
 
@@ -97,7 +97,7 @@ final class ReportFacadeTest extends OrchestraTestCase
     {
         $this->registrar
             ->make(DomainType::COMMAND, 'default')
-            ->withProducerStrategy('sync');
+            ->withStrategy('sync');
 
         $reporter = Report::create('command', 'default');
 

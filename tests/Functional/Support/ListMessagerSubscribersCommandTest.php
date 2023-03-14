@@ -53,8 +53,8 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
         $this->app->resolving(Registrar::class, function (Registrar $registrar) use ($name, $consumerFqn): void {
             $registrar
                 ->make(DomainType::from($name), 'default')
-                ->withProducerStrategy('sync')
-                ->withMessageSubscribers($consumerFqn);
+                ->withStrategy('sync')
+                ->withSubscribers($consumerFqn);
         });
 
         $genericListener = class_basename(GenericListener::class);
@@ -106,8 +106,8 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
         $this->app->resolving(Registrar::class, function (Registrar $registrar) use ($dispatchedEvents): void {
             $registrar
                 ->make(DomainType::from('event'), 'default')
-                ->withProducerStrategy('sync')
-                ->withMessageSubscribers(ConsumeEvent::class, $dispatchedEvents);
+                ->withStrategy('sync')
+                ->withSubscribers(ConsumeEvent::class, $dispatchedEvents);
         });
 
         $genericListener = class_basename(GenericListener::class);

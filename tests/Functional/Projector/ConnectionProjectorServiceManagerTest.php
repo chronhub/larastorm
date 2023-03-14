@@ -73,7 +73,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Projection provider is not defined');
 
-        $this->assertEquals('eloquent', $this->app['config']->get('projector.projectors.connection.default.provider'));
+        $this->assertEquals('connection', $this->app['config']->get('projector.projectors.connection.default.provider'));
 
         $this->app['config']->set('projector.projectors.connection.default.provider', null);
 
@@ -90,9 +90,9 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Projection provider connection name is not defined');
 
-        $this->assertEquals('eloquent', $this->app['config']->get('projector.projectors.connection.default.provider'));
+        $this->assertEquals('connection', $this->app['config']->get('projector.projectors.connection.default.provider'));
 
-        $this->app['config']->set('projector.providers.eloquent', []);
+        $this->app['config']->set('projector.providers.connection', []);
 
         $this->serviceManager->setDefaultDriver('connection');
 

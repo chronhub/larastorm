@@ -17,13 +17,14 @@ use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
 use function ucfirst;
 use function is_array;
-use function is_string;
 
 final class ProjectorServiceManager implements ServiceManager
 {
     private Container $container;
 
     private readonly EventStoreResolver $eventStoreResolver;
+
+    private readonly ProjectionProviderFactory $projectionProviderFactory;
 
     /**
      * @var array<string, ProjectorManager>
@@ -39,6 +40,7 @@ final class ProjectorServiceManager implements ServiceManager
     {
         $this->container = $container();
         $this->eventStoreResolver = new EventStoreResolver($container);
+        $this->projectionProviderFactory = new ProjectionProviderFactory($container);
     }
 
     public function create(string $name): ProjectorManager
@@ -138,20 +140,7 @@ final class ProjectorServiceManager implements ServiceManager
             throw new InvalidArgumentException('Projection provider is not defined');
         }
 
-        if (is_string($projectionProvider)) {
-            return $this->container[$projectionProvider];
-        }
-
-        $connectionName = $projectionProvider['connection'] ?? null;
-
-        if ($connectionName === null) {
-            throw new InvalidArgumentException('Projection provider connection name is not defined');
-        }
-
-        $model = new Projection();
-        $model->setConnection($connectionName);
-
-        return $model;
+        return $this->projectionProviderFactory->createProvider($projectionProvider);
     }
 
     private function determineProjectorOptions(?string $optionKey): array|ProjectorOption

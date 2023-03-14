@@ -119,16 +119,15 @@ final class EventStoreConnectionProvider extends AbstractChroniclerProvider
     }
 
     /**
-     * @param  array{strategy: string, query_loader: string|null, write_lock: bool|null}  $config
+     * @param  array{
+     *     strategy: string,
+     *     query_loader: string|null,
+     *     write_lock: bool|null,
+     *     event_stream_provider: null|string
+     * }  $config
      */
     private function createStandaloneStore(Connection $connection, array $config, bool $isTransactional): ChroniclerDB
     {
-        return $this->storeDatabaseFactory->createStore(
-            $connection,
-            $config['strategy'],
-            $config['query_loader'] ?? null,
-            $config['write_lock'] ?? false,
-            $isTransactional
-        );
+        return $this->storeDatabaseFactory->createStore($connection, $isTransactional, $config);
     }
 }

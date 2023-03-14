@@ -36,8 +36,9 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
                 'projector' => 'connection',
             ],
             'providers' => [
-                'eloquent' => [
-                    'connection' => 'pgsql',
+                'connection' => [
+                    'name' => 'pgsql',
+                    'table' => 'projections',
                 ],
                 'in_memory' => InMemoryProjectionProvider::class,
             ],
@@ -47,14 +48,14 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
                         'chronicler' => ['connection', 'publish'],
                         'dispatcher' => true,
                         'options' => 'default',
-                        'provider' => 'eloquent',
+                        'provider' => 'connection',
                         'scope' => ConnectionQueryScope::class,
                     ],
                     'emit' => [
                         'chronicler' => ['connection', 'read'],
                         'dispatcher' => true,
                         'options' => 'default',
-                        'provider' => 'eloquent',
+                        'provider' => 'connection',
                         'scope' => ConnectionQueryScope::class,
                     ],
                 ],

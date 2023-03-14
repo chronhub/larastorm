@@ -27,6 +27,18 @@ return [
     'defaults' => [
         'provider' => 'connection',
 
+        /**
+         * connection is normally provided by the event store unless you switch to your own service id
+         *
+         * you can add a table key to change the table name but,
+         * you should also change the migration and disable migration below
+         *
+         * @see \Chronhub\Larastorm\EventStore\Persistence\EventStreamProvider::TABLE_NAME
+         */
+        'event_stream_provider' => [
+            //'connection' => ['table_name' => 'event_streams'],
+        ],
+
         'providers' => [
             'connection' => \Chronhub\Larastorm\EventStore\EventStoreConnectionProvider::class,
             'in_memory' => \Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider::class,
@@ -40,15 +52,15 @@ return [
     |
     |   store: laravel configuration connection name
     |
-    |   cursor: CursorQueryLoader
-    |       lazy: LazyQueryLoader or lazy:1000 to configure chunkSize
-    |       or your own string service id
+    |   cursor : CursorQueryLoader
+    |           lazy: LazyQueryLoader or lazy:1000 to configure chunkSize
+    |           or your own string service id
     |
-    |   strategy: (required)
-    |       available pgsql and mysql stream persistence
-    |       or your own service id
+    |   strategy : (required)
+    |           available pgsql and mysql stream persistence
+    |           or your own service id
     |
-    |   write_lock: (optional : default fake write lock)
+    |   write_lock : (optional : default fake write lock)
     |       true: use default write lock depends on driver
     |       false: a fake write lock
     |       string: your own service
@@ -56,6 +68,8 @@ return [
     |   is_transactional: (only for connection)
     |       required when you need a standalone/transactional (not eventable e.g. no stream tracker) chronicler instance
     |
+    |   event_stream_provider: (only for connection)
+    |       provide your own event stream provider key defined above or use the default connection
     */
 
     'providers' => [

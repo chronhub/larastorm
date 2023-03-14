@@ -16,7 +16,6 @@ use Chronhub\Larastorm\EventStore\EventStoreManager;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Chronicler\TrackTransactionalStream;
-use Chronhub\Larastorm\EventStore\Persistence\EventStream;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
 use Chronhub\Larastorm\EventStore\WriteLock\PgsqlWriteLock;
@@ -28,6 +27,7 @@ use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
 use Chronhub\Larastorm\EventStore\PgsqlTransactionalEventStore;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
+use Chronhub\Larastorm\EventStore\Persistence\EventStreamProvider;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 
@@ -87,9 +87,8 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
         $eventLoader = ReflectionProperty::getProperty($concreteEventStore, 'eventLoader');
         $this->assertEquals(CursorQueryLoader::class, $eventLoader::class);
 
-        // checkMe last two not part of config
         $eventStreamProvider = ReflectionProperty::getProperty($concreteEventStore, 'eventStreamProvider');
-        $this->assertInstanceOf(EventStream::class, $eventStreamProvider);
+        $this->assertInstanceOf(EventStreamProvider::class, $eventStreamProvider);
 
         $streamCategory = ReflectionProperty::getProperty($concreteEventStore, 'streamCategory');
         $this->assertInstanceOf(DetermineStreamCategory::class, $streamCategory);

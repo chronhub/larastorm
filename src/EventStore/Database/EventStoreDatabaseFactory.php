@@ -9,32 +9,30 @@ use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
 use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
-use Chronhub\Larastorm\EventStore\Persistence\EventStream;
-use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
+use Chronhub\Larastorm\EventStore\Persistence\EventStreamProviderFactory;
 
 class EventStoreDatabaseFactory
 {
     protected Container $container;
 
     public function __construct(protected readonly LockFactory $lockFactory,
-                                protected readonly EventLoaderConnectionFactory $eventLoaderFactory)
+                                protected readonly EventLoaderConnectionFactory $eventLoaderFactory,
+                                protected readonly EventStreamProviderFactory $eventStreamProviderFactory)
     {
     }
 
     public function createStore(Connection $connection,
-                                string $streamPersistence,
-                                null|bool|string $queryLoader,
-                                bool|string $lock,
-                                bool $isTransactional): ChroniclerDB
+                                bool $isTransactional,
+                                array $config): ChroniclerDB
     {
         $args = [
             $connection,
-            $this->container[$streamPersistence],
-            $this->eventLoaderFactory->createEventLoader($queryLoader),
-            $this->determineEventStreamProvider($connection),
+            $this->container[$config['strategy']],
+            $this->eventLoaderFactory->createEventLoader($config['query_loader'] ?? null),
+            $this->eventStreamProviderFactory->createProvider($connection, $config['event_stream_provider'] ?? null),
             $this->container[StreamCategory::class],
-            $this->lockFactory->createLock($connection, $lock),
+            $this->lockFactory->createLock($connection, $config['write_lock'] ?? null),
         ];
 
         return $isTransactional
@@ -44,17 +42,5 @@ class EventStoreDatabaseFactory
     public function setContainer(Container $container): void
     {
         $this->container = $container;
-    }
-
-    protected function determineEventStreamProvider(Connection $connection): EventStreamProvider
-    {
-        if ($this->container->bound(EventStreamProvider::class)) {
-            return $this->container[EventStreamProvider::class];
-        }
-
-        $model = new EventStream();
-        $model->setConnection($connection->getName());
-
-        return $model;
     }
 }

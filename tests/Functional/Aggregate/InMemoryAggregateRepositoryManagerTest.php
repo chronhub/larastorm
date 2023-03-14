@@ -8,12 +8,12 @@ use Illuminate\Cache\RedisStore;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Cache\Repository;
 use Chronhub\Storm\Aggregate\AggregateType;
+use Illuminate\Contracts\Container\Container;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Storm\Aggregate\NullAggregateCache;
 use Chronhub\Storm\Stream\OneStreamPerAggregate;
-use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Aggregate\AggregateRepository;
 use Chronhub\Storm\Message\ChainMessageDecorator;
 use Chronhub\Storm\Stream\SingleStreamPerAggregate;
@@ -23,6 +23,7 @@ use Chronhub\Larastorm\Aggregate\AggregateTaggedCache;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootChildStub;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootFinalStub;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
+use Chronhub\Larastorm\Aggregate\AggregateRepositoryFactory;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Larastorm\Providers\AggregateRepositoryServiceProvider;
@@ -254,9 +255,10 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $mock = $this->createMock(AggregateRepositoryContract::class);
 
         $this->repositoryManager->extends('withdraw',
-            function (Application $app, string $streamName, array $config) use ($expectedConfig, $mock) {
+            function (Container $app, string $streamName, array $config, AggregateRepositoryFactory $factory) use ($expectedConfig, $mock) {
                 $this->assertEquals($expectedConfig, $config);
                 $this->assertEquals('withdraw', $streamName);
+                $this->assertInstanceOf(AggregateRepositoryFactory::class, $factory);
 
                 return $mock;
             });

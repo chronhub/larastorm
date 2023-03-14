@@ -8,29 +8,17 @@ use Closure;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Aggregate\AggregateRepository;
-use Chronhub\Storm\Message\ChainMessageDecorator;
-use Chronhub\Larastorm\EventStore\EventStoreResolver;
-use Chronhub\Storm\Contracts\Message\MessageDecorator;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as Repository;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as Manager;
 use function ucfirst;
-use function array_map;
-use function is_string;
-use function array_merge;
 use function method_exists;
 
 final class AggregateRepositoryManager implements Manager
 {
     private readonly Container $container;
 
-    private readonly EventStoreResolver $eventStoreResolver;
-
-    private readonly AggregateCacheFactory $aggregateCacheFactory;
-
-    private readonly AggregateTypeFactory $aggregateTypeFactory;
-
-    private readonly StreamProducerFactory $streamProducerFactory;
+    private readonly AggregateRepositoryFactory $factory;
 
     /**
      * @var array<Repository>
@@ -38,17 +26,14 @@ final class AggregateRepositoryManager implements Manager
     private array $repositories = [];
 
     /**
-     * @var array<non-empty-string, callable(Container, non-empty-string, array): AggregateRepository>
+     * @var array<non-empty-string, callable(Container, non-empty-string, array, AggregateRepositoryFactory): AggregateRepository>
      */
     private array $customCreators = [];
 
     public function __construct(Closure $container)
     {
         $this->container = $container();
-        $this->eventStoreResolver = new EventStoreResolver($container);
-        $this->aggregateTypeFactory = new AggregateTypeFactory($container);
-        $this->aggregateCacheFactory = new AggregateCacheFactory();
-        $this->streamProducerFactory = new StreamProducerFactory();
+        $this->factory = new AggregateRepositoryFactory($container);
     }
 
     /**
@@ -73,7 +58,7 @@ final class AggregateRepositoryManager implements Manager
         }
 
         if (isset($this->customCreators[$streamName])) {
-            return $this->customCreators[$streamName]($this->container, $streamName, $config);
+            return $this->customCreators[$streamName]($this->container, $streamName, $config, $this->factory);
         }
 
         return $this->callAggregateRepository($streamName, $config);
@@ -95,41 +80,23 @@ final class AggregateRepositoryManager implements Manager
 
     private function createGenericRepositoryDriver(string $streamName, array $config): Repository
     {
-        $eventStore = $this->eventStoreResolver->resolve($config['chronicler']);
+        $eventStore = $this->factory->eventStoreResolver->resolve($config['chronicler']);
 
-        $aggregateType = $this->aggregateTypeFactory->createType($config['aggregate_type']);
+        $aggregateType = $this->factory->aggregateTypeFactory->createType($config['aggregate_type']);
 
-        $streamProducer = $this->streamProducerFactory->createStreamProducer($streamName, $config['strategy'] ?? null);
+        $streamProducer = $this->factory->streamProducerFactory->createStreamProducer(
+            $streamName, $config['strategy'] ?? null
+        );
 
-        $aggregateCache = $this->aggregateCacheFactory->createCache(
+        $aggregateCache = $this->factory->aggregateCacheFactory->createCache(
             $aggregateType->current(),
             $config['cache']['size'] ?? 0,
             $config['cache']['tag'] ?? null,
             $config['cache']['driver'] ?? null
         );
 
-        $eventDecorators = $this->makeEventDecorators($config['event_decorators'] ?? []);
+        $eventDecorators = $this->factory->chainMessageDecorator($config['event_decorators'] ?? []);
 
         return new AggregateRepository($eventStore, $streamProducer, $aggregateCache, $aggregateType, $eventDecorators);
-    }
-
-    private function makeEventDecorators(array $aggregateEventDecorators = []): MessageDecorator
-    {
-        $eventDecorators = [];
-
-        if ($this->container['config']['aggregate.repository.use_messager_decorators'] === true) {
-            $eventDecorators = $this->container['config']['messager.decorators'] ?? [];
-        }
-
-        $eventDecorators = array_map(
-            fn (string|MessageDecorator $decorator) => is_string($decorator) ? $this->container[$decorator] : $decorator,
-            array_merge(
-                $eventDecorators,
-                $this->container['config']['aggregate.repository.event_decorators'] ?? [],
-                $aggregateEventDecorators
-            )
-        );
-
-        return new ChainMessageDecorator(...$eventDecorators);
     }
 }

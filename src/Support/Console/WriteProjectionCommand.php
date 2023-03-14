@@ -44,6 +44,7 @@ final class WriteProjectionCommand extends Command
 
     private function processProjection(string $streamName, string $operation): void
     {
+        /** @phpstan-ignore-next-line */
         match ($operation) {
             'stop' => $this->projector->stop($streamName),
             'reset' => $this->projector->reset($streamName),

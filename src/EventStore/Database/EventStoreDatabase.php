@@ -65,9 +65,9 @@ class EventStoreDatabase extends AbstractEventStoreDatabase
     public function delete(StreamName $streamName): void
     {
         try {
-            $result = $this->eventStreamProvider->deleteStream($streamName->name);
+            $deleted = $this->eventStreamProvider->deleteStream($streamName->name);
 
-            if (! $result) {
+            if (! $deleted) {
                 throw StreamNotFound::withStreamName($streamName);
             }
         } catch (QueryException $exception) {

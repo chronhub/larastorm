@@ -13,6 +13,7 @@ use Chronhub\Storm\Reporter\ReportEvent;
 use Chronhub\Storm\Reporter\ReportQuery;
 use Chronhub\Storm\Tracker\TrackMessage;
 use Chronhub\Storm\Reporter\ReportCommand;
+use Chronhub\Storm\Message\DecorateMessage;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Storm\Contracts\Routing\Registrar;
@@ -25,7 +26,6 @@ use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Storm\Contracts\Tracker\MessageSubscriber;
 use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
 use Chronhub\Storm\Reporter\Subscribers\NameReporterService;
-use Chronhub\Larastorm\Support\MessageDecorator\DecorateMessage;
 use function array_map;
 use function is_string;
 

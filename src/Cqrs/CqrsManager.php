@@ -107,10 +107,10 @@ final readonly class CqrsManager implements ReporterManager
      */
     private function makeMessageSubscribers(Group $group, string $reporterClass): array
     {
-        $reporterServiceId = $group->reporterId() ?? $group->reporterConcrete() ?? $reporterClass;
+        $reporterId = $group->reporterId() ?? $group->reporterConcrete() ?? $reporterClass;
 
         return $this->resolveServices([
-            new NameReporterService($reporterServiceId),
+            new NameReporterService($reporterId),
             $this->container['config']->get('messager.subscribers', []),
             $group->subscribers(),
             $this->chainMessageDecorators($group),

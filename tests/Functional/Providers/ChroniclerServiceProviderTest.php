@@ -20,7 +20,7 @@ use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
 use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
@@ -40,7 +40,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             'defaults' => [
                 'provider' => 'connection',
                 'providers' => [
-                    'connection' => ConnectionChroniclerProvider::class,
+                    'connection' => EventStoreConnectionProvider::class,
                     'in_memory' => InMemoryChroniclerProvider::class,
                 ],
             ],
@@ -109,7 +109,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
         $this->assertTrue($this->app->bound(Chronicle::SERVICE_ID));
 
         $this->assertTrue($this->app->bound(InMemoryChroniclerProvider::class));
-        $this->assertTrue($this->app->bound(ConnectionChroniclerProvider::class));
+        $this->assertTrue($this->app->bound(EventStoreConnectionProvider::class));
     }
 
     #[Test]
@@ -123,7 +123,7 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             ChroniclerManager::class,
             Chronicle::SERVICE_ID,
             InMemoryChroniclerProvider::class,
-            ConnectionChroniclerProvider::class,
+            EventStoreConnectionProvider::class,
         ], $provider->provides());
     }
 

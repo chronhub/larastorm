@@ -27,7 +27,7 @@ use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
-use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
@@ -64,7 +64,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
 
@@ -88,7 +88,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
 
@@ -138,7 +138,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
 
@@ -173,7 +173,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'is_transactional' => false,
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
 
@@ -199,7 +199,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'is_transactional' => true,
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
 
@@ -230,7 +230,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertNull(config('chronicler.providers.connection.write.is_transactional'));
 
         $this->manager
-            ->shouldUse('connection', ConnectionChroniclerProvider::class)
+            ->shouldUse('connection', EventStoreConnectionProvider::class)
             ->create('write');
     }
 
@@ -253,7 +253,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
 
@@ -281,7 +281,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $this->manager->create('write');
     }
@@ -301,7 +301,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
         $this->assertInstanceOf(EventableChronicler::class, $eventStore);
@@ -330,7 +330,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
         $this->assertInstanceOf(EventableChronicler::class, $eventStore);
@@ -359,7 +359,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $this->manager->create('write');
     }
@@ -379,7 +379,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $this->manager->create('write');
     }
@@ -399,7 +399,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
         $this->assertInstanceOf(EventableChronicler::class, $eventStore);
@@ -428,7 +428,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
 
         $this->assertNull(config('chronicler.providers.connection.write.query_loader'));
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
         $this->assertInstanceOf(EventableChronicler::class, $eventStore);
@@ -457,7 +457,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'lazy',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
         $this->assertInstanceOf(EventableChronicler::class, $eventStore);
@@ -487,7 +487,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'lazy:10',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $eventStore = $this->manager->create('write');
         $this->assertInstanceOf(EventableChronicler::class, $eventStore);
@@ -520,7 +520,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', ConnectionChroniclerProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
         $this->manager->create('write');
     }

@@ -22,7 +22,7 @@ use function is_bool;
 use function ucfirst;
 use function method_exists;
 
-final class ConnectionChroniclerProvider extends AbstractChroniclerProvider
+final class EventStoreConnectionProvider extends AbstractChroniclerProvider
 {
     protected ContainerInterface|Container $container;
 

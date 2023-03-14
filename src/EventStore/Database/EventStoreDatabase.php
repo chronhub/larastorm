@@ -71,8 +71,6 @@ class EventStoreDatabase extends AbstractEventStoreDatabase
                 throw StreamNotFound::withStreamName($streamName);
             }
         } catch (QueryException $exception) {
-            // checkMe do we need 'not affected row' as it should be covered by false result above
-            // does the laravel query builder set 00000 as code and raise exception
             if ('00000' !== $exception->getCode()) {
                 throw $exception;
             }
@@ -83,8 +81,6 @@ class EventStoreDatabase extends AbstractEventStoreDatabase
                 $this->streamPersistence->tableName($streamName)
             );
         } catch (QueryException $exception) {
-            //checkMe handle stream not found when dropping table which not exist
-
             if ('00000' !== $exception->getCode()) {
                 throw $exception;
             }

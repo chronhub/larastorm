@@ -38,8 +38,7 @@ class EventStoreDatabaseFactory
         ];
 
         return $isTransactional
-            ? new EventStoreTransactionalDatabase(...$args)
-            : new EventStoreDatabase(...$args);
+            ? new EventStoreTransactionalDatabase(...$args) : new EventStoreDatabase(...$args);
     }
 
     public function setContainer(Container $container): void

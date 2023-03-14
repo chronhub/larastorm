@@ -18,7 +18,7 @@ use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Larastorm\EventStore\ConnectionChroniclerProvider;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 
@@ -79,8 +79,8 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
     protected function registerProviders(): void
     {
         $this->app->singleton(
-            ConnectionChroniclerProvider::class,
-            fn (Application $app): ChroniclerProvider => new ConnectionChroniclerProvider(
+            EventStoreConnectionProvider::class,
+            fn (Application $app): ChroniclerProvider => new EventStoreConnectionProvider(
                 fn () => $app, $app[EventStoreDatabaseFactory::class]
             )
         );
@@ -114,7 +114,7 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             ChroniclerManager::class,
             Chronicle::SERVICE_ID,
             InMemoryChroniclerProvider::class,
-            ConnectionChroniclerProvider::class,
+            EventStoreConnectionProvider::class,
         ];
     }
 }

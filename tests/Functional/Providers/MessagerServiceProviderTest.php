@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
+use Chronhub\Storm\Message\UniqueIdV4;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Artisan;
 use Chronhub\Storm\Message\MessageFactory;
@@ -16,7 +17,6 @@ use Chronhub\Storm\Message\Decorator\EventTime;
 use Chronhub\Storm\Message\Decorator\EventType;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
 use Chronhub\Storm\Serializer\MessagingSerializer;
-use Chronhub\Larastorm\Support\UniqueId\UniqueIdV4;
 use Chronhub\Storm\Reporter\Subscribers\MakeMessage;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;

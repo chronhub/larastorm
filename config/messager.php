@@ -17,7 +17,7 @@ return [
     | to feat the package used
     */
 
-    'unique_id' => \Chronhub\Larastorm\Support\UniqueId\UniqueIdV4::class,
+    'unique_id' => \Chronhub\Storm\Message\UniqueIdV4::class,
 
     /*
     |--------------------------------------------------------------------------

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Stubs;
 
 use Illuminate\Database\QueryException;
-use Chronhub\Larastorm\Tests\Double\SomeException;
+use Chronhub\Larastorm\Tests\Stubs\Double\SomeException;
 
 final class QueryExceptionStub extends QueryException
 {

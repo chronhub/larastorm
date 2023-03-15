@@ -28,9 +28,9 @@ use Chronhub\Larastorm\Tests\Stubs\AggregateRootFinalStub;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryFactory;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
-use Chronhub\Larastorm\Tests\Stubs\ExtendedAggregateRepositoryStub;
 use Chronhub\Larastorm\Providers\AggregateRepositoryServiceProvider;
 use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
+use Chronhub\Larastorm\Tests\Stubs\Dummy\DummyExtendedAggregateRepository;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as AggregateRepositoryContract;
 
@@ -96,7 +96,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
             'transaction' => [
                 'type' => [
                     'alias' => 'extended',
-                    'concrete' => ExtendedAggregateRepositoryStub::class,
+                    'concrete' => DummyExtendedAggregateRepository::class,
                 ],
                 'chronicler' => ['in_memory', 'standalone'],
                 'strategy' => 'single',
@@ -106,7 +106,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
 
         $aggregateRepository = $this->repositoryManager->create('transaction');
 
-        $this->assertEquals(ExtendedAggregateRepositoryStub::class, $aggregateRepository::class);
+        $this->assertEquals(DummyExtendedAggregateRepository::class, $aggregateRepository::class);
     }
 
     #[Test]
@@ -131,7 +131,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
 
         $aggregateRepository = $this->repositoryManager->create('transaction');
 
-        $this->assertEquals(ExtendedAggregateRepositoryStub::class, $aggregateRepository::class);
+        $this->assertEquals(DummyExtendedAggregateRepository::class, $aggregateRepository::class);
     }
 
     #[Test]
@@ -155,7 +155,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
 
         $aggregateRepository = $this->repositoryManager->create('transaction');
 
-        $this->assertEquals(ExtendedAggregateRepositoryStub::class, $aggregateRepository::class);
+        $this->assertEquals(DummyExtendedAggregateRepository::class, $aggregateRepository::class);
     }
 
     #[Test]

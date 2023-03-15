@@ -18,9 +18,9 @@ class MessageProducerFactory
 {
     private Container $container;
 
-    public function __construct(callable $app)
+    public function __construct(callable $container)
     {
-        $this->container = $app();
+        $this->container = $container();
     }
 
     public function createMessageProducer(Group $group): MessageProducer

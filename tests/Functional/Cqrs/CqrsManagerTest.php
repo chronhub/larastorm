@@ -17,15 +17,15 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Larastorm\Cqrs\MessageProducerFactory;
-use Chronhub\Larastorm\Tests\Dummy\SomeReportEvent;
-use Chronhub\Larastorm\Tests\Dummy\SomeReportQuery;
 use Chronhub\Larastorm\Providers\CqrsServiceProvider;
-use Chronhub\Larastorm\Tests\Dummy\SomeReportCommand;
 use Chronhub\Larastorm\Cqrs\MessageSubscribersFactory;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Tests\Stubs\Dummy\DummyReportEvent;
+use Chronhub\Larastorm\Tests\Stubs\Dummy\DummyReportQuery;
+use Chronhub\Larastorm\Tests\Stubs\Dummy\DummyReportCommand;
 
 #[CoversClass(CqrsManager::class)]
 #[CoversClass(MessageProducerFactory::class)]
@@ -62,7 +62,7 @@ class CqrsManagerTest extends OrchestraTestCase
     {
         $reporter = $this->manager->command('dummy');
 
-        $this->assertEquals(SomeReportCommand::class, $reporter::class);
+        $this->assertEquals(DummyReportCommand::class, $reporter::class);
     }
 
     #[Test]
@@ -86,7 +86,7 @@ class CqrsManagerTest extends OrchestraTestCase
     {
         $reporter = $this->manager->event('dummy');
 
-        $this->assertEquals(SomeReportEvent::class, $reporter::class);
+        $this->assertEquals(DummyReportEvent::class, $reporter::class);
     }
 
     #[Test]
@@ -110,7 +110,7 @@ class CqrsManagerTest extends OrchestraTestCase
     {
         $reporter = $this->manager->query('dummy');
 
-        $this->assertEquals(SomeReportQuery::class, $reporter::class);
+        $this->assertEquals(DummyReportQuery::class, $reporter::class);
     }
 
     #[DataProvider('provideDomainType')]
@@ -199,15 +199,15 @@ class CqrsManagerTest extends OrchestraTestCase
         $registrar->make(DomainType::QUERY, 'another')->withStrategy('sync');
 
         $registrar->make(DomainType::COMMAND, 'dummy')
-            ->withReporterConcrete(SomeReportCommand::class)
+            ->withReporterConcrete(DummyReportCommand::class)
             ->withStrategy('sync');
 
         $registrar->make(DomainType::EVENT, 'dummy')
-            ->withReporterConcrete(SomeReportEvent::class)
+            ->withReporterConcrete(DummyReportEvent::class)
             ->withStrategy('sync');
 
         $registrar->make(DomainType::QUERY, 'dummy')
-            ->withReporterConcrete(SomeReportQuery::class)
+            ->withReporterConcrete(DummyReportQuery::class)
             ->withStrategy('sync');
     }
 

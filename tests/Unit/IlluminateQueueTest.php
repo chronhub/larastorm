@@ -9,9 +9,9 @@ use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\Double\SomeCommand;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Chronhub\Larastorm\Support\Producer\MessageJob;
+use Chronhub\Larastorm\Tests\Stubs\Double\SomeCommand;
 use Chronhub\Larastorm\Support\Producer\IlluminateQueue;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 

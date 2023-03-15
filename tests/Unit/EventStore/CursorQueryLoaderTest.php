@@ -10,7 +10,7 @@ use Illuminate\Support\LazyCollection;
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\Double\SomeEvent;
+use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;

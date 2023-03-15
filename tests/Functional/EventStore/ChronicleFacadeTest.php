@@ -19,7 +19,7 @@ use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 final class ChronicleFacadeTest extends OrchestraTestCase
 {
     #[Test]
-    public function it_assert_root(): void
+    public function it_test_facade_root(): void
     {
         $root = Chronicle::getFacadeRoot();
 

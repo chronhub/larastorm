@@ -187,13 +187,11 @@ final class EventStreamProviderTest extends OrchestraTestCase
         }
 
         $this->provider->createStream('operation', $this->tableName);
-
         $this->provider->createStream('$all', $this->tableName);
 
         $expectedCategories = ['add', 'divide', 'subtract'];
 
         $this->assertEquals($expectedCategories, $this->provider->filterByCategories(['transaction']));
-
         $this->assertEquals($streamNames, $this->provider->filterByStreams($streamNames));
 
         $this->assertEquals([

@@ -33,7 +33,7 @@ final class ReportFacadeTest extends OrchestraTestCase
     }
 
     #[Test]
-    public function it_assert_root(): void
+    public function it_test_facade_root(): void
     {
         $root = Report::getFacadeRoot();
 

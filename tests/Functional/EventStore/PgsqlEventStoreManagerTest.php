@@ -49,11 +49,10 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
     #[Test]
     public function it_return_transactional_eventable_instance(): void
     {
-        $this->app['config']->set('chronicler.providers.connection.write', [
+        $this->app['config']->set('chronicler.providers.connection.publisher', [
             'store' => 'pgsql',
             'tracking' => [
                 'tracker_id' => TrackTransactionalStream::class,
-                'subscribers' => [],
             ],
             'write_lock' => true,
             'strategy' => PgsqlSingleStreamPersistence::class,
@@ -62,7 +61,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
 
         $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
-        $eventStore = $this->manager->create('write');
+        $eventStore = $this->manager->create('publisher');
 
         $this->assertInstanceOf(TransactionalChronicler::class, $eventStore);
         $this->assertInstanceOf(EventableChronicler::class, $eventStore);
@@ -97,20 +96,17 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
     #[Test]
     public function it_return_eventable_instance(): void
     {
-        $this->app['config']->set('chronicler.providers.connection.write', [
+        $this->app['config']->set('chronicler.providers.connection.publisher', [
             'store' => 'pgsql',
             'tracking' => [
                 'tracker_id' => TrackStream::class,
-                'subscribers' => [],
             ],
-            'write_lock' => true,
             'strategy' => PgsqlSingleStreamPersistence::class,
-            'query_loader' => 'cursor',
         ]);
 
         $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
-        $eventStore = $this->manager->create('write');
+        $eventStore = $this->manager->create('publisher');
 
         $this->assertNotInstanceOf(TransactionalChronicler::class, $eventStore);
         $this->assertInstanceOf(EventableChronicler::class, $eventStore);
@@ -126,21 +122,18 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
     #[Test]
     public function it_return_standalone_instance(): void
     {
-        $this->app['config']->set('chronicler.providers.connection.write', [
+        $this->app['config']->set('chronicler.providers.connection.publisher', [
             'store' => 'pgsql',
             'tracking' => [
                 'tracker_id' => null,
-                'subscribers' => [],
             ],
-            'write_lock' => true,
             'strategy' => PgsqlSingleStreamPersistence::class,
-            'query_loader' => 'cursor',
             'is_transactional' => false,
         ]);
 
         $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
 
-        $eventStore = $this->manager->create('write');
+        $eventStore = $this->manager->create('publisher');
 
         $this->assertNotInstanceOf(TransactionalChronicler::class, $eventStore);
         $this->assertNotInstanceOf(EventableChronicler::class, $eventStore);
@@ -156,11 +149,8 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
             'store' => 'pgsql',
             'tracking' => [
                 'tracker_id' => null,
-                'subscribers' => [],
             ],
-            'write_lock' => true,
             'strategy' => PgsqlSingleStreamPersistence::class,
-            'query_loader' => 'cursor',
             'is_transactional' => true,
         ]);
 

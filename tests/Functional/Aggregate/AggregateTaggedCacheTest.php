@@ -42,7 +42,7 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
     }
 
     #[Test]
-    public function it_assert_aggregate_exists_in_cache_by_aggregate_id(): void
+    public function it_assert_aggregate_is_cached(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
@@ -52,7 +52,7 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
     }
 
     #[Test]
-    public function it_assert_aggregate_does_not_exists_in_cache_by_aggregate_id(): void
+    public function it_assert_aggregate_is_not_cached(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
@@ -60,7 +60,7 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
     }
 
     #[Test]
-    public function it_put_aggregate_in_cache_and_increment_counter(): void
+    public function it_cache_aggregate_and_increment_counter(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 

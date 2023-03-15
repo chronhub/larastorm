@@ -17,7 +17,7 @@ use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 final class EventStoreResolverTest extends OrchestraTestCase
 {
     #[Test]
-    public function it_return_event_store_instance_from_string(): void
+    public function it_create_event_store_instance_from_string_service(): void
     {
         $instance = Chronicle::setDefaultDriver('in_memory')->create('standalone');
 

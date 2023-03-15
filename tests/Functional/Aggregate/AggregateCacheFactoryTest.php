@@ -37,11 +37,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
     {
         $factory = new AggregateCacheFactory();
 
-        $aggregateCache = $factory->createCache(
-            AggregateRootStub::class,
-            1000,
-            'my_tag'
-        );
+        $aggregateCache = $factory->createCache(AggregateRootStub::class, 1000, 'my_tag');
 
         $this->assertInstanceOf(AggregateTaggedCache::class, $aggregateCache);
 
@@ -56,11 +52,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
 
         $factory = new AggregateCacheFactory();
 
-        $factory->createCache(AggregateRootStub::class,
-            1,
-            null,
-            'redis'
-        );
+        $factory->createCache(AggregateRootStub::class, 1, null, 'redis');
     }
 
     #[DataProvider('provideValuesForNullAggregateCache')]

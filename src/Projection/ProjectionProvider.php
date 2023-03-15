@@ -65,12 +65,8 @@ final readonly class ProjectionProvider implements Provider
         }
 
         return new Projection(
-            $result['name'],
-            $result['status'],
-            $result['position'],
-            $result['state'],
-            $result['locked_until']
-        );
+            $result['name'], $result['status'], $result['position'],
+            $result['state'], $result['locked_until']);
     }
 
     public function filterByNames(string ...$names): array

@@ -12,7 +12,7 @@ use Chronhub\Storm\Tracker\TrackMessage;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(CqrsManager::class)]
-final class EventReporterManagerTest extends CqrsManagerTest
+final class EventReporterManagerTest extends AbstractReporterManagerSetup
 {
     private DomainType $domainType = DomainType::EVENT;
 

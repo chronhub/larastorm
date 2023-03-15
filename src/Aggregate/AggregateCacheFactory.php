@@ -28,7 +28,7 @@ final class AggregateCacheFactory
 
         $store = Cache::store($driver ?? null);
 
-        $tag ??= 'identity-'.Str::snake(class_basename($aggregateRoot));
+        $tag ??= 'aggregate-'.Str::snake(class_basename($aggregateRoot));
 
         return new AggregateTaggedCache($store, $tag, $size);
     }

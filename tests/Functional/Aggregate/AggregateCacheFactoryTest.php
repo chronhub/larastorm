@@ -28,7 +28,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
 
         $this->assertInstanceOf(AggregateTaggedCache::class, $aggregateCache);
 
-        $this->assertEquals('identity-aggregate_root_stub', $aggregateCache->tag);
+        $this->assertEquals('aggregate-aggregate_root_stub', $aggregateCache->tag);
         $this->assertEquals(10, $aggregateCache->limit);
     }
 

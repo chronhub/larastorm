@@ -12,7 +12,7 @@ use Chronhub\Storm\Reporter\ReportCommand;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(CqrsManager::class)]
-final class CommandReporterManagerTest extends CqrsManagerTest
+final class CommandReporterManagerTest extends AbstractReporterManagerSetup
 {
     private DomainType $domainType = DomainType::COMMAND;
 

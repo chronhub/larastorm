@@ -92,7 +92,7 @@ return [
 
                     /**
                      *  Unique Cache tag name per stream name
-                     *  null tag will provide a default tag like {identity-aggregate_root_base_name}
+                     *  null tag will provide a default tag like {aggregate-snake(aggregate_root_base_name)}
                      */
                     'tag' => null,
 

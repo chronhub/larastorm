@@ -36,7 +36,7 @@ use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as AggregateRepositor
 
 #[CoversClass(AggregateRepositoryManager::class)]
 #[CoversClass(AggregateRepositoryFactory::class)]
-final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
+final class AggregateRepositoryManagerTest extends OrchestraTestCase
 {
     private AggregateRepositoryManager $repositoryManager;
 

@@ -35,13 +35,12 @@ final readonly class EventStreamProvider implements Provider
 
     public function filterByStreams(array $streamNames): array
     {
+        $toStrings = array_map(function (string|StreamName $streamName): string {
+            return $streamName instanceof StreamName ? $streamName->name : $streamName;
+        }, $streamNames);
+
         return $this->newQuery()
-            ->whereIn(
-                'real_stream_name',
-                array_map(
-                    static fn (string|StreamName $streamName): string => $streamName instanceof StreamName ? $streamName->name : $streamName,
-                    $streamNames)
-            )
+            ->whereIn('real_stream_name', $toStrings)
             ->orderBy('real_stream_name')
             ->get()
             ->pluck('real_stream_name')

@@ -49,7 +49,7 @@ class MessageSubscribersFactory
         ]);
     }
 
-    private function makeRouteSubscriber(Group $group): MessageSubscriber
+    protected function makeRouteSubscriber(Group $group): MessageSubscriber
     {
         $routeLocator = new FindRoute($group, $this->container[MessageAlias::class], $this->container);
 
@@ -58,7 +58,7 @@ class MessageSubscribersFactory
         return new HandleRoute($routeLocator, $messageProducer, $this->container[ProducerUnity::class]);
     }
 
-    private function chainMessageDecorators(Group $group): MessageSubscriber
+    protected function chainMessageDecorators(Group $group): MessageSubscriber
     {
         $messageDecorators = [
             new ProducerMessageDecorator($group->strategy()),

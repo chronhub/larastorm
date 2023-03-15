@@ -46,7 +46,6 @@ return [
                  * Available keys type:
                  *
                  *  generic  : will return a generic aggregate repository
-                 *
                  *  extended : will return an extended aggregate repository with your fqn class
                  *
                  * @see \Chronhub\Storm\Aggregate\AggregateRepository
@@ -92,7 +91,7 @@ return [
 
                     /**
                      *  Unique Cache tag name per stream name
-                     *  null tag will provide a default tag like {aggregate-snake(aggregate_root_base_name)}
+                     *  null tag will provide a default tag like {aggregate-aggregate_root_base_name}
                      */
                     'tag' => null,
 

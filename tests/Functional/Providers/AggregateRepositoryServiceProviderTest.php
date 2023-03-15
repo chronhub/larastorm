@@ -14,6 +14,7 @@ use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryM
 #[CoversClass(AggregateRepositoryServiceProvider::class)]
 class AggregateRepositoryServiceProviderTest extends OrchestraTestCase
 {
+    #[Test]
     public function it_fix_configuration(): void
     {
         $this->assertEquals([
@@ -22,7 +23,10 @@ class AggregateRepositoryServiceProviderTest extends OrchestraTestCase
                 'event_decorators' => [],
                 'repositories' => [
                     'my_stream_name' => [
-                        'repository' => 'generic',
+                        'type' => [
+                            'alias' => 'generic',
+                            // 'service' => 'your service id for setter or concrete for extended'
+                        ],
                         'chronicler' => ['connection', 'write'],
                         'strategy' => 'single',
                         'aggregate_type' => [

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Aggregate;
 
+use stdClass;
+use InvalidArgumentException;
 use Illuminate\Cache\RedisStore;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Cache\Repository;
@@ -20,18 +22,20 @@ use Chronhub\Storm\Stream\SingleStreamPerAggregate;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Larastorm\Aggregate\AggregateTaggedCache;
+use Chronhub\Storm\Aggregate\AbstractAggregateRepository;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootChildStub;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootFinalStub;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryFactory;
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
-use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Larastorm\Tests\Stubs\ExtendedAggregateRepositoryStub;
 use Chronhub\Larastorm\Providers\AggregateRepositoryServiceProvider;
 use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as AggregateRepositoryContract;
 
 #[CoversClass(AggregateRepositoryManager::class)]
+#[CoversClass(AggregateRepositoryFactory::class)]
 final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
 {
     private AggregateRepositoryManager $repositoryManager;
@@ -50,7 +54,9 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
 
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
-                'repository' => 'generic',
+                'type' => [
+                    'alias' => 'generic',
+                ],
                 'chronicler' => ['in_memory', 'standalone'],
                 'strategy' => 'single',
                 'aggregate_type' => [
@@ -82,19 +88,89 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
     }
 
     #[Test]
+    public function it_return_a_extended_aggregate_repository(): void
+    {
+        $this->assertTrue($this->app['config']['aggregate.repository.use_messager_decorators']);
+
+        $this->app['config']->set('aggregate.repository.repositories', [
+            'transaction' => [
+                'type' => [
+                    'alias' => 'extended',
+                    'concrete' => ExtendedAggregateRepositoryStub::class,
+                ],
+                'chronicler' => ['in_memory', 'standalone'],
+                'strategy' => 'single',
+                'aggregate_type' => AggregateRootStub::class,
+            ],
+        ]);
+
+        $aggregateRepository = $this->repositoryManager->create('transaction');
+
+        $this->assertEquals(ExtendedAggregateRepositoryStub::class, $aggregateRepository::class);
+    }
+
+    #[Test]
+    public function it_raise_exception_when_extended_aggregate_repository_is_not_extend_abstract(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Extended repository must be a subclass of '.AbstractAggregateRepository::class);
+
+        $this->assertTrue($this->app['config']['aggregate.repository.use_messager_decorators']);
+
+        $this->app['config']->set('aggregate.repository.repositories', [
+            'transaction' => [
+                'type' => [
+                    'alias' => 'extended',
+                    'concrete' => stdClass::class,
+                ],
+                'chronicler' => ['in_memory', 'standalone'],
+                'strategy' => 'single',
+                'aggregate_type' => AggregateRootStub::class,
+            ],
+        ]);
+
+        $aggregateRepository = $this->repositoryManager->create('transaction');
+
+        $this->assertEquals(ExtendedAggregateRepositoryStub::class, $aggregateRepository::class);
+    }
+
+    #[Test]
+    public function it_raise_exception_when_extended_aggregate_repository_service_key_missing(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Missing concrete key for aggregate repository with stream name transaction');
+
+        $this->assertTrue($this->app['config']['aggregate.repository.use_messager_decorators']);
+
+        $this->app['config']->set('aggregate.repository.repositories', [
+            'transaction' => [
+                'type' => [
+                    'alias' => 'extended',
+                ],
+                'chronicler' => ['in_memory', 'standalone'],
+                'strategy' => 'single',
+                'aggregate_type' => AggregateRootStub::class,
+            ],
+        ]);
+
+        $aggregateRepository = $this->repositoryManager->create('transaction');
+
+        $this->assertEquals(ExtendedAggregateRepositoryStub::class, $aggregateRepository::class);
+    }
+
+    #[Test]
     public function it_define_aggregate_cache(): void
     {
         $this->assertTrue($this->app['config']['aggregate.repository.use_messager_decorators']);
 
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
-                'repository' => 'generic',
+                'type' => [
+                    'alias' => 'generic',
+                ],
                 'chronicler' => ['in_memory', 'standalone'],
                 'strategy' => 'single',
-                'aggregate_type' => [
-                    'root' => AggregateRootStub::class,
-                    'lineage' => [],
-                ],
+                'aggregate_type' => AggregateRootStub::class,
                 'cache' => [
                     'size' => 2000,
                     'tag' => 'my_tag',
@@ -125,7 +201,9 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
     {
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
-                'repository' => 'generic',
+                'type' => [
+                    'alias' => 'generic',
+                ],
                 'chronicler' => ['in_memory', 'standalone'],
                 'strategy' => 'per_aggregate',
                 'aggregate_type' => [
@@ -150,13 +228,12 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
 
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
-                'repository' => 'generic',
+                'type' => [
+                    'alias' => 'generic',
+                ],
                 'chronicler' => 'event_store.in_memory.standalone',
                 'strategy' => 'single',
-                'aggregate_type' => [
-                    'root' => AggregateRootStub::class,
-                    'lineage' => [],
-                ],
+                'aggregate_type' => AggregateRootStub::class,
             ],
         ]);
 
@@ -171,7 +248,9 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
     {
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
-                'repository' => 'generic',
+                'type' => [
+                    'alias' => 'generic',
+                ],
                 'chronicler' => ['in_memory', 'standalone'],
                 'strategy' => 'single',
                 'aggregate_type' => AggregateRootStub::class,
@@ -196,7 +275,9 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
 
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
-                'repository' => 'generic',
+                'type' => [
+                    'alias' => 'generic',
+                ],
                 'chronicler' => ['in_memory', 'standalone'],
                 'strategy' => 'single',
                 'aggregate_type' => 'aggregate.type.transaction',
@@ -218,7 +299,9 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
     {
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
-                'repository' => 'generic',
+                'type' => [
+                    'alias' => 'generic',
+                ],
                 'chronicler' => ['in_memory', 'standalone'],
                 'strategy' => 'single',
                 'aggregate_type' => [
@@ -255,10 +338,9 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
         $mock = $this->createMock(AggregateRepositoryContract::class);
 
         $this->repositoryManager->extends('withdraw',
-            function (Container $app, string $streamName, array $config, AggregateRepositoryFactory $factory) use ($expectedConfig, $mock) {
+            function (Container $app, string $streamName, array $config) use ($expectedConfig, $mock) {
                 $this->assertEquals($expectedConfig, $config);
                 $this->assertEquals('withdraw', $streamName);
-                $this->assertInstanceOf(AggregateRepositoryFactory::class, $factory);
 
                 return $mock;
             });
@@ -300,7 +382,9 @@ final class InMemoryAggregateRepositoryManagerTest extends OrchestraTestCase
 
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
-                'repository' => 'generic',
+                'type' => [
+                    'alias' => 'generic',
+                ],
                 'chronicler' => ['in_memory', 'standalone'],
                 'strategy' => 'foo',
                 'aggregate_type' => AggregateRootStub::class,

@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Aggregate;
 
 use Closure;
-use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Aggregate\AggregateRepository;
-use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as Repository;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as Manager;
-use function ucfirst;
-use function method_exists;
 
 final class AggregateRepositoryManager implements Manager
 {
@@ -26,7 +23,7 @@ final class AggregateRepositoryManager implements Manager
     private array $repositories = [];
 
     /**
-     * @var array<non-empty-string, callable(Container, non-empty-string, array, AggregateRepositoryFactory): AggregateRepository>
+     * @var array<non-empty-string, callable(Container, non-empty-string, array): AggregateRepository>
      */
     private array $customCreators = [];
 
@@ -58,7 +55,7 @@ final class AggregateRepositoryManager implements Manager
         }
 
         if (isset($this->customCreators[$streamName])) {
-            return $this->customCreators[$streamName]($this->container, $streamName, $config, $this->factory);
+            return $this->customCreators[$streamName]($this->container, $streamName, $config);
         }
 
         return $this->callAggregateRepository($streamName, $config);
@@ -66,37 +63,36 @@ final class AggregateRepositoryManager implements Manager
 
     private function callAggregateRepository(string $streamName, array $config): Repository
     {
-        $driverMethod = 'create'.ucfirst(Str::camel($config['repository'].'RepositoryDriver'));
+        $driver = $config['type']['alias'] ?? null;
 
         /**
          * @covers createGenericRepositoryDriver
+         * @covers createExtendedRepositoryDriver
          */
-        if (method_exists($this, $driverMethod)) {
-            return $this->{$driverMethod}($streamName, $config);
-        }
+        $driverMethod = match ($driver) {
+            'generic' => 'createGenericRepositoryDriver',
+            'extended' => 'createExtendedRepositoryDriver',
+            default => throw new InvalidArgumentException("Aggregate repository with stream name $streamName is not defined"),
+        };
 
-        throw new InvalidArgumentException("Aggregate repository with stream name $streamName is not defined");
+        return $this->{$driverMethod}($streamName, $config);
     }
 
     private function createGenericRepositoryDriver(string $streamName, array $config): Repository
     {
-        $eventStore = $this->factory->eventStoreResolver->resolve($config['chronicler']);
+        return $this->factory->createRepository($streamName, $config);
+    }
 
-        $aggregateType = $this->factory->aggregateTypeFactory->createType($config['aggregate_type']);
+    private function createExtendedRepositoryDriver(string $streamName, array $config): Repository
+    {
+        $repositoryClass = $config['type']['concrete'] ?? null;
 
-        $streamProducer = $this->factory->streamProducerFactory->createStreamProducer(
-            $streamName, $config['strategy'] ?? null
-        );
+        if ($repositoryClass === null) {
+            throw new InvalidArgumentException(
+                "Missing concrete key for aggregate repository with stream name $streamName"
+            );
+        }
 
-        $aggregateCache = $this->factory->aggregateCacheFactory->createCache(
-            $aggregateType->current(),
-            $config['cache']['size'] ?? 0,
-            $config['cache']['tag'] ?? null,
-            $config['cache']['driver'] ?? null
-        );
-
-        $eventDecorators = $this->factory->chainMessageDecorator($config['event_decorators'] ?? []);
-
-        return new AggregateRepository($eventStore, $streamProducer, $aggregateCache, $aggregateType, $eventDecorators);
+        return $this->factory->createRepository($streamName, $config, $repositoryClass);
     }
 }

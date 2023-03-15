@@ -36,15 +36,26 @@ return [
         */
 
         'repositories' => [
+
             /**
              * Stream name
              */
             'my_stream_name' => [
 
                 /**
-                 * Return a default generic aggregate repository
+                 * Available keys type:
+                 *
+                 *  generic  : will return a generic aggregate repository
+                 *
+                 *  extended : will return an extended aggregate repository with your fqn class
+                 *
+                 * @see \Chronhub\Storm\Aggregate\AggregateRepository
+                 * @see \Chronhub\Storm\Aggregate\AbstractAggregateRepository
                  */
-                'repository' => 'generic',
+                'type' => [
+                    'alias' => 'generic',
+                    // 'concrete' => 'concrete for extended'
+                ],
 
                 /**
                  * Chronicler use by your aggregate repository

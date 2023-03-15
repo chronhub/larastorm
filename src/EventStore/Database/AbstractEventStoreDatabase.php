@@ -111,16 +111,16 @@ abstract class AbstractEventStoreDatabase implements ChroniclerDB
      */
     protected function createEventStream(StreamName $streamName): void
     {
-        $tableName = $this->streamPersistence->tableName($streamName);
-
-        $result = $this->eventStreamProvider->createStream(
+        $created = $this->eventStreamProvider->createStream(
             $streamName->name,
-            $tableName,
-            ($this->streamCategory)($streamName->name)
+            $this->streamPersistence->tableName($streamName),
+            $this->streamCategory->determineFrom($streamName->name)
         );
 
-        if (! $result) {
-            throw new ConnectionQueryFailure("Unable to insert data for stream $streamName in event stream table");
+        if (! $created) {
+            throw new ConnectionQueryFailure(
+                "Unable to insert data for stream $streamName in event stream table"
+            );
         }
     }
 }

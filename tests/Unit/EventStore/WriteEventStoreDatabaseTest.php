@@ -99,7 +99,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
             ->willReturn($tableName);
 
         $this->streamCategory->expects($this->once())
-            ->method('__invoke')
+            ->method('determineFrom')
             ->with($this->streamName->name)
             ->willReturn(null);
 
@@ -129,7 +129,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
             ->willReturn($tableName);
 
         $this->streamCategory->expects($this->once())
-            ->method('__invoke')
+            ->method('determineFrom')
             ->with($this->streamName->name)
             ->willReturn('admin');
 
@@ -162,7 +162,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
             ->willReturn($tableName);
 
         $this->streamCategory->expects($this->once())
-            ->method('__invoke')
+            ->method('determineFrom')
             ->with($this->streamName->name)
             ->willReturn(null);
 
@@ -189,7 +189,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
             ->willReturn($tableName);
 
         $this->streamCategory->expects($this->once())
-            ->method('__invoke')
+            ->method('determineFrom')
             ->with($this->streamName->name)
             ->willReturn(null);
 

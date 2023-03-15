@@ -6,6 +6,7 @@ namespace Chronhub\Larastorm\Cqrs;
 
 use Chronhub\Storm\Routing\Group;
 use Chronhub\Storm\Producer\ProduceMessage;
+use Chronhub\Storm\Producer\ProducerStrategy;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Chronhub\Storm\Contracts\Producer\ProducerUnity;
@@ -31,11 +32,15 @@ class MessageProducerFactory
             return $this->container[$producerId];
         }
 
-        $messageQueue = new IlluminateQueue(
-            $this->container[QueueingDispatcher::class],
-            $this->container[MessageSerializer::class],
-            $group->queue()
-        );
+        $messageQueue = null;
+
+        if ($group->strategy() !== ProducerStrategy::SYNC) {
+            $messageQueue = new IlluminateQueue(
+                $this->container[QueueingDispatcher::class],
+                $this->container[MessageSerializer::class],
+                $group->queue()
+            );
+        }
 
         return new ProduceMessage($this->container[ProducerUnity::class], $messageQueue);
     }

@@ -7,14 +7,18 @@ namespace Chronhub\Larastorm\EventStore\Loader;
 use Generator;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader as EventLoader;
 
 final readonly class LazyQueryLoader implements StreamEventLoaderConnection
 {
     public function __construct(private EventLoader $eventLoader,
-                                public int $chunkSize = 5000)
+                                public int $chunkSize = 1000)
     {
+        if ($chunkSize < 1) {
+            throw new InvalidArgumentException('Chunk size must be greater than 0');
+        }
     }
 
     public function query(Builder $builder, StreamName $streamName): Generator

@@ -16,6 +16,7 @@ use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\EventStore\Loader\LazyQueryLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 
 #[CoversClass(LazyQueryLoader::class)]
 final class LazyQueryLoaderTest extends UnitTestCase
@@ -51,10 +52,57 @@ final class LazyQueryLoaderTest extends UnitTestCase
         $this->assertEquals(1, $generator->getReturn());
     }
 
+    #[Test]
+    public function it_assert_default_chunk_size(): void
+    {
+        $serializer = $this->createMock(StreamEventSerializer::class);
+
+        $eventLoader = new EventLoader($serializer);
+
+        $lazyQueryLoader = new LazyQueryLoader($eventLoader);
+
+        $this->assertSame(1000, $lazyQueryLoader->chunkSize);
+    }
+
+    #[Test]
+    #[DataProvider('provideChunkSize')]
+    public function it_assert_chunk_size(int $chunkSize): void
+    {
+        $serializer = $this->createMock(StreamEventSerializer::class);
+
+        $eventLoader = new EventLoader($serializer);
+
+        $lazyQueryLoader = new LazyQueryLoader($eventLoader, $chunkSize);
+
+        $this->assertSame($chunkSize, $lazyQueryLoader->chunkSize);
+    }
+
+    #[Test]
+    #[DataProvider('provideInvalidChunkSize')]
+    public function it_raise_exception_when_chunk_size_is_less_than_one(int $invalidChunkSize): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Chunk size must be greater than 0');
+
+        $serializer = $this->createMock(StreamEventSerializer::class);
+
+        $eventLoader = new EventLoader($serializer);
+
+        $lazyQueryLoader = new LazyQueryLoader($eventLoader, $invalidChunkSize);
+
+        $this->assertSame($invalidChunkSize, $lazyQueryLoader->chunkSize);
+    }
+
     public static function provideChunkSize(): Generator
     {
         yield [1];
         yield [10];
         yield [100];
+    }
+
+    public static function provideInvalidChunkSize(): Generator
+    {
+        yield [0];
+        yield [-1];
     }
 }

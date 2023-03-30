@@ -6,7 +6,7 @@ namespace Chronhub\Larastorm\Projection\Events;
 
 final readonly class ProjectionStopped
 {
-    public function __construct(public readonly string $streamName)
+    public function __construct(public string $streamName)
     {
     }
 }

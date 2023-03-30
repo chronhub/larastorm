@@ -14,31 +14,31 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use Chronhub\Storm\Projector\ProjectReadModel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Storm\Projector\ProjectProjection;
 use Chronhub\Storm\Contracts\Projector\ReadModel;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Projector\QueryProjector;
 use Chronhub\Storm\Contracts\Projector\ProjectionModel;
-use Chronhub\Storm\Contracts\Projector\ProjectorOption;
 use Chronhub\Storm\Contracts\Serializer\JsonSerializer;
+use Chronhub\Storm\Contracts\Projector\ProjectionOption;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 use Chronhub\Storm\Contracts\Projector\ReadModelProjector;
 use Chronhub\Storm\Contracts\Projector\ProjectionProjector;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectionQueryScope;
-use Chronhub\Storm\Projector\Options\DefaultProjectorOption;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 use Chronhub\Larastorm\Projection\ConnectionProjectorManager;
+use Chronhub\Storm\Projector\Options\DefaultProjectionOption;
 
 #[CoversClass(ConnectionProjectorManager::class)]
 final class ConnectionProjectorManagerTest extends UnitTestCase
 {
-    #[Test]
-    public function it_create_query_projection(): void
+    public function testQueryProjection(): void
     {
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $projector = $manager->projectQuery();
 
@@ -46,10 +46,9 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
         $this->assertEquals(ProjectQuery::class, $projector::class);
     }
 
-    #[Test]
-    public function it_create_persistent_projection(): void
+    public function testPersistentProjection(): void
     {
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $projector = $manager->projectProjection('balance');
 
@@ -58,12 +57,11 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
         $this->assertEquals('balance', $projector->getStreamName());
     }
 
-    #[Test]
-    public function it_create_read_model_projection(): void
+    public function testReadModelProjection(): void
     {
         $readModel = $this->createMock(ReadModel::class);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $projector = $manager->projectReadModel('balance', $readModel);
 
@@ -73,8 +71,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
         $this->assertSame($readModel, $projector->readModel());
     }
 
-    #[Test]
-    public function it_fetch_status_of_stream(): void
+    public function testFetchStatusOfProjection(): void
     {
         $model = $this->createMock(ProjectionModel::class);
 
@@ -87,15 +84,14 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ->with('balance')
             ->willReturn($model);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $status = $manager->statusOf('balance');
 
         $this->assertEquals('running', $status);
     }
 
-    #[Test]
-    public function it_raise_exception_when_stream_on_status_not_found(): void
+    public function testExceptionRaisedWhenRetrieveStatusOfProjectionNotFound(): void
     {
         $this->expectException(ProjectionNotFound::class);
 
@@ -104,13 +100,12 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ->with('balance')
             ->willReturn(null);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->statusOf('balance');
     }
 
-    #[Test]
-    public function it_fetch_stream_positions_of_stream(): void
+    public function testFetchStreamPositionOfProjection(): void
     {
         $model = $this->createMock(ProjectionModel::class);
 
@@ -128,15 +123,14 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ->with('balance')
             ->willReturn($model);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $position = $manager->streamPositionsOf('balance');
 
         $this->assertEquals(['balance' => 5], $position);
     }
 
-    #[Test]
-    public function it_fetch_empty_stream_positions_of_stream_and_return_empty_array(): void
+    public function testReturnEmptyStreamPosition(): void
     {
         $model = $this->createMock(ProjectionModel::class);
         $model->expects($this->once())
@@ -153,15 +147,14 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ->with('balance')
             ->willReturn($model);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $streamPosition = $manager->streamPositionsOf('balance');
 
         $this->assertEquals([], $streamPosition);
     }
 
-    #[Test]
-    public function it_raise_exception_when_stream_not_found_call_stream_positions(): void
+    public function testExceptionRaisedWhenRetrieveStreamPositionOfProjectionNotFound(): void
     {
         $this->expectException(ProjectionNotFound::class);
 
@@ -170,13 +163,12 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ->with('balance')
             ->willReturn(null);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->streamPositionsOf('balance');
     }
 
-    #[Test]
-    public function it_fetch_state_of_stream(): void
+    public function testFetchStateOfProjection(): void
     {
         $model = $this->createMock(ProjectionModel::class);
         $model->expects($this->once())
@@ -193,7 +185,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ->with('balance')
             ->willReturn($model);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $position = $manager->stateOf('balance');
 
@@ -201,7 +193,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
     }
 
     #[Test]
-    public function it_fetch_empty_state_of_stream_and_return_empty_array(): void
+    public function testFetchEmptyState(): void
     {
         $model = $this->createMock(ProjectionModel::class);
         $model->expects($this->once())
@@ -218,7 +210,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ->with('balance')
             ->willReturn($model);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $position = $manager->stateOf('balance');
 
@@ -226,7 +218,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
     }
 
     #[Test]
-    public function it_raise_exception_when_stream_on_state_not_found(): void
+    public function testExceptionRaisedWhenRetrieveStateOfProjectionNotFound(): void
     {
         $this->expectException(ProjectionNotFound::class);
 
@@ -235,50 +227,48 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ->with('balance')
             ->willReturn(null);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->stateOf('balance');
     }
 
-    #[Test]
-    public function it_filter_stream_by_names(): void
+    public function testFilterProjectionNames(): void
     {
         $this->projectionProvider->expects($this->once())
             ->method('filterByNames')
             ->with('balance', 'foo', 'bar')
             ->willReturn(['balance']);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $streamNames = $manager->filterNamesByAscendantOrder('balance', 'foo', 'bar');
 
         $this->assertEquals(['balance'], $streamNames);
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('provideBoolean')]
-    #[Test]
-    public function it_assert_stream_exists(bool $exists): void
+    #[DataProvider('provideBoolean')]
+    public function testStreamExists(bool $exists): void
     {
         $this->projectionProvider->expects($this->once())
             ->method('projectionExists')
             ->with('balance')
             ->willReturn($exists);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $this->assertEquals($exists, $manager->exists('balance'));
     }
 
     #[Test]
-    public function it_access_query_scope(): void
+    public function testQueryScopeGetter(): void
     {
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $this->assertEquals($this->queryScope, $manager->queryScope());
     }
 
     #[Test]
-    public function it_mark_projection_as_stopped(): void
+    public function testMarkProjectionStopped(): void
     {
         $this->projectionProvider->expects($this->once())
             ->method('updateProjection')
@@ -287,13 +277,13 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willReturn(true);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->stop('balance');
     }
 
     #[Test]
-    public function it_raise_exception_on_stopping_not_found_stream(): void
+    public function testExceptionRaisedWhenMarkStoppedOfProjectionNotFound(): void
     {
         $this->expectException(ProjectionNotFound::class);
 
@@ -309,13 +299,12 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willReturn(false);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->stop('balance');
     }
 
-    #[Test]
-    public function it_raise_exception_on_stopping_when_query_exception_raised(): void
+    public function testExceptionRaisedWhenUpdateProjectionFailed(): void
     {
         $this->expectException(ConnectionProjectionFailed::class);
 
@@ -326,13 +315,12 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willThrowException(new QueryException('', '', [], new RuntimeException('nope')));
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->stop('balance');
     }
 
-    #[Test]
-    public function it_raise_exception_on_stopping_when_throwable_exception_raised(): void
+    public function testExceptionRaisedWhenUpdateProjectionFailed_2(): void
     {
         $this->expectException(ConnectionProjectionFailed::class);
         $this->expectExceptionMessage('Unable to update projection status for stream name balance and status stopping');
@@ -344,13 +332,12 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willThrowException(new RuntimeException('nope'));
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->stop('balance');
     }
 
-    #[Test]
-    public function it_mark_projection_as_resetting(): void
+    public function testMarkProjectionReset(): void
     {
         $this->projectionProvider->expects($this->once())
             ->method('updateProjection')
@@ -359,13 +346,12 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willReturn(true);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->reset('balance');
     }
 
-    #[Test]
-    public function it_raise_exception_on_resetting_not_found_stream(): void
+    public function testExceptionRaisedWhenMarkResetOnProjectionNotFound(): void
     {
         $this->projectionProvider->expects($this->once())
             ->method('projectionExists')
@@ -381,13 +367,12 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willReturn(false);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->reset('balance');
     }
 
-    #[Test]
-    public function it_raise_exception_on_resetting_when_query_exception_raised(): void
+    public function testExceptionRaisedWhenMarkResetProjectionFailed(): void
     {
         $this->expectException(ConnectionProjectionFailed::class);
 
@@ -398,13 +383,13 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willThrowException(new QueryException('', '', [], new RuntimeException('nope')));
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->reset('balance');
     }
 
     #[Test]
-    public function it_raise_exception_on_resetting_when_throwable_exception_raised(): void
+    public function testExceptionRaisedWhenMarkResetProjectionFailed_2(): void
     {
         $this->expectException(ConnectionProjectionFailed::class);
         $this->expectExceptionMessage('Unable to update projection status for stream name balance and status resetting');
@@ -416,14 +401,13 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willThrowException(new RuntimeException('nope'));
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->reset('balance');
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('provideBoolean')]
-    #[Test]
-    public function it_mark_projection_as_deleting(bool $withEmittedEvents): void
+    #[DataProvider('provideBoolean')]
+    public function testMarkDeletingProjection(bool $withEmittedEvents): void
     {
         $status = $withEmittedEvents ? ProjectionStatus::DELETING_WITH_EMITTED_EVENTS->value : ProjectionStatus::DELETING->value;
 
@@ -434,14 +418,13 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willReturn(true);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->delete('balance', $withEmittedEvents);
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('provideBoolean')]
-    #[Test]
-    public function it_raise_exception_on_deleting_not_found_stream(bool $withEmittedEvents): void
+    #[DataProvider('provideBoolean')]
+    public function testExceptionRaisedWhenMarkDeletingOnProjectionNotFound(bool $withEmittedEvents): void
     {
         $this->projectionProvider->expects($this->once())
             ->method('projectionExists')
@@ -459,14 +442,14 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willReturn(false);
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->delete('balance', $withEmittedEvents);
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('provideBoolean')]
+    #[DataProvider('provideBoolean')]
     #[Test]
-    public function it_raise_exception_on_deleting_when_query_exception_raised(bool $withEmittedEvents): void
+    public function testExceptionRaisedWhenMarkDeletingFailed(bool $withEmittedEvents): void
     {
         $status = $withEmittedEvents ? ProjectionStatus::DELETING_WITH_EMITTED_EVENTS->value : ProjectionStatus::DELETING->value;
 
@@ -479,14 +462,14 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willThrowException(new QueryException('', '', [], new RuntimeException('nope')));
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->delete('balance', $withEmittedEvents);
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('provideBoolean')]
+    #[DataProvider('provideBoolean')]
     #[Test]
-    public function it_raise_exception_on_deleting_when_exception_raised(bool $withEmittedEvents): void
+    public function testExceptionRaisedWhenMarkDeletingFailed_2(bool $withEmittedEvents): void
     {
         $status = $withEmittedEvents ? ProjectionStatus::DELETING_WITH_EMITTED_EVENTS->value : ProjectionStatus::DELETING->value;
 
@@ -500,7 +483,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             ])
             ->willThrowException(new RuntimeException('nope'));
 
-        $manager = $this->newProjectorManager(new DefaultProjectorOption());
+        $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
         $manager->delete('balance', $withEmittedEvents);
     }
@@ -521,7 +504,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
 
     private SystemClock|MockObject $clock;
 
-    private ProjectorOption|MockObject $projectorOption;
+    private ProjectionOption|MockObject $projectionOption;
 
     private JsonSerializer|MockObject $jsonSerializer;
 
@@ -535,10 +518,10 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
         $this->queryScope = $this->createMock(ProjectionQueryScope::class);
         $this->clock = $this->createMock(SystemClock::class);
         $this->jsonSerializer = $this->createMock(JsonSerializer::class);
-        $this->projectorOption = $this->createMock(ProjectorOption::class);
+        $this->projectionOption = $this->createMock(ProjectionOption::class);
     }
 
-    private function newProjectorManager(array|ProjectorOption $projectorOption = null): ConnectionProjectorManager
+    private function newProjectorManager(array|ProjectionOption $projectorOption = null): ConnectionProjectorManager
     {
         return new ConnectionProjectorManager(
             $this->chronicler,
@@ -547,7 +530,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
             $this->queryScope,
             $this->clock,
             $this->jsonSerializer,
-            $projectorOption ?? $this->projectorOption,
+            $projectorOption ?? $this->projectionOption,
         );
     }
 }

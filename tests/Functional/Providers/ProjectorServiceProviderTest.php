@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Artisan;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Larastorm\Projection\ConnectionQueryScope;
-use Chronhub\Storm\Contracts\Projector\ProjectorOption;
+use Chronhub\Storm\Contracts\Projector\ProjectionOption;
 use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
-use Chronhub\Storm\Projector\Options\InMemoryProjectorOption;
 use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
+use Chronhub\Storm\Projector\Options\InMemoryProjectionOption;
 use Chronhub\Storm\Projector\Provider\InMemoryProjectionProvider;
 use Chronhub\Larastorm\Support\Console\Generator\MakeQueryProjectionCommand;
 use Chronhub\Larastorm\Support\Supervisor\Command\SuperviseProjectionCommand;
@@ -28,8 +27,7 @@ use Chronhub\Larastorm\Support\Supervisor\Command\CheckSupervisedProjectionStatu
 #[CoversClass(ProjectorServiceProvider::class)]
 final class ProjectorServiceProviderTest extends OrchestraTestCase
 {
-    #[Test]
-    public function it_assert_config(): void
+    public function testProjectorConfig(): void
     {
         $this->assertEquals([
             'defaults' => [
@@ -71,15 +69,15 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
             'options' => [
                 'default' => [],
                 'lazy' => [
-                    ProjectorOption::SIGNAL => true,
-                    ProjectorOption::LOCKOUT => 500000,
-                    ProjectorOption::SLEEP => 100000,
-                    ProjectorOption::BLOCK_SIZE => 1000,
-                    ProjectorOption::TIMEOUT => 10000,
-                    ProjectorOption::RETRIES => '50, 1000, 50',
-                    ProjectorOption::DETECTION_WINDOWS => null,
+                    ProjectionOption::SIGNAL => true,
+                    ProjectionOption::LOCKOUT => 500000,
+                    ProjectionOption::SLEEP => 100000,
+                    ProjectionOption::BLOCK_SIZE => 1000,
+                    ProjectionOption::TIMEOUT => 10000,
+                    ProjectionOption::RETRIES => '50, 1000, 50',
+                    ProjectionOption::DETECTION_WINDOWS => null,
                 ],
-                'in_memory' => InMemoryProjectorOption::class,
+                'in_memory' => InMemoryProjectionOption::class,
                 'snapshot' => [],
             ],
             'console' => [
@@ -97,16 +95,14 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
         ], $this->app['config']['projector']);
     }
 
-    #[Test]
-    public function it_assert_bindings(): void
+    public function testBindings(): void
     {
         $this->assertTrue($this->app->bound(ServiceManager::class));
         $this->assertEquals(ProjectorServiceManager::class, $this->app[ServiceManager::class]::class);
         $this->assertTrue($this->app->bound(Project::SERVICE_ID));
     }
 
-    #[Test]
-    public function it_assert_provides(): void
+    public function testProvides(): void
     {
         $serviceProvider = $this->app->getProvider(ProjectorServiceProvider::class);
 
@@ -116,8 +112,7 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
         ], $serviceProvider->provides());
     }
 
-    #[Test]
-    public function it_assert_console_commands_registered(): void
+    public function testConsoleCommands(): void
     {
         $commands = Artisan::all();
 

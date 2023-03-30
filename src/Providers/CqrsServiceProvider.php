@@ -6,8 +6,8 @@ namespace Chronhub\Larastorm\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
+use Chronhub\Storm\Routing\GroupRegistrar;
 use Chronhub\Storm\Producer\LogicalProducer;
-use Chronhub\Storm\Routing\RoutingRegistrar;
 use Chronhub\Larastorm\Support\Facade\Report;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Illuminate\Contracts\Foundation\Application;
@@ -21,7 +21,7 @@ class CqrsServiceProvider extends ServiceProvider implements DeferrableProvider
     {
         $this->app->singleton(ProducerUnity::class, LogicalProducer::class);
 
-        $this->app->singleton(Registrar::class, RoutingRegistrar::class);
+        $this->app->singleton(Registrar::class, GroupRegistrar::class);
 
         $this->app->singleton(
             ReporterManager::class,

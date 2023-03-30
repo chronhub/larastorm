@@ -10,7 +10,7 @@ use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
 use Chronhub\Storm\Projector\InMemoryProjectorManager;
 use Chronhub\Storm\Serializer\ProjectorJsonSerializer;
-use Chronhub\Storm\Contracts\Projector\ProjectorOption;
+use Chronhub\Storm\Contracts\Projector\ProjectionOption;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
@@ -143,7 +143,7 @@ final class ProjectorServiceManager implements ServiceManager
         return $this->projectionProviderFactory->createProvider($projectionProvider);
     }
 
-    private function determineProjectorOptions(?string $optionKey): array|ProjectorOption
+    private function determineProjectorOptions(?string $optionKey): array|ProjectionOption
     {
         $options = $this->container['config']["projector.options.$optionKey"] ?? [];
 

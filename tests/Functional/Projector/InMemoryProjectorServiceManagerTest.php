@@ -31,8 +31,7 @@ final class InMemoryProjectorServiceManagerTest extends OrchestraTestCase
         $this->assertEquals(ProjectorServiceManager::class, $this->serviceManager::class);
     }
 
-    #[Test]
-    public function it_create_projector_manager(): void
+    public function testProjectorManager(): void
     {
         $this->serviceManager->setDefaultDriver('in_memory');
 
@@ -41,8 +40,7 @@ final class InMemoryProjectorServiceManagerTest extends OrchestraTestCase
         $this->assertEquals(InMemoryProjectorManager::class, $projectorManager::class);
     }
 
-    #[Test]
-    public function it_raise_exception_if_projector_name_is_not_defined(): void
+    public function testExceptionRaisedWhenProjectorNameIsNotDefined(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Projector configuration with name foo is not defined');
@@ -53,7 +51,7 @@ final class InMemoryProjectorServiceManagerTest extends OrchestraTestCase
     }
 
     #[Test]
-    public function it_raise_exception_if_projector_driver_is_not_defined(): void
+    public function testExceptionRaisedWhenProjectorDriverIsNotDefined(): void
     {
         $this->app['config']->set('projector.projectors.foo', ['testing' => []]);
 
@@ -65,8 +63,7 @@ final class InMemoryProjectorServiceManagerTest extends OrchestraTestCase
         $this->serviceManager->create('testing');
     }
 
-    #[Test]
-    public function it_raise_exception_if_projection_provider_key_is_not_defined(): void
+    public function testExceptionRaisedWhenProjectionProviderKeyIsNotDefined(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Projection provider is not defined');
@@ -82,8 +79,7 @@ final class InMemoryProjectorServiceManagerTest extends OrchestraTestCase
         $this->serviceManager->create('testing');
     }
 
-    #[Test]
-    public function it_can_extend_manager(): void
+    public function testExtendProjectorManager(): void
     {
         $config = ['any_value'];
 

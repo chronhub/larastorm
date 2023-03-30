@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Chronhub\Storm\Contracts\Projector\ProjectorOption;
+use Chronhub\Storm\Contracts\Projector\ProjectionOption;
 
 return [
 
@@ -109,16 +109,16 @@ return [
         'default' => [],
 
         'lazy' => [
-            ProjectorOption::SIGNAL => true,
-            ProjectorOption::LOCKOUT => 500000,
-            ProjectorOption::SLEEP => 100000,
-            ProjectorOption::BLOCK_SIZE => 1000,
-            ProjectorOption::TIMEOUT => 10000,
-            ProjectorOption::RETRIES => '50, 1000, 50',
-            ProjectorOption::DETECTION_WINDOWS => null,
+            ProjectionOption::SIGNAL => true,
+            ProjectionOption::LOCKOUT => 500000,
+            ProjectionOption::SLEEP => 100000,
+            ProjectionOption::BLOCK_SIZE => 1000,
+            ProjectionOption::TIMEOUT => 10000,
+            ProjectionOption::RETRIES => '50, 1000, 50',
+            ProjectionOption::DETECTION_WINDOWS => null,
         ],
 
-        'in_memory' => \Chronhub\Storm\Projector\Options\InMemoryProjectorOption::class,
+        'in_memory' => \Chronhub\Storm\Projector\Options\InMemoryProjectionOption::class,
 
         'snapshot' => [],
     ],

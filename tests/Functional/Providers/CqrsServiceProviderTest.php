@@ -6,8 +6,8 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
+use Chronhub\Storm\Routing\GroupRegistrar;
 use Chronhub\Storm\Producer\LogicalProducer;
-use Chronhub\Storm\Routing\RoutingRegistrar;
 use Chronhub\Larastorm\Support\Facade\Report;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
@@ -27,7 +27,7 @@ final class CqrsServiceProviderTest extends OrchestraTestCase
         $this->assertInstanceOf(LogicalProducer::class, $this->app[ProducerUnity::class]);
 
         $this->assertTrue($this->app->bound(Registrar::class));
-        $this->assertInstanceOf(RoutingRegistrar::class, $this->app[Registrar::class]);
+        $this->assertInstanceOf(GroupRegistrar::class, $this->app[Registrar::class]);
 
         $this->assertTrue($this->app->bound(ReporterManager::class));
         $this->assertInstanceOf(CqrsManager::class, $this->app[ReporterManager::class]);

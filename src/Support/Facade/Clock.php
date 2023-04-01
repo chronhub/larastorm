@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static DateTimeImmutable now()
+ * @method static DateTimeImmutable toDateTimeImmutable(string|DateTimeImmutable $pointInTime)
  * @method static string format(string|DateTimeImmutable $pointInTime)
- * @method static string toDateTimeImmutable(string|DateTimeImmutable $pointInTime): DateTimeImmutable
  * @method static string getFormat()
  * @method static void sleep(float|int $seconds)
  * @method static bool isGreaterThan(DateTimeImmutable|string $pointInTime, DateTimeImmutable|string $anotherPointInTime)

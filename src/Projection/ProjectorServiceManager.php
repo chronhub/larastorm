@@ -106,6 +106,10 @@ final class ProjectorServiceManager implements ServiceManager
 
         $subscriptionFactory = new ConnectionSubscriptionFactory(...$subscriptionFactoryArguments);
 
+        if (true === ($config['dispatcher'] ?? false)) {
+            $subscriptionFactory->setEventDispatcher($this->container['events']);
+        }
+
         return new SubscriptionManager($subscriptionFactory);
     }
 
@@ -122,12 +126,6 @@ final class ProjectorServiceManager implements ServiceManager
     {
         $chronicler = $this->eventStoreResolver->resolve($config['chronicler']);
 
-        $eventDispatcher = null;
-
-        if (true === ($config['dispatcher'] ?? false)) {
-            $eventDispatcher = $this->container['events'];
-        }
-
         return [
             $chronicler,
             $this->determineProjectionProvider($config['provider'] ?? null),
@@ -137,7 +135,6 @@ final class ProjectorServiceManager implements ServiceManager
             $this->container[MessageAlias::class],
             new ProjectorJsonSerializer(),
             $this->determineProjectorOptions($config['options']),
-            $eventDispatcher,
         ];
     }
 

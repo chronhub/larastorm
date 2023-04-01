@@ -6,8 +6,8 @@ namespace Chronhub\Larastorm\Projection;
 
 use Throwable;
 use Illuminate\Contracts\Events\Dispatcher;
-use Chronhub\Storm\Contracts\Projector\Store;
 use Chronhub\Storm\Projector\ProjectionStatus;
+use Chronhub\Storm\Contracts\Projector\ProjectionStore;
 use Chronhub\Larastorm\Projection\Events\ProjectionReset;
 use Chronhub\Larastorm\Projection\Events\ProjectionDeleted;
 use Chronhub\Larastorm\Projection\Events\ProjectionOnError;
@@ -15,9 +15,9 @@ use Chronhub\Larastorm\Projection\Events\ProjectionStarted;
 use Chronhub\Larastorm\Projection\Events\ProjectionStopped;
 use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
 
-final readonly class StandaloneAwareStore implements Store
+final readonly class DispatcherAwareProjectionStore implements ProjectionStore
 {
-    public function __construct(private Store $store,
+    public function __construct(private ProjectionStore $store,
                                 private Dispatcher $eventDispatcher)
     {
     }

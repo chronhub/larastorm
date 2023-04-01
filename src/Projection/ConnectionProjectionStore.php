@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Projection;
 
 use Illuminate\Database\QueryException;
-use Chronhub\Storm\Contracts\Projector\Store;
 use Chronhub\Storm\Projector\ProjectionStatus;
+use Chronhub\Storm\Contracts\Projector\ProjectionStore;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 
-final readonly class ConnectionStore implements Store
+final readonly class ConnectionProjectionStore implements ProjectionStore
 {
-    public function __construct(private Store $store)
+    public function __construct(private ProjectionStore $store)
     {
     }
 

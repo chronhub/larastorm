@@ -31,7 +31,7 @@ return [
             'name' => 'pgsql',
             'table' => 'projections',
         ],
-        'in_memory' => \Chronhub\Storm\Projector\Provider\InMemoryProjectionProvider::class,
+        'in_memory' => \Chronhub\Storm\Projector\InMemoryProjectionProvider::class,
     ],
 
     /*

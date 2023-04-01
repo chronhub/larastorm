@@ -14,11 +14,11 @@ use Chronhub\Storm\Contracts\Projector\Store;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Projection\ConnectionStore;
+use Chronhub\Larastorm\Projection\ConnectionProjectionStore;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 use Chronhub\Storm\Projector\Exceptions\ProjectionAlreadyRunning;
 
-#[CoversClass(ConnectionStore::class)]
+#[CoversClass(ConnectionProjectionStore::class)]
 final class ConnectionStoreTest extends UnitTestCase
 {
     private Store|MockObject $store;
@@ -38,7 +38,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('create')
             ->willReturn(true);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $this->assertTrue($connectionProvider->create());
     }
@@ -52,7 +52,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('create')
             ->willThrowException($this->queryException);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         try {
             $connectionProvider->create();
@@ -77,7 +77,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('create')
             ->willReturn(false);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $connectionProvider->create();
     }
@@ -89,7 +89,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('stop')
             ->willReturn(true);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $this->assertTrue($connectionProvider->stop());
     }
@@ -103,7 +103,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('stop')
             ->willThrowException($this->queryException);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         try {
             $connectionProvider->stop();
@@ -126,7 +126,7 @@ final class ConnectionStoreTest extends UnitTestCase
 
         $this->store->expects($this->once())->method('stop')->willReturn(false);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $connectionProvider->stop();
     }
@@ -139,7 +139,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('startAgain')
             ->willReturn(true);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $this->assertTrue($connectionProvider->startAgain());
     }
@@ -153,7 +153,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('startAgain')
             ->willThrowException($this->queryException);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         try {
             $connectionProvider->startAgain();
@@ -176,7 +176,7 @@ final class ConnectionStoreTest extends UnitTestCase
 
         $this->store->expects($this->once())->method('startAgain')->willReturn(false);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $connectionProvider->startAgain();
     }
@@ -189,7 +189,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('persist')
             ->willReturn(true);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $this->assertTrue($connectionProvider->persist());
     }
@@ -203,7 +203,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('persist')
             ->willThrowException($this->queryException);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         try {
             $connectionProvider->persist();
@@ -226,7 +226,7 @@ final class ConnectionStoreTest extends UnitTestCase
 
         $this->store->expects($this->once())->method('persist')->willReturn(false);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $connectionProvider->persist();
     }
@@ -239,7 +239,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('reset')
             ->willReturn(true);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $this->assertTrue($connectionProvider->reset());
     }
@@ -253,7 +253,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('reset')
             ->willThrowException($this->queryException);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         try {
             $connectionProvider->reset();
@@ -276,7 +276,7 @@ final class ConnectionStoreTest extends UnitTestCase
 
         $this->store->expects($this->once())->method('reset')->willReturn(false);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $connectionProvider->reset();
     }
@@ -291,7 +291,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->with($withEmittedEvents)
             ->willReturn(true);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $this->assertTrue($connectionProvider->delete($withEmittedEvents));
     }
@@ -307,7 +307,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->with($withEmittedEvents)
             ->willThrowException($this->queryException);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         try {
             $connectionProvider->delete($withEmittedEvents);
@@ -334,7 +334,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->with($withEmittedEvents)
             ->willReturn(false);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $connectionProvider->delete($withEmittedEvents);
     }
@@ -346,7 +346,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('acquireLock')
             ->willReturn(true);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $this->assertTrue($connectionProvider->acquireLock());
     }
@@ -360,7 +360,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('acquireLock')
             ->willThrowException($this->queryException);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         try {
             $connectionProvider->acquireLock();
@@ -385,7 +385,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('acquireLock')
             ->willReturn(false);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $connectionProvider->acquireLock();
     }
@@ -397,7 +397,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('updateLock')
             ->willReturn(true);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $this->assertTrue($connectionProvider->updateLock());
     }
@@ -411,7 +411,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('updateLock')
             ->willThrowException($this->queryException);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         try {
             $connectionProvider->updateLock();
@@ -436,7 +436,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('updateLock')
             ->willReturn(false);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $connectionProvider->updateLock();
     }
@@ -448,7 +448,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('releaseLock')
             ->willReturn(true);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $this->assertTrue($connectionProvider->releaseLock());
     }
@@ -462,7 +462,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('releaseLock')
             ->willThrowException($this->queryException);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         try {
             $connectionProvider->releaseLock();
@@ -487,7 +487,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('releaseLock')
             ->willReturn(false);
 
-        $connectionProvider = new ConnectionStore($this->store);
+        $connectionProvider = new ConnectionProjectionStore($this->store);
 
         $connectionProvider->releaseLock();
     }
@@ -499,7 +499,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('loadStatus')
             ->willReturn(ProjectionStatus::RUNNING);
 
-        $this->assertEquals(ProjectionStatus::RUNNING, (new ConnectionStore($this->store))->loadStatus());
+        $this->assertEquals(ProjectionStatus::RUNNING, (new ConnectionProjectionStore($this->store))->loadStatus());
     }
 
     #[DataProvider('provideBoolean')]
@@ -510,7 +510,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('loadState')
             ->willReturn($success);
 
-        $this->assertEquals($success, (new ConnectionStore($this->store))->loadState());
+        $this->assertEquals($success, (new ConnectionProjectionStore($this->store))->loadState());
     }
 
     #[DataProvider('provideBoolean')]
@@ -521,7 +521,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('exists')
             ->willReturn($projectionExists);
 
-        $this->assertEquals($projectionExists, (new ConnectionStore($this->store))->exists());
+        $this->assertEquals($projectionExists, (new ConnectionProjectionStore($this->store))->exists());
     }
 
     #[Test]
@@ -531,7 +531,7 @@ final class ConnectionStoreTest extends UnitTestCase
             ->method('currentStreamName')
             ->willReturn('foo');
 
-        $this->assertEquals('foo', (new ConnectionStore($this->store))->currentStreamName());
+        $this->assertEquals('foo', (new ConnectionProjectionStore($this->store))->currentStreamName());
     }
 
     public static function provideBoolean(): Generator

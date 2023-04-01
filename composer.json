@@ -14,13 +14,13 @@
   "require": {
     "php": "^8.2",
     "chronhub/storm": "dev-main",
-    "laravel/framework": "^10.3",
+    "laravel/framework": "^10.x-dev",
     "ext-pdo": "*",
     "ext-posix": "*",
     "ext-pcntl": "*"
   },
   "require-dev": {
-    "laravel/pint": "^1.6",
+    "laravel/pint": "^1.7",
     "phpstan/phpstan":"^1.10",
     "nunomaduro/larastan": "^2.5",
     "orchestra/testbench": "8.*",

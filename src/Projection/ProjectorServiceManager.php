@@ -7,11 +7,13 @@ namespace Chronhub\Larastorm\Projection;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
+use Chronhub\Storm\Projector\SubscriptionManager;
+use Chronhub\Storm\Contracts\Message\MessageAlias;
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
-use Chronhub\Storm\Projector\InMemoryProjectorManager;
 use Chronhub\Storm\Serializer\ProjectorJsonSerializer;
 use Chronhub\Storm\Contracts\Projector\ProjectionOption;
 use Chronhub\Storm\Contracts\Projector\ProjectorManager;
+use Chronhub\Storm\Projector\InMemorySubscriptionFactory;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
@@ -100,36 +102,43 @@ final class ProjectorServiceManager implements ServiceManager
 
     private function createConnectionManager(array $config): ProjectorManager
     {
-        return $this->createProjectorManagerInstance(ConnectionProjectorManager::class, $config);
+        $subscriptionFactoryArguments = $this->createSubscriptionFactoryArguments($config);
+
+        $subscriptionFactory = new ConnectionSubscriptionFactory(...$subscriptionFactoryArguments);
+
+        return new SubscriptionManager($subscriptionFactory);
     }
 
     private function createInMemoryManager(array $config): ProjectorManager
     {
-        return $this->createProjectorManagerInstance(InMemoryProjectorManager::class, $config);
+        $subscriptionFactoryArguments = $this->createSubscriptionFactoryArguments($config);
+
+        $subscriptionFactory = new InMemorySubscriptionFactory(...$subscriptionFactoryArguments);
+
+        return new SubscriptionManager($subscriptionFactory);
     }
 
-    /**
-     * @param  class-string  $manager
-     */
-    private function createProjectorManagerInstance(string $manager, array $config): ProjectorManager
+    private function createSubscriptionFactoryArguments(array $config): array
     {
         $chronicler = $this->eventStoreResolver->resolve($config['chronicler']);
 
-        $projectorManager = new $manager(
-            $chronicler,
-            $chronicler->getEventStreamProvider(),
-            $this->determineProjectionProvider($config['provider'] ?? null),
-            $this->container[$config['scope']],
-            $this->container[SystemClock::class],
-            new ProjectorJsonSerializer(),
-            $this->determineProjectorOptions($config['options']),
-        );
+        $eventDispatcher = null;
 
         if (true === ($config['dispatcher'] ?? false)) {
-            $projectorManager->setEventDispatcher($this->container['events']);
+            $eventDispatcher = $this->container['events'];
         }
 
-        return $projectorManager;
+        return [
+            $chronicler,
+            $this->determineProjectionProvider($config['provider'] ?? null),
+            $chronicler->getEventStreamProvider(),
+            $this->container[$config['scope']],
+            $this->container[SystemClock::class],
+            $this->container[MessageAlias::class],
+            new ProjectorJsonSerializer(),
+            $this->determineProjectorOptions($config['options']),
+            $eventDispatcher,
+        ];
     }
 
     private function determineProjectionProvider(?string $providerKey): ProjectionProvider

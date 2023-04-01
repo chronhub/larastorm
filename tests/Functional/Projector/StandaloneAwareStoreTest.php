@@ -14,15 +14,15 @@ use Chronhub\Storm\Contracts\Projector\Store;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Projection\StandaloneAwareStore;
 use Chronhub\Larastorm\Projection\Events\ProjectionReset;
 use Chronhub\Larastorm\Projection\Events\ProjectionDeleted;
 use Chronhub\Larastorm\Projection\Events\ProjectionOnError;
 use Chronhub\Larastorm\Projection\Events\ProjectionStarted;
 use Chronhub\Larastorm\Projection\Events\ProjectionStopped;
 use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
+use Chronhub\Larastorm\Projection\DispatcherAwareProjectionStore;
 
-#[CoversClass(StandaloneAwareStore::class)]
+#[CoversClass(DispatcherAwareProjectionStore::class)]
 class StandaloneAwareStoreTest extends UnitTestCase
 {
     private Store|MockObject $store;
@@ -52,7 +52,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }));
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->create();
     }
@@ -76,7 +76,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }));
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->create();
     }
@@ -95,7 +95,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }))->willReturn(true);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->startAgain();
     }
@@ -119,7 +119,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }));
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->startAgain();
     }
@@ -138,7 +138,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }))->willReturn(true);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->stop();
     }
@@ -162,7 +162,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }));
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->stop();
     }
@@ -181,7 +181,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }))->willReturn(true);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->reset();
     }
@@ -205,7 +205,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }));
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->reset();
     }
@@ -225,7 +225,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }))->willReturn(true);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->delete(false);
     }
@@ -249,7 +249,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }));
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->delete(false);
     }
@@ -269,7 +269,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }))->willReturn(true);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->delete(true);
     }
@@ -293,7 +293,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
                 return true;
             }));
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $store->delete(true);
     }
@@ -304,7 +304,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     {
         $this->store->expects($this->once())->method('acquireLock')->willReturn($lockAcquired);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $this->assertEquals($lockAcquired, $store->acquireLock());
     }
@@ -315,7 +315,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     {
         $this->store->expects($this->once())->method('releaseLock')->willReturn($lockReleased);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $this->assertEquals($lockReleased, $store->releaseLock());
     }
@@ -326,7 +326,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     {
         $this->store->expects($this->once())->method('updateLock')->willReturn($lockUpdated);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $this->assertEquals($lockUpdated, $store->updateLock());
     }
@@ -336,7 +336,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     {
         $this->store->expects($this->once())->method('loadStatus')->willReturn(ProjectionStatus::IDLE);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $this->assertEquals(ProjectionStatus::IDLE, $store->loadStatus());
     }
@@ -347,7 +347,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     {
         $this->store->expects($this->once())->method('persist')->willReturn($isPersisted);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $this->assertEquals($isPersisted, $store->persist());
     }
@@ -358,7 +358,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     {
         $this->store->expects($this->once())->method('exists')->willReturn($streamExists);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $this->assertEquals($streamExists, $store->exists());
     }
@@ -369,7 +369,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     {
         $this->store->expects($this->once())->method('loadState')->willReturn($stateLoaded);
 
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $this->assertEquals($stateLoaded, $store->loadState());
     }
@@ -377,7 +377,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     #[Test]
     public function it_return_current_stream_name(): void
     {
-        $store = new StandaloneAwareStore($this->store, $this->eventDispatcher);
+        $store = new DispatcherAwareProjectionStore($this->store, $this->eventDispatcher);
 
         $this->assertEquals('stream_name', $store->currentStreamName());
     }

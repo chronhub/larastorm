@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Support\Facade;
 
 use Illuminate\Support\Facades\Facade;
-use Chronhub\Storm\Contracts\Projector\ProjectorManager;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
+use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
 
 /**
- * @method static ProjectorManager create(string $name)
+ * @method static ProjectorManagerInterface create(string $name)
  * @method static ProjectorServiceManager extend(string $name, callable $callback)
  * @method static ProjectorServiceManager setDefaultDriver(string $driver)
  * @method static string getDefaultDriver()

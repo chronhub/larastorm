@@ -7,17 +7,17 @@ namespace Chronhub\Larastorm\Projection;
 use Throwable;
 use Illuminate\Contracts\Events\Dispatcher;
 use Chronhub\Storm\Projector\ProjectionStatus;
-use Chronhub\Storm\Contracts\Projector\ProjectionStore;
 use Chronhub\Larastorm\Projection\Events\ProjectionReset;
 use Chronhub\Larastorm\Projection\Events\ProjectionDeleted;
 use Chronhub\Larastorm\Projection\Events\ProjectionOnError;
 use Chronhub\Larastorm\Projection\Events\ProjectionStarted;
 use Chronhub\Larastorm\Projection\Events\ProjectionStopped;
 use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
+use Chronhub\Storm\Contracts\Projector\ProjectionRepositoryInterface;
 
-final readonly class DispatcherAwareProjectionStore implements ProjectionStore
+final readonly class DispatcherAwareRepository implements ProjectionRepositoryInterface
 {
-    public function __construct(private ProjectionStore $store,
+    public function __construct(private ProjectionRepositoryInterface $store,
                                 private Dispatcher $eventDispatcher)
     {
     }
@@ -27,7 +27,7 @@ final readonly class DispatcherAwareProjectionStore implements ProjectionStore
         try {
             $created = $this->store->create();
 
-            $this->eventDispatcher->dispatch(new ProjectionStarted($this->store->currentStreamName()));
+            $this->eventDispatcher->dispatch(new ProjectionStarted($this->store->projectionName()));
 
             return $created;
         } catch (Throwable $e) {
@@ -42,7 +42,7 @@ final readonly class DispatcherAwareProjectionStore implements ProjectionStore
         try {
             $stopped = $this->store->stop();
 
-            $this->eventDispatcher->dispatch(new ProjectionStopped($this->store->currentStreamName()));
+            $this->eventDispatcher->dispatch(new ProjectionStopped($this->store->projectionName()));
 
             return $stopped;
         } catch (Throwable $e) {
@@ -57,7 +57,7 @@ final readonly class DispatcherAwareProjectionStore implements ProjectionStore
         try {
             $restarted = $this->store->startAgain();
 
-            $this->eventDispatcher->dispatch(new ProjectionRestarted($this->store->currentStreamName()));
+            $this->eventDispatcher->dispatch(new ProjectionRestarted($this->store->projectionName()));
 
             return $restarted;
         } catch (Throwable $e) {
@@ -72,7 +72,7 @@ final readonly class DispatcherAwareProjectionStore implements ProjectionStore
         try {
             $reset = $this->store->reset();
 
-            $this->eventDispatcher->dispatch(new ProjectionReset($this->store->currentStreamName()));
+            $this->eventDispatcher->dispatch(new ProjectionReset($this->store->projectionName()));
 
             return $reset;
         } catch (Throwable $e) {
@@ -87,7 +87,7 @@ final readonly class DispatcherAwareProjectionStore implements ProjectionStore
         try {
             $deleted = $this->store->delete($withEmittedEvents);
 
-            $this->eventDispatcher->dispatch(new ProjectionDeleted($this->store->currentStreamName(), $withEmittedEvents));
+            $this->eventDispatcher->dispatch(new ProjectionDeleted($this->store->projectionName(), $withEmittedEvents));
 
             return $deleted;
         } catch (Throwable $e) {
@@ -132,13 +132,13 @@ final readonly class DispatcherAwareProjectionStore implements ProjectionStore
         return $this->store->releaseLock();
     }
 
-    public function currentStreamName(): string
+    public function projectionName(): string
     {
-        return $this->store->currentStreamName();
+        return $this->store->projectionName();
     }
 
     private function dispatchExceptionEvent(Throwable $e): void
     {
-        $this->eventDispatcher->dispatch(new ProjectionOnError($this->store->currentStreamName(), $e));
+        $this->eventDispatcher->dispatch(new ProjectionOnError($this->store->projectionName(), $e));
     }
 }

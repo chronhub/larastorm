@@ -6,35 +6,35 @@ namespace Chronhub\Larastorm\Projection;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Chronhub\Storm\Contracts\Projector\ReadModel;
+use Chronhub\Storm\Projector\Repository\EmitterManager;
 use Chronhub\Storm\Projector\AbstractSubscriptionFactory;
-use Chronhub\Storm\Contracts\Projector\ProjectionRepository;
-use Chronhub\Storm\Contracts\Projector\PersistentViewSubscription;
-use Chronhub\Storm\Projector\Repository\ReadModelProjectionRepository;
-use Chronhub\Storm\Contracts\Projector\PersistentReadModelSubscription;
-use Chronhub\Storm\Projector\Repository\PersistentProjectionRepository;
+use Chronhub\Storm\Projector\Repository\ReadModelManager;
+use Chronhub\Storm\Contracts\Projector\ProjectionManagement;
+use Chronhub\Storm\Contracts\Projector\EmitterSubscriptionInterface;
+use Chronhub\Storm\Contracts\Projector\ReadModelSubscriptionInterface;
 
 final class ConnectionSubscriptionFactory extends AbstractSubscriptionFactory
 {
     protected ?Dispatcher $eventDispatcher = null;
 
     public function createSubscriptionManagement(
-        PersistentReadModelSubscription|PersistentViewSubscription $subscription,
+        EmitterSubscriptionInterface|ReadModelSubscriptionInterface $subscription,
         string $streamName,
-        ?ReadModel $readModel): ProjectionRepository
+        ?ReadModel $readModel): ProjectionManagement
     {
         $store = $this->createStore($subscription, $streamName);
 
-        $adapter = new ConnectionProjectionStore($store);
+        $adapter = new ConnectionRepository($store);
 
         if ($this->eventDispatcher) {
-            $adapter = new DispatcherAwareProjectionStore($adapter, $this->eventDispatcher);
+            $adapter = new DispatcherAwareRepository($adapter, $this->eventDispatcher);
         }
 
         if ($readModel) {
-            return new ReadModelProjectionRepository($subscription, $adapter, $readModel);
+            return new ReadModelManager($subscription, $adapter, $readModel);
         }
 
-        return new PersistentProjectionRepository($subscription, $adapter, $this->chronicler);
+        return new EmitterManager($subscription, $adapter, $this->chronicler);
     }
 
     public function setEventDispatcher(Dispatcher $eventDispatcher): void

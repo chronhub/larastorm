@@ -31,7 +31,7 @@ final readonly class ProjectionProviderFactory
             throw new InvalidArgumentException('Projection provider connection name is not defined');
         }
 
-        return new ProjectionProvider(
+        return new ConnectionProvider(
             $this->container['db']->connection($connectionName),
             $provider['table'] ?? null,
         );

@@ -9,8 +9,8 @@ use Illuminate\Console\Command;
 use Chronhub\Storm\Stream\StreamName;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Chronhub\Storm\Contracts\Projector\ProjectorManager;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
+use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
 use function in_array;
 
 #[AsCommand(name: 'projector:write', description: 'write operation on projection by stream name')]
@@ -23,9 +23,9 @@ final class WriteProjectionCommand extends Command
 
     protected array $operationAvailable = ['stop', 'reset', 'delete', 'deleteIncl'];
 
-    private ProjectorManager $projector;
+    private ProjectorManagerInterface $projector;
 
-    public function handle(): void
+    public function handle(): int
     {
         $streamName = new StreamName($this->argument('stream'));
 
@@ -34,12 +34,14 @@ final class WriteProjectionCommand extends Command
         $operation = $this->operationArgument();
 
         if (! $this->confirmOperation($streamName, $operation)) {
-            return;
+            return self::FAILURE;
         }
 
         $this->processProjection($streamName->name, $operation);
 
         $this->info("Operation {$this->operationArgument()} on $streamName projection successful");
+
+        return self::SUCCESS;
     }
 
     private function processProjection(string $streamName, string $operation): void

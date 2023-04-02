@@ -6,12 +6,12 @@ namespace Chronhub\Larastorm\Projection;
 
 use Illuminate\Database\QueryException;
 use Chronhub\Storm\Projector\ProjectionStatus;
-use Chronhub\Storm\Contracts\Projector\ProjectionStore;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
+use Chronhub\Storm\Contracts\Projector\ProjectionRepositoryInterface;
 
-final readonly class ConnectionProjectionStore implements ProjectionStore
+final readonly class ConnectionRepository implements ProjectionRepositoryInterface
 {
-    public function __construct(private ProjectionStore $store)
+    public function __construct(private ProjectionRepositoryInterface $repository)
     {
     }
 
@@ -21,13 +21,13 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
     public function create(): bool
     {
         try {
-            $created = $this->store->create();
+            $created = $this->repository->create();
         } catch (QueryException $queryException) {
             throw ConnectionProjectionFailed::fromProjectionException($queryException);
         }
 
         if (! $created) {
-            throw ConnectionProjectionFailed::failedOnCreate($this->currentStreamName());
+            throw ConnectionProjectionFailed::failedOnCreate($this->projectionName());
         }
 
         return true;
@@ -39,13 +39,13 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
     public function stop(): bool
     {
         try {
-            $stopped = $this->store->stop();
+            $stopped = $this->repository->stop();
         } catch (QueryException $queryException) {
             throw ConnectionProjectionFailed::fromProjectionException($queryException);
         }
 
         if (! $stopped) {
-            throw ConnectionProjectionFailed::failedOnStop($this->currentStreamName());
+            throw ConnectionProjectionFailed::failedOnStop($this->projectionName());
         }
 
         return true;
@@ -57,13 +57,13 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
     public function startAgain(): bool
     {
         try {
-            $restarted = $this->store->startAgain();
+            $restarted = $this->repository->startAgain();
         } catch (QueryException $queryException) {
             throw ConnectionProjectionFailed::fromProjectionException($queryException);
         }
 
         if (! $restarted) {
-            throw ConnectionProjectionFailed::failedOnStartAgain($this->currentStreamName());
+            throw ConnectionProjectionFailed::failedOnStartAgain($this->projectionName());
         }
 
         return true;
@@ -75,13 +75,13 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
     public function persist(): bool
     {
         try {
-            $persisted = $this->store->persist();
+            $persisted = $this->repository->persist();
         } catch (QueryException $queryException) {
             throw ConnectionProjectionFailed::fromProjectionException($queryException);
         }
 
         if (! $persisted) {
-            throw ConnectionProjectionFailed::failedOnPersist($this->currentStreamName());
+            throw ConnectionProjectionFailed::failedOnPersist($this->projectionName());
         }
 
         return true;
@@ -93,13 +93,13 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
     public function reset(): bool
     {
         try {
-            $reset = $this->store->reset();
+            $reset = $this->repository->reset();
         } catch (QueryException $queryException) {
             throw ConnectionProjectionFailed::fromProjectionException($queryException);
         }
 
         if (! $reset) {
-            throw ConnectionProjectionFailed::failedOnReset($this->currentStreamName());
+            throw ConnectionProjectionFailed::failedOnReset($this->projectionName());
         }
 
         return true;
@@ -111,13 +111,13 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
     public function delete(bool $withEmittedEvents): bool
     {
         try {
-            $deleted = $this->store->delete($withEmittedEvents);
+            $deleted = $this->repository->delete($withEmittedEvents);
         } catch (QueryException $queryException) {
             throw ConnectionProjectionFailed::fromProjectionException($queryException);
         }
 
         if (! $deleted) {
-            throw ConnectionProjectionFailed::failedOnDelete($this->currentStreamName());
+            throw ConnectionProjectionFailed::failedOnDelete($this->projectionName());
         }
 
         return true;
@@ -130,13 +130,13 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
     {
         // checkMe dead catch
         try {
-            $locked = $this->store->acquireLock();
+            $locked = $this->repository->acquireLock();
         } catch (QueryException $queryException) {
             throw ConnectionProjectionFailed::fromQueryException($queryException);
         }
 
         if (! $locked) {
-            throw ConnectionProjectionFailed::failedOnAcquireLock($this->currentStreamName());
+            throw ConnectionProjectionFailed::failedOnAcquireLock($this->projectionName());
         }
 
         return true;
@@ -148,13 +148,13 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
     public function updateLock(): bool
     {
         try {
-            $updated = $this->store->updateLock();
+            $updated = $this->repository->updateLock();
         } catch (QueryException $queryException) {
             throw ConnectionProjectionFailed::fromProjectionException($queryException);
         }
 
         if (! $updated) {
-            throw ConnectionProjectionFailed::failedOnUpdateLock($this->currentStreamName());
+            throw ConnectionProjectionFailed::failedOnUpdateLock($this->projectionName());
         }
 
         return true;
@@ -166,13 +166,13 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
     public function releaseLock(): bool
     {
         try {
-            $released = $this->store->releaseLock();
+            $released = $this->repository->releaseLock();
         } catch (QueryException $queryException) {
             throw ConnectionProjectionFailed::fromProjectionException($queryException);
         }
 
         if (! $released) {
-            throw ConnectionProjectionFailed::failedOnReleaseLock($this->currentStreamName());
+            throw ConnectionProjectionFailed::failedOnReleaseLock($this->projectionName());
         }
 
         return true;
@@ -180,21 +180,21 @@ final readonly class ConnectionProjectionStore implements ProjectionStore
 
     public function loadState(): bool
     {
-        return $this->store->loadState();
+        return $this->repository->loadState();
     }
 
     public function loadStatus(): ProjectionStatus
     {
-        return $this->store->loadStatus();
+        return $this->repository->loadStatus();
     }
 
     public function exists(): bool
     {
-        return $this->store->exists();
+        return $this->repository->exists();
     }
 
-    public function currentStreamName(): string
+    public function projectionName(): string
     {
-        return $this->store->currentStreamName();
+        return $this->repository->projectionName();
     }
 }

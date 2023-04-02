@@ -6,15 +6,16 @@ namespace Chronhub\Larastorm\Projection;
 
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Container\Container;
+use Chronhub\Storm\Projector\ProjectorManager;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
-use Chronhub\Storm\Projector\SubscriptionManager;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
 use Chronhub\Storm\Serializer\ProjectorJsonSerializer;
 use Chronhub\Storm\Contracts\Projector\ProjectionOption;
-use Chronhub\Storm\Contracts\Projector\ProjectorManager;
+use Chronhub\Storm\Projector\AbstractSubscriptionFactory;
 use Chronhub\Storm\Projector\InMemorySubscriptionFactory;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
+use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
 use function ucfirst;
@@ -29,12 +30,12 @@ final class ProjectorServiceManager implements ServiceManager
     private readonly ProjectionProviderFactory $projectionProviderFactory;
 
     /**
-     * @var array<string, ProjectorManager>
+     * @var array<string, ProjectorManagerInterface>
      */
     private array $projectors = [];
 
     /**
-     * @var array<string, callable(Container, string, array): ProjectorManager>
+     * @var array<string, callable(Container, string, array): ProjectorManagerInterface>
      */
     private array $customCreators = [];
 
@@ -45,13 +46,13 @@ final class ProjectorServiceManager implements ServiceManager
         $this->projectionProviderFactory = new ProjectionProviderFactory($container);
     }
 
-    public function create(string $name): ProjectorManager
+    public function create(string $name): ProjectorManagerInterface
     {
         return $this->projectors[$name] ?? $this->projectors[$name] = $this->resolve($name);
     }
 
     /**
-     * @param  callable(Container, string, array): ProjectorManager  $callback
+     * @param  callable(Container, string, array): ProjectorManagerInterface  $callback
      */
     public function extend(string $name, callable $callback): ServiceManager
     {
@@ -72,7 +73,7 @@ final class ProjectorServiceManager implements ServiceManager
         return $this->container['config']['projector.defaults.projector'];
     }
 
-    private function resolve(string $name): ProjectorManager
+    private function resolve(string $name): ProjectorManagerInterface
     {
         $driver = $this->getDefaultDriver();
 
@@ -89,7 +90,7 @@ final class ProjectorServiceManager implements ServiceManager
         return $this->createProjectorManager($driver, $config);
     }
 
-    private function createProjectorManager(string $driver, array $config): ProjectorManager
+    private function createProjectorManager(string $driver, array $config): ProjectorManagerInterface
     {
         /**
          * @covers createConnectionManager
@@ -100,33 +101,30 @@ final class ProjectorServiceManager implements ServiceManager
         return $this->{$driverMethod}($config);
     }
 
-    private function createConnectionManager(array $config): ProjectorManager
+    private function createConnectionManager(array $config): ProjectorManagerInterface
     {
-        $subscriptionFactoryArguments = $this->createSubscriptionFactoryArguments($config);
-
-        $subscriptionFactory = new ConnectionSubscriptionFactory(...$subscriptionFactoryArguments);
+        /** @var ConnectionSubscriptionFactory $subscription */
+        $subscription = $this->makeSubscription(ConnectionSubscriptionFactory::class, $config);
 
         if (true === ($config['dispatcher'] ?? false)) {
-            $subscriptionFactory->setEventDispatcher($this->container['events']);
+            $subscription->setEventDispatcher($this->container['events']);
         }
 
-        return new SubscriptionManager($subscriptionFactory);
+        return new ProjectorManager($subscription);
     }
 
-    private function createInMemoryManager(array $config): ProjectorManager
+    private function createInMemoryManager(array $config): ProjectorManagerInterface
     {
-        $subscriptionFactoryArguments = $this->createSubscriptionFactoryArguments($config);
+        $subscription = $this->makeSubscription(InMemorySubscriptionFactory::class, $config);
 
-        $subscriptionFactory = new InMemorySubscriptionFactory(...$subscriptionFactoryArguments);
-
-        return new SubscriptionManager($subscriptionFactory);
+        return new ProjectorManager($subscription);
     }
 
-    private function createSubscriptionFactoryArguments(array $config): array
+    private function makeSubscription(string $subscription, array $config): AbstractSubscriptionFactory
     {
         $chronicler = $this->eventStoreResolver->resolve($config['chronicler']);
 
-        return [
+        $args = [
             $chronicler,
             $this->determineProjectionProvider($config['provider'] ?? null),
             $chronicler->getEventStreamProvider(),
@@ -136,6 +134,8 @@ final class ProjectorServiceManager implements ServiceManager
             new ProjectorJsonSerializer(),
             $this->determineProjectorOptions($config['options']),
         ];
+
+        return $this->container->makeWith($subscription, $args);
     }
 
     private function determineProjectionProvider(?string $providerKey): ProjectionProvider
@@ -156,7 +156,7 @@ final class ProjectorServiceManager implements ServiceManager
         return is_array($options) ? $options : $this->container[$options];
     }
 
-    private function callCustomCreator(string $name, array $config): ProjectorManager
+    private function callCustomCreator(string $name, array $config): ProjectorManagerInterface
     {
         return $this->customCreators[$name]($this->container, $name, $config);
     }

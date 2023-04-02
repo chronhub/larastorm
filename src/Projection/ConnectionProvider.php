@@ -8,9 +8,9 @@ use StdClass;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Chronhub\Storm\Contracts\Projector\ProjectionModel;
-use Chronhub\Storm\Contracts\Projector\ProjectionProvider as Provider;
+use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 
-final readonly class ProjectionProvider implements Provider
+final readonly class ConnectionProvider implements ProjectionProvider
 {
     final public const TABLE_NAME = 'projections';
 
@@ -21,27 +21,27 @@ final readonly class ProjectionProvider implements Provider
         $this->tableName = $tableName ?? self::TABLE_NAME;
     }
 
-    public function createProjection(string $name, string $status): bool
+    public function createProjection(string $projectionName, string $status): bool
     {
-        $projection = new Projection($name, $status, null, null, null);
+        $projection = new Projection($projectionName, $status, null, null, null);
 
         return $this->newQuery()->insert($projection->jsonSerialize());
     }
 
-    public function updateProjection(string $name, array $data): bool
+    public function updateProjection(string $projectionName, array $data): bool
     {
-        return $this->newQuery()->where('name', $name)->update($data) === 1;
+        return $this->newQuery()->where('name', $projectionName)->update($data) === 1;
     }
 
-    public function deleteProjection(string $name): bool
+    public function deleteProjection(string $projectionName): bool
     {
-        return $this->newQuery()->where('name', $name)->delete() === 1;
+        return $this->newQuery()->where('name', $projectionName)->delete() === 1;
     }
 
-    public function acquireLock(string $name, string $status, string $lockedUntil, string $datetime): bool
+    public function acquireLock(string $projectionName, string $status, string $lockedUntil, string $datetime): bool
     {
         $query = $this->newQuery()
-            ->where('name', $name)
+            ->where('name', $projectionName)
             ->where(static function (Builder $query) use ($datetime): void {
                 $query->whereRaw('locked_until IS NULL OR locked_until < ?', [$datetime]);
             })->update([
@@ -52,9 +52,9 @@ final readonly class ProjectionProvider implements Provider
         return $query === 1;
     }
 
-    public function retrieve(string $name): ?ProjectionModel
+    public function retrieve(string $projectionName): ?ProjectionModel
     {
-        $result = $this->newQuery()->where('name', $name)->first();
+        $result = $this->newQuery()->where('name', $projectionName)->first();
 
         if ($result === null) {
             return null;
@@ -78,9 +78,9 @@ final readonly class ProjectionProvider implements Provider
             ->toArray();
     }
 
-    public function projectionExists(string $name): bool
+    public function exists(string $projectionName): bool
     {
-        return $this->newQuery()->where('name', $name)->exists();
+        return $this->newQuery()->where('name', $projectionName)->exists();
     }
 
     private function newQuery(): Builder

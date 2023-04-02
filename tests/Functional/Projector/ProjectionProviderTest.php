@@ -15,23 +15,23 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Chronhub\Larastorm\Projection\ProjectionProvider;
+use Chronhub\Larastorm\Projection\ConnectionProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectionModel;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider as Provider;
 
-#[CoversClass(ProjectionProvider::class)]
+#[CoversClass(ConnectionProvider::class)]
 final class ProjectionProviderTest extends OrchestraTestCase
 {
     use RefreshDatabase;
 
-    private ProjectionProvider $provider;
+    private ConnectionProvider $provider;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->provider = new ProjectionProvider($this->app['db']->connection());
+        $this->provider = new ConnectionProvider($this->app['db']->connection());
     }
 
     #[Test]

@@ -12,7 +12,6 @@ use Chronhub\Storm\Contracts\Message\MessageAlias;
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
 use Chronhub\Storm\Serializer\ProjectorJsonSerializer;
 use Chronhub\Storm\Contracts\Projector\ProjectionOption;
-use Chronhub\Storm\Projector\AbstractSubscriptionFactory;
 use Chronhub\Storm\Projector\InMemorySubscriptionFactory;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
@@ -103,8 +102,9 @@ final class ProjectorServiceManager implements ServiceManager
 
     private function createConnectionManager(array $config): ProjectorManagerInterface
     {
-        /** @var ConnectionSubscriptionFactory $subscription */
-        $subscription = $this->makeSubscription(ConnectionSubscriptionFactory::class, $config);
+        $args = $this->makeSubscription($config);
+
+        $subscription = new ConnectionSubscriptionFactory(...$args);
 
         if (true === ($config['dispatcher'] ?? false)) {
             $subscription->setEventDispatcher($this->container['events']);
@@ -115,16 +115,18 @@ final class ProjectorServiceManager implements ServiceManager
 
     private function createInMemoryManager(array $config): ProjectorManagerInterface
     {
-        $subscription = $this->makeSubscription(InMemorySubscriptionFactory::class, $config);
+        $args = $this->makeSubscription($config);
+
+        $subscription = new InMemorySubscriptionFactory(...$args);
 
         return new ProjectorManager($subscription);
     }
 
-    private function makeSubscription(string $subscription, array $config): AbstractSubscriptionFactory
+    private function makeSubscription(array $config): array
     {
         $chronicler = $this->eventStoreResolver->resolve($config['chronicler']);
 
-        $args = [
+        return [
             $chronicler,
             $this->determineProjectionProvider($config['provider'] ?? null),
             $chronicler->getEventStreamProvider(),
@@ -134,8 +136,6 @@ final class ProjectorServiceManager implements ServiceManager
             new ProjectorJsonSerializer(),
             $this->determineProjectorOptions($config['options']),
         ];
-
-        return $this->container->makeWith($subscription, $args);
     }
 
     private function determineProjectionProvider(?string $providerKey): ProjectionProvider

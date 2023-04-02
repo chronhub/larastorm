@@ -6,8 +6,8 @@ namespace Chronhub\Larastorm\Projection;
 
 use Closure;
 use Illuminate\Contracts\Container\Container;
+use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
-use Chronhub\Storm\Contracts\Projector\ProjectionProvider as Provider;
 use function is_string;
 
 final readonly class ProjectionProviderFactory
@@ -19,7 +19,7 @@ final readonly class ProjectionProviderFactory
         $this->container = $container();
     }
 
-    public function createProvider(string|array $provider): Provider
+    public function createProvider(string|array $provider): ProjectionProvider
     {
         if (is_string($provider)) {
             return $this->container[$provider];

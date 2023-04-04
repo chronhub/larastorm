@@ -14,7 +14,6 @@ class ClockServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     public function register(): void
     {
-        // todo add methods to facade
         $this->app->singleton(SystemClock::class, PointInTime::class);
 
         $this->app->alias(SystemClock::class, Clock::SERVICE_ID);

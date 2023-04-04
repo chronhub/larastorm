@@ -24,7 +24,7 @@ use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
-use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Larastorm\EventStore\MysqlTransactionalEventStore;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Larastorm\EventStore\Persistence\EventStreamProvider;
@@ -32,7 +32,7 @@ use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 
 #[CoversClass(EventStoreManager::class)]
-#[CoversClass(EventStoreConnectionProvider::class)]
+#[CoversClass(EventStoreConnectionFactory::class)]
 final class MysqlEventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;
@@ -60,7 +60,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionFactory::class);
 
         $eventStore = $this->manager->create('publish');
 
@@ -105,7 +105,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
             'strategy' => MysqlSingleStreamPersistence::class,
         ]);
 
-        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionFactory::class);
 
         $eventStore = $this->manager->create('publish');
 
@@ -132,7 +132,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
             'is_transactional' => false,
         ]);
 
-        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionFactory::class);
 
         $eventStore = $this->manager->create('publish');
 
@@ -152,7 +152,7 @@ final class MysqlEventStoreManagerTest extends OrchestraTestCase
             'is_transactional' => true,
         ]);
 
-        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionFactory::class);
 
         $eventStore = $this->manager->create('publish');
 

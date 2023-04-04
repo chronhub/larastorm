@@ -19,10 +19,10 @@ use Chronhub\Storm\Chronicler\TrackTransactionalStream;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
 use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
-use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
+use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
 use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 
 #[CoversClass(ChroniclerServiceProvider::class)]
@@ -41,8 +41,8 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
                 'provider' => 'connection',
                 'event_stream_provider' => [],
                 'providers' => [
-                    'connection' => EventStoreConnectionProvider::class,
-                    'in_memory' => InMemoryChroniclerProvider::class,
+                    'connection' => EventStoreConnectionFactory::class,
+                    'in_memory' => InMemoryChroniclerFactory::class,
                 ],
             ],
             'providers' => [
@@ -109,8 +109,8 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
         $this->assertInstanceOf(EventStoreManager::class, $this->app[ChroniclerManager::class]);
         $this->assertTrue($this->app->bound(Chronicle::SERVICE_ID));
 
-        $this->assertTrue($this->app->bound(InMemoryChroniclerProvider::class));
-        $this->assertTrue($this->app->bound(EventStoreConnectionProvider::class));
+        $this->assertTrue($this->app->bound(InMemoryChroniclerFactory::class));
+        $this->assertTrue($this->app->bound(EventStoreConnectionFactory::class));
     }
 
     #[Test]
@@ -123,8 +123,8 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             StreamCategory::class,
             ChroniclerManager::class,
             Chronicle::SERVICE_ID,
-            InMemoryChroniclerProvider::class,
-            EventStoreConnectionProvider::class,
+            InMemoryChroniclerFactory::class,
+            EventStoreConnectionFactory::class,
         ], $provider->provides());
     }
 

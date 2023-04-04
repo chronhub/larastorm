@@ -18,16 +18,17 @@ use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Contracts\Projector\ProjectorManager;
+use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
 use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
+use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
 
 #[CoversClass(ReadProjectionCommand::class)]
 final class ReadProjectionCommandTest extends OrchestraTestCase
 {
-    private ProjectorManager $projector;
+    private ProjectorManagerInterface $projector;
 
     private StreamName $streamName;
 
@@ -119,7 +120,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
 
         $this->assertFalse($this->projector->exists($this->streamName->name));
 
-        $projection = $this->projector->projectProjection($this->streamName->name);
+        $projection = $this->projector->emitter($this->streamName->name);
 
         $projection
             ->withQueryFilter($this->projector->queryScope()->fromIncludedPosition())
@@ -141,6 +142,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
     {
         return[
             ClockServiceProvider::class,
+            MessagerServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

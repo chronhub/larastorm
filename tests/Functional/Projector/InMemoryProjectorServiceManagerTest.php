@@ -8,13 +8,14 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Container\Container;
 use PHPUnit\Framework\Attributes\CoversClass;
+use Chronhub\Storm\Projector\ProjectorManager;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Projector\InMemoryProjectorManager;
-use Chronhub\Storm\Contracts\Projector\ProjectorManager;
+use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
+use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
 
@@ -37,7 +38,7 @@ final class InMemoryProjectorServiceManagerTest extends OrchestraTestCase
 
         $projectorManager = $this->serviceManager->create('testing');
 
-        $this->assertEquals(InMemoryProjectorManager::class, $projectorManager::class);
+        $this->assertEquals(ProjectorManager::class, $projectorManager::class);
     }
 
     public function testExceptionRaisedWhenProjectorNameIsNotDefined(): void
@@ -85,11 +86,11 @@ final class InMemoryProjectorServiceManagerTest extends OrchestraTestCase
 
         $this->app['config']->set('projector.projectors.in_memory.foo', $config);
 
-        $instance = $this->createMock(ProjectorManager::class);
+        $instance = $this->createMock(ProjectorManagerInterface::class);
 
         $this->serviceManager->extend(
             'foo',
-            function (Container $container, string $name, array $projectorConfig) use ($instance, $config): ProjectorManager {
+            function (Container $container, string $name, array $projectorConfig) use ($instance, $config): ProjectorManagerInterface {
                 TestCase::assertEquals($container, $this->app);
                 TestCase::assertEquals('foo', $name);
                 TestCase::assertEquals($projectorConfig, $config);
@@ -108,6 +109,7 @@ final class InMemoryProjectorServiceManagerTest extends OrchestraTestCase
     {
         return [
             ClockServiceProvider::class,
+            MessagerServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

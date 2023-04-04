@@ -10,7 +10,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Illuminate\Contracts\Events\Dispatcher;
 use PHPUnit\Framework\MockObject\MockObject;
-use Chronhub\Storm\Contracts\Projector\Store;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -21,11 +20,12 @@ use Chronhub\Larastorm\Projection\Events\ProjectionStarted;
 use Chronhub\Larastorm\Projection\Events\ProjectionStopped;
 use Chronhub\Larastorm\Projection\DispatcherAwareRepository;
 use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
+use Chronhub\Storm\Contracts\Projector\ProjectionRepositoryInterface;
 
 #[CoversClass(DispatcherAwareRepository::class)]
 class StandaloneAwareStoreTest extends UnitTestCase
 {
-    private Store|MockObject $store;
+    private ProjectionRepositoryInterface|MockObject $store;
 
     private Dispatcher|MockObject $eventDispatcher;
 
@@ -33,8 +33,8 @@ class StandaloneAwareStoreTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->store = $this->createMock(Store::class);
-        $this->store->method('currentStreamName')->willReturn('stream_name');
+        $this->store = $this->createMock(ProjectionRepositoryInterface::class);
+        $this->store->method('projectionName')->willReturn('stream_name');
         $this->eventDispatcher = $this->createMock(Dispatcher::class);
     }
 
@@ -379,7 +379,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     {
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $this->assertEquals('stream_name', $store->currentStreamName());
+        $this->assertEquals('stream_name', $store->projectionName());
     }
 
     public static function provideBoolean(): Generator

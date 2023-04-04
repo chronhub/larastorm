@@ -7,37 +7,36 @@ namespace Chronhub\Larastorm\EventStore;
 use Closure;
 use Illuminate\Support\Str;
 use Illuminate\Database\Connection;
-use Psr\Container\ContainerInterface;
-use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Tracker\StreamTracker;
 use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
-use Chronhub\Storm\Chronicler\AbstractChroniclerProvider;
+use Chronhub\Storm\Chronicler\ProvideChroniclerFactory;
+use Chronhub\Storm\Contracts\Chronicler\ChroniclerFactory;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
 use Chronhub\Storm\Contracts\Tracker\TransactionalStreamTracker;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 use function is_bool;
+use function sprintf;
 use function ucfirst;
 use function method_exists;
 
-final class EventStoreConnectionProvider extends AbstractChroniclerProvider
+final class EventStoreConnectionFactory implements ChroniclerFactory
 {
-    protected ContainerInterface|Container $container;
+    use ProvideChroniclerFactory;
 
     public function __construct(Closure $container,
                                 private readonly EventStoreDatabaseFactory $storeDatabaseFactory)
     {
-        parent::__construct($container);
+        $this->container = $container();
 
-        /** @phpstan-ignore-next-line  */
         $this->storeDatabaseFactory->setContainer($this->container);
     }
 
-    public function resolve(string $name, array $config): Chronicler
+    public function createEventStore(string $name, array $config): Chronicler
     {
-        $chronicler = $this->createEventStore($name, $config);
+        $chronicler = $this->resolve($name, $config);
 
         if ($chronicler instanceof EventableChronicler) {
             $this->attachStreamSubscribers($chronicler, $config['tracking']['subscribers'] ?? []);
@@ -46,7 +45,7 @@ final class EventStoreConnectionProvider extends AbstractChroniclerProvider
         return $chronicler;
     }
 
-    private function createEventStore(string $name, array $config): Chronicler
+    private function resolve(string $name, array $config): Chronicler
     {
         [$streamTracker, $driver, $isTransactional] = $this->determineStore($name, $config);
 
@@ -60,7 +59,9 @@ final class EventStoreConnectionProvider extends AbstractChroniclerProvider
             return $this->{$driverMethod}($config, $isTransactional, $streamTracker);
         }
 
-        throw new InvalidArgumentException("Connection $name with provider $driver is not defined.");
+        throw new InvalidArgumentException(
+            sprintf('Connection %s name with factory %s is not defined', $name, $driver)
+        );
     }
 
     private function createPgsqlDriver(array $config,
@@ -111,7 +112,7 @@ final class EventStoreConnectionProvider extends AbstractChroniclerProvider
 
         if (! is_bool($isTransactional)) {
             throw new InvalidArgumentException(
-                "Config key is_transactional is required when no stream tracker is provided for chronicler name $name"
+                sprintf('Config key is_transactional is required when no stream tracker is provided for chronicler name %s', $name)
             );
         }
 

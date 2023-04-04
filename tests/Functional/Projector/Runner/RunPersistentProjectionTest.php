@@ -18,20 +18,21 @@ use Chronhub\Storm\Contracts\Message\EventHeader;
 use Chronhub\Larastorm\Tests\Stubs\Model\BalanceId;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Contracts\Projector\ProjectorManager;
+use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Tests\Stubs\Model\BalanceWasDebited;
 use Chronhub\Larastorm\Tests\Stubs\Model\BalanceWasCredited;
 use Chronhub\Larastorm\Tests\Stubs\Model\BalanceWasRegistered;
-use Chronhub\Storm\Contracts\Projector\PersistentProjectorCaster;
+use Chronhub\Storm\Contracts\Projector\EmitterCasterInterface;
+use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
 use function random_int;
 
 final class RunPersistentProjectionTest extends OrchestraTestCase
 {
     private Chronicler $eventStore;
 
-    private ProjectorManager $projector;
+    private ProjectorManagerInterface $projector;
 
     private PointInTime $eventTime;
 
@@ -66,13 +67,13 @@ final class RunPersistentProjectionTest extends OrchestraTestCase
 
         $this->eventStore->amend(new Stream($streamName, $streamEvents));
 
-        $projection = $this->projector->projectProjection('balance_projection');
+        $projection = $this->projector->emitter('balance_projection');
 
         $projection->fromStreams('balance')
             ->initialize(fn (): array => ['balance' => [], 'total' => 0])
             ->withQueryFilter($this->projector->queryScope()->fromIncludedPosition())
             ->whenAny(function (DomainEvent $event, array $state): array {
-                /** @var PersistentProjectorCaster $this */
+                /** @var EmitterCasterInterface $this */
                 if ($event instanceof BalanceWasRegistered) {
                     $state[$this->streamName()] = [$event->balanceId()->toString() => 0];
 
@@ -144,6 +145,7 @@ final class RunPersistentProjectionTest extends OrchestraTestCase
     {
         return [
             ClockServiceProvider::class,
+            MessagerServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

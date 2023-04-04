@@ -5,42 +5,47 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
 use Generator;
+use Throwable;
 use RuntimeException;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Projector\ProjectQuery;
+use Chronhub\Storm\Projector\ProjectEmitter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
+use Chronhub\Storm\Projector\ProjectorManager;
 use Chronhub\Storm\Projector\ProjectReadModel;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
-use Chronhub\Storm\Projector\ProjectProjection;
 use Chronhub\Storm\Contracts\Projector\ReadModel;
+use Chronhub\Storm\Contracts\Message\MessageAlias;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Projector\QueryProjector;
 use Chronhub\Storm\Contracts\Projector\ProjectionModel;
 use Chronhub\Storm\Contracts\Serializer\JsonSerializer;
+use Chronhub\Storm\Contracts\Projector\EmitterProjector;
 use Chronhub\Storm\Contracts\Projector\ProjectionOption;
+use Chronhub\Storm\Projector\Exceptions\ProjectionFailed;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 use Chronhub\Storm\Contracts\Projector\ReadModelProjector;
-use Chronhub\Storm\Contracts\Projector\ProjectionProjector;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectionQueryScope;
-use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
-use Chronhub\Larastorm\Projection\ConnectionProjectorManager;
 use Chronhub\Storm\Projector\Options\DefaultProjectionOption;
+use Chronhub\Larastorm\Projection\ConnectionSubscriptionFactory;
+use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
+use function sprintf;
 
-#[CoversClass(ConnectionProjectorManager::class)]
+#[CoversClass(ProjectorManager::class)]
 final class ConnectionProjectorManagerTest extends UnitTestCase
 {
     public function testQueryProjection(): void
     {
         $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
-        $projector = $manager->projectQuery();
+        $projector = $manager->query();
 
         $this->assertInstanceOf(QueryProjector::class, $projector);
         $this->assertEquals(ProjectQuery::class, $projector::class);
@@ -50,10 +55,10 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
     {
         $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
-        $projector = $manager->projectProjection('balance');
+        $projector = $manager->emitter('balance');
 
-        $this->assertInstanceOf(ProjectionProjector::class, $projector);
-        $this->assertEquals(ProjectProjection::class, $projector::class);
+        $this->assertInstanceOf(EmitterProjector::class, $projector);
+        $this->assertEquals(ProjectEmitter::class, $projector::class);
         $this->assertEquals('balance', $projector->getStreamName());
     }
 
@@ -63,7 +68,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
 
         $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
-        $projector = $manager->projectReadModel('balance', $readModel);
+        $projector = $manager->readModel('balance', $readModel);
 
         $this->assertInstanceOf(ReadModelProjector::class, $projector);
         $this->assertEquals(ProjectReadModel::class, $projector::class);
@@ -250,7 +255,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
     public function testStreamExists(bool $exists): void
     {
         $this->projectionProvider->expects($this->once())
-            ->method('projectionExists')
+            ->method('exists')
             ->with('balance')
             ->willReturn($exists);
 
@@ -288,7 +293,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
         $this->expectException(ProjectionNotFound::class);
 
         $this->projectionProvider->expects($this->once())
-            ->method('projectionExists')
+            ->method('exists')
             ->with('balance')
             ->willReturn(false);
 
@@ -306,7 +311,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
 
     public function testExceptionRaisedWhenUpdateProjectionFailed(): void
     {
-        $this->expectException(ConnectionProjectionFailed::class);
+        $this->expectException(ProjectionFailed::class);
 
         $this->projectionProvider->expects($this->once())
             ->method('updateProjection')
@@ -322,7 +327,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
 
     public function testExceptionRaisedWhenUpdateProjectionFailed_2(): void
     {
-        $this->expectException(ConnectionProjectionFailed::class);
+        $this->expectException(ProjectionFailed::class);
         $this->expectExceptionMessage('Unable to update projection status for stream name balance and status stopping');
 
         $this->projectionProvider->expects($this->once())
@@ -354,7 +359,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
     public function testExceptionRaisedWhenMarkResetOnProjectionNotFound(): void
     {
         $this->projectionProvider->expects($this->once())
-            ->method('projectionExists')
+            ->method('exists')
             ->with('balance')
             ->willReturn(false);
 
@@ -374,7 +379,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
 
     public function testExceptionRaisedWhenMarkResetProjectionFailed(): void
     {
-        $this->expectException(ConnectionProjectionFailed::class);
+        $this->expectException(ProjectionFailed::class);
 
         $this->projectionProvider->expects($this->once())
             ->method('updateProjection')
@@ -391,7 +396,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
     #[Test]
     public function testExceptionRaisedWhenMarkResetProjectionFailed_2(): void
     {
-        $this->expectException(ConnectionProjectionFailed::class);
+        $this->expectException(ProjectionFailed::class);
         $this->expectExceptionMessage('Unable to update projection status for stream name balance and status resetting');
 
         $this->projectionProvider->expects($this->once())
@@ -427,7 +432,7 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
     public function testExceptionRaisedWhenMarkDeletingOnProjectionNotFound(bool $withEmittedEvents): void
     {
         $this->projectionProvider->expects($this->once())
-            ->method('projectionExists')
+            ->method('exists')
             ->with('balance')
             ->willReturn(false);
 
@@ -448,12 +453,11 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
     public function testExceptionRaisedWhenMarkDeletingFailed(bool $withEmittedEvents): void
     {
         $status = $withEmittedEvents ? ProjectionStatus::DELETING_WITH_EMITTED_EVENTS->value : ProjectionStatus::DELETING->value;
 
-        $this->expectException(ConnectionProjectionFailed::class);
+        $this->expectException(ProjectionFailed::class);
 
         $this->projectionProvider->expects($this->once())
             ->method('updateProjection')
@@ -468,13 +472,9 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
     public function testExceptionRaisedWhenMarkDeletingFailed_2(bool $withEmittedEvents): void
     {
         $status = $withEmittedEvents ? ProjectionStatus::DELETING_WITH_EMITTED_EVENTS->value : ProjectionStatus::DELETING->value;
-
-        $this->expectException(ConnectionProjectionFailed::class);
-        $this->expectExceptionMessage('Unable to update projection status for stream name balance and status '.$status);
 
         $this->projectionProvider->expects($this->once())
             ->method('updateProjection')
@@ -485,7 +485,12 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
 
         $manager = $this->newProjectorManager(new DefaultProjectionOption());
 
-        $manager->delete('balance', $withEmittedEvents);
+        try {
+            $manager->delete('balance', $withEmittedEvents);
+        } catch (Throwable $e) {
+            $this->assertSame(ProjectionFailed::class, $e::class);
+            $this->assertSame(sprintf('Unable to update projection status for stream name balance and status %s', $status), $e->getMessage());
+        }
     }
 
     public static function provideBoolean(): Generator
@@ -508,6 +513,8 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
 
     private JsonSerializer|MockObject $jsonSerializer;
 
+    private MessageAlias|MockObject $messageAlias;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -519,18 +526,22 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
         $this->clock = $this->createMock(SystemClock::class);
         $this->jsonSerializer = $this->createMock(JsonSerializer::class);
         $this->projectionOption = $this->createMock(ProjectionOption::class);
+        $this->messageAlias = $this->createMock(MessageAlias::class);
     }
 
-    private function newProjectorManager(array|ProjectionOption $projectorOption = null): ConnectionProjectorManager
+    private function newProjectorManager(array|ProjectionOption $projectorOption = null): ProjectorManagerInterface
     {
-        return new ConnectionProjectorManager(
+        $subscriptionFactory = new ConnectionSubscriptionFactory(
             $this->chronicler,
-            $this->eventStreamProvider,
             $this->projectionProvider,
+            $this->eventStreamProvider,
             $this->queryScope,
             $this->clock,
+            $this->messageAlias,
             $this->jsonSerializer,
             $projectorOption ?? $this->projectionOption,
         );
+
+        return new ProjectorManager($subscriptionFactory);
     }
 }

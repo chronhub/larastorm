@@ -20,7 +20,7 @@ use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
-use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Larastorm\EventStore\MysqlTransactionalEventStore;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
@@ -28,15 +28,15 @@ use Chronhub\Storm\Contracts\Chronicler\TransactionalEventableChronicler;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 
-#[CoversClass(EventStoreConnectionProvider::class)]
-class MysqlEventStoreConnectionProvider extends OrchestraTestCase
+#[CoversClass(EventStoreConnectionFactory::class)]
+class MysqlEventStoreConnectionFactoryTest extends OrchestraTestCase
 {
     #[Test]
     public function it_create_mysql_event_store(): void
     {
         $provider = $this->newInstance();
 
-        $eventStore = $provider->resolve('default', [
+        $eventStore = $provider->createEventStore('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
             'store' => 'mysql',
             'is_transactional' => false,
@@ -54,7 +54,7 @@ class MysqlEventStoreConnectionProvider extends OrchestraTestCase
     {
         $provider = $this->newInstance();
 
-        $eventStore = $provider->resolve('default', [
+        $eventStore = $provider->createEventStore('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
             'store' => 'mysql',
             'is_transactional' => true,
@@ -72,7 +72,7 @@ class MysqlEventStoreConnectionProvider extends OrchestraTestCase
     {
         $provider = $this->newInstance();
 
-        $eventStore = $provider->resolve('default', [
+        $eventStore = $provider->createEventStore('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
             'store' => 'mysql',
             'tracking' => [
@@ -97,7 +97,7 @@ class MysqlEventStoreConnectionProvider extends OrchestraTestCase
     {
         $provider = $this->newInstance();
 
-        $eventStore = $provider->resolve('default', [
+        $eventStore = $provider->createEventStore('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
             'store' => 'mysql',
             'tracking' => [
@@ -126,7 +126,7 @@ class MysqlEventStoreConnectionProvider extends OrchestraTestCase
 
         $provider = $this->newInstance();
 
-        $provider->resolve('default', [
+        $provider->createEventStore('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
             'store' => 'mysql',
             'tracking' => [
@@ -163,7 +163,7 @@ class MysqlEventStoreConnectionProvider extends OrchestraTestCase
 
         $provider = $this->newInstance();
 
-        $provider->resolve('default', [
+        $provider->createEventStore('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
             'store' => 'mysql',
             'tracking' => [
@@ -177,11 +177,11 @@ class MysqlEventStoreConnectionProvider extends OrchestraTestCase
     public function it_raise_exception_when_store_drive_is_not_supported(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Connection default with provider foo is not defined.');
+        $this->expectExceptionMessage('Connection default name with factory foo is not defined');
 
         $provider = $this->newInstance();
 
-        $provider->resolve('default', [
+        $provider->createEventStore('default', [
             'strategy' => MysqlSingleStreamPersistence::class,
             'store' => 'foo',
             'tracking' => [
@@ -191,9 +191,9 @@ class MysqlEventStoreConnectionProvider extends OrchestraTestCase
         ]);
     }
 
-    private function newInstance(): EventStoreConnectionProvider
+    private function newInstance(): EventStoreConnectionFactory
     {
-        return new EventStoreConnectionProvider(
+        return new EventStoreConnectionFactory(
             fn () => $this->app,
             $this->app[EventStoreDatabaseFactory::class]);
     }

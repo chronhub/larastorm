@@ -103,7 +103,6 @@ abstract class EventStoreConnection implements ChroniclerConnection, ChroniclerD
     /**
      * Handle query exception depends on connection driver
      *
-     *
      * @throws StreamNotFound when stream not found on update
      * @throws StreamAlreadyExists when stream already exist on creation
      * @throws ConnectionConcurrencyException when stream already exist on update

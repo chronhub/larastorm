@@ -8,9 +8,10 @@ use Closure;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Storm\Contracts\Chronicler\ChroniclerFactory;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use function sprintf;
 use function is_string;
 
 final class EventStoreManager implements ChroniclerManager
@@ -28,7 +29,7 @@ final class EventStoreManager implements ChroniclerManager
     private array $customCreators = [];
 
     /**
-     * @var array<string, string|ChroniclerProvider>
+     * @var array<string, string|ChroniclerFactory>
      */
     private array $providers = [];
 
@@ -52,7 +53,7 @@ final class EventStoreManager implements ChroniclerManager
         return $this;
     }
 
-    public function shouldUse(string $driver, string|ChroniclerProvider $provider): self
+    public function shouldUse(string $driver, string|ChroniclerFactory $provider): self
     {
         $this->providers[$driver] = $provider;
 
@@ -61,7 +62,7 @@ final class EventStoreManager implements ChroniclerManager
         return $this;
     }
 
-    public function addProvider(string $driver, string|ChroniclerProvider $chroniclerProvider): self
+    public function addProvider(string $driver, string|ChroniclerFactory $chroniclerProvider): self
     {
         $this->providers[$driver] = $chroniclerProvider;
 
@@ -87,7 +88,7 @@ final class EventStoreManager implements ChroniclerManager
         $config = $this->app['config']["chronicler.providers.$driver.$name"];
 
         if ($config === null) {
-            throw new InvalidArgumentException("Chronicler config $name is not defined");
+            throw new InvalidArgumentException(sprintf('Chronicler config %s is not defined', $name));
         }
 
         if (isset($this->customCreators[$name])) {
@@ -105,11 +106,11 @@ final class EventStoreManager implements ChroniclerManager
             $provider = $this->providers[$driver] = $this->app[$provider];
         }
 
-        if ($provider instanceof ChroniclerProvider) {
-            return $provider->resolve($name, $config);
+        if ($provider instanceof ChroniclerFactory) {
+            return $provider->createEventStore($name, $config);
         }
 
-        throw new InvalidArgumentException("Chronicler provider with name $name and driver $driver is not defined");
+        throw new InvalidArgumentException(sprintf('Chronicler provider with name %s and driver %s is not defined', $name, $driver));
     }
 
     private function callCustomCreator(string $name, array $config): Chronicler

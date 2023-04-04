@@ -7,9 +7,10 @@ namespace Chronhub\Larastorm\Tests\Functional\Projector;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
+use Chronhub\Storm\Projector\ProjectorManager;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Projector\InMemoryProjectorManager;
+use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Projection\ProjectorServiceManager as ServiceManager;
@@ -33,7 +34,7 @@ final class ProjectFacadeTest extends OrchestraTestCase
 
         $projectorManager = $manager->create('testing');
 
-        $this->assertInstanceOf(InMemoryProjectorManager::class, $projectorManager);
+        $this->assertInstanceOf(ProjectorManager::class, $projectorManager);
     }
 
     #[Test]
@@ -60,6 +61,7 @@ final class ProjectFacadeTest extends OrchestraTestCase
     {
         return [
             ClockServiceProvider::class,
+            MessagerServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

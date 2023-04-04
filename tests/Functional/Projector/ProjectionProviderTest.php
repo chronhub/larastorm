@@ -128,11 +128,11 @@ final class ProjectionProviderTest extends OrchestraTestCase
     #[Test]
     public function it_assert_projection_exists(): void
     {
-        $this->assertFalse($this->provider->projectionExists('balance'));
+        $this->assertFalse($this->provider->exists('balance'));
 
         $this->provider->createProjection('balance', ProjectionStatus::IDLE->value);
 
-        $this->assertTrue($this->provider->projectionExists('balance'));
+        $this->assertTrue($this->provider->exists('balance'));
     }
 
     #[Test]

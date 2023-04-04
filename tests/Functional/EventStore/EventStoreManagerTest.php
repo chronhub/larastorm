@@ -28,7 +28,7 @@ use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
-use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
@@ -36,7 +36,7 @@ use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\PerAggregateStreamPersistence;
 
 #[CoversClass(EventStoreManager::class)]
-#[CoversClass(EventStoreConnectionProvider::class)]
+#[CoversClass(EventStoreConnectionFactory::class)]
 final class EventStoreManagerTest extends OrchestraTestCase
 {
     private EventStoreManager $manager;
@@ -456,7 +456,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     public function it_raise_exception_when_config_store_is_not_supported(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Connection publish with provider mongo is not defined');
+        $this->expectExceptionMessage('Connection publish name with factory mongo is not defined');
 
         $this->setEventStoreConfig([
             'store' => 'mongo',
@@ -491,7 +491,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
 
     private function createEventStoreInstance(): Chronicler
     {
-        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionFactory::class);
 
         return $this->manager->create('publish');
     }

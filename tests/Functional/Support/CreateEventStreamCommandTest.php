@@ -9,21 +9,21 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Storm\Contracts\Chronicler\InMemoryChronicler;
 use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
-use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
+use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
 
 #[CoversClass(CreateEventStreamCommand::class)]
 final class CreateEventStreamCommandTest extends OrchestraTestCase
 {
-    private InMemoryChronicler $eventStore;
+    private Chronicler $eventStore;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->eventStore = Chronicle::shouldUse('in_memory', InMemoryChroniclerProvider::class)
+        $this->eventStore = Chronicle::shouldUse('in_memory', InMemoryChroniclerFactory::class)
             ->create('standalone');
     }
 

@@ -40,8 +40,8 @@ return [
         ],
 
         'providers' => [
-            'connection' => \Chronhub\Larastorm\EventStore\EventStoreConnectionProvider::class,
-            'in_memory' => \Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider::class,
+            'connection' => \Chronhub\Larastorm\EventStore\EventStoreConnectionFactory::class,
+            'in_memory' => \Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory::class,
         ],
     ],
 

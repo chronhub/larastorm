@@ -10,24 +10,24 @@ use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use Chronhub\Storm\Contracts\Projector\Store;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Larastorm\Projection\ConnectionRepository;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 use Chronhub\Storm\Projector\Exceptions\ProjectionAlreadyRunning;
+use Chronhub\Storm\Contracts\Projector\ProjectionRepositoryInterface;
 
 #[CoversClass(ConnectionRepository::class)]
 final class ConnectionStoreTest extends UnitTestCase
 {
-    private Store|MockObject $store;
+    private ProjectionRepositoryInterface|MockObject $store;
 
     private QueryException $queryException;
 
     public function setUp(): void
     {
-        $this->store = $this->createMock(Store::class);
+        $this->store = $this->createMock(ProjectionRepositoryInterface::class);
         $this->queryException = new QueryException('some_connection', 'some_sql', [], new RuntimeException('foo'));
     }
 
@@ -70,7 +70,7 @@ final class ConnectionStoreTest extends UnitTestCase
         $this->expectExceptionMessage('Unable to create projection for stream name: some_stream_name');
 
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('some_stream_name');
 
         $this->store->expects($this->once())
@@ -121,7 +121,7 @@ final class ConnectionStoreTest extends UnitTestCase
         $this->expectExceptionMessage('Unable to stop projection for stream name: some_stream_name');
 
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('some_stream_name');
 
         $this->store->expects($this->once())->method('stop')->willReturn(false);
@@ -171,7 +171,7 @@ final class ConnectionStoreTest extends UnitTestCase
         $this->expectExceptionMessage('Unable to restart projection for stream name: some_stream_name');
 
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('some_stream_name');
 
         $this->store->expects($this->once())->method('startAgain')->willReturn(false);
@@ -221,7 +221,7 @@ final class ConnectionStoreTest extends UnitTestCase
         $this->expectExceptionMessage('Unable to persist projection for stream name: some_stream_name');
 
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('some_stream_name');
 
         $this->store->expects($this->once())->method('persist')->willReturn(false);
@@ -271,7 +271,7 @@ final class ConnectionStoreTest extends UnitTestCase
         $this->expectExceptionMessage('Unable to reset projection for stream name: some_stream_name');
 
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('some_stream_name');
 
         $this->store->expects($this->once())->method('reset')->willReturn(false);
@@ -326,7 +326,7 @@ final class ConnectionStoreTest extends UnitTestCase
         $this->expectExceptionMessage('Unable to delete projection for stream name: some_stream_name');
 
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('some_stream_name');
 
         $this->store->expects($this->once())
@@ -378,7 +378,7 @@ final class ConnectionStoreTest extends UnitTestCase
         $this->expectExceptionMessage('Acquiring lock failed for stream name: some_stream_name');
 
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('some_stream_name');
 
         $this->store->expects($this->once())
@@ -429,7 +429,7 @@ final class ConnectionStoreTest extends UnitTestCase
         $this->expectExceptionMessage('Unable to update projection lock for stream name: some_stream_name');
 
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('some_stream_name');
 
         $this->store->expects($this->once())
@@ -480,7 +480,7 @@ final class ConnectionStoreTest extends UnitTestCase
         $this->expectExceptionMessage('Unable to release projection lock for stream name: some_stream_name');
 
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('some_stream_name');
 
         $this->store->expects($this->once())
@@ -528,10 +528,10 @@ final class ConnectionStoreTest extends UnitTestCase
     public function it_access_current_stream_name(): void
     {
         $this->store->expects($this->once())
-            ->method('currentStreamName')
+            ->method('projectionName')
             ->willReturn('foo');
 
-        $this->assertEquals('foo', (new ConnectionRepository($this->store))->currentStreamName());
+        $this->assertEquals('foo', (new ConnectionRepository($this->store))->projectionName());
     }
 
     public static function provideBoolean(): Generator

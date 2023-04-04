@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional;
 
 use DateTimeZone;
+use DomainException;
 use DateTimeImmutable;
 use Chronhub\Storm\Clock\PointInTime;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Support\Facade\Clock;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
@@ -16,8 +16,7 @@ use Chronhub\Larastorm\Providers\ClockServiceProvider;
 #[CoversClass(Clock::class)]
 final class ClockFacadeTest extends OrchestraTestCase
 {
-    #[Test]
-    public function it_assert_clock(): void
+    public function testClock(): void
     {
         $clock = Clock::getFacadeRoot();
 
@@ -25,8 +24,7 @@ final class ClockFacadeTest extends OrchestraTestCase
         $this->assertEquals('clock.system', Clock::SERVICE_ID);
     }
 
-    #[Test]
-    public function it_assert_now(): void
+    public function testNow(): void
     {
         $clock = Clock::now();
 
@@ -34,24 +32,22 @@ final class ClockFacadeTest extends OrchestraTestCase
         $this->assertEquals('UTC', $clock->getTimezone()->getName());
     }
 
-    #[Test]
-    public function it_assert_get_format(): void
+    public function testGetFormat(): void
     {
         $clockFormat = Clock::getFormat();
 
         $this->assertEquals(PointInTime::DATE_TIME_FORMAT, $clockFormat);
     }
 
-    #[Test]
-    public function it_test_format_datetime_from_string(): void
+    public function testExceptionRaisedWithInvalidDatetime(): void
     {
-        $timeString = Clock::format('some_datetime');
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('Invalid date time format: some_datetime');
 
-        $this->assertEquals('some_datetime', $timeString);
+        Clock::format('some_datetime');
     }
 
-    #[Test]
-    public function it_test_format_datetime_from_date_time_immutable(): void
+    public function testFormatFromDateTimeImmutable(): void
     {
         $now = Clock::now();
 
@@ -62,12 +58,11 @@ final class ClockFacadeTest extends OrchestraTestCase
         $this->assertEquals($nowString, $clockString);
     }
 
-    #[Test]
-    public function it_test_format_datetime_from_date_time_immutable_2(): void
+    public function testFormatFromDateTimeImmutable_2(): void
     {
-        $clockString = Clock::format(new DateTimeImmutable('2023-02-19T15:43:45.482919', new DateTimeZone('UTC')));
+        $clockString = Clock::format(new DateTimeImmutable('2023-02-19T15', new DateTimeZone('UTC')));
 
-        $this->assertEquals('2023-02-19T15:43:45.482919', $clockString);
+        $this->assertEquals('2023-02-19T15:00:00.000000', $clockString);
     }
 
     protected function getPackageProviders($app): array

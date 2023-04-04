@@ -15,6 +15,7 @@ use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
+use function sprintf;
 use function is_string;
 
 final readonly class CqrsManager implements ReporterManager
@@ -37,13 +38,13 @@ final readonly class CqrsManager implements ReporterManager
         $groupType = DomainType::tryFrom($type);
 
         if (! $groupType instanceof DomainType) {
-            throw new RoutingViolation("Group type $type is invalid");
+            throw new RoutingViolation(sprintf('Group type %s is invalid', $type));
         }
 
         $group = $this->registrar->get($groupType, $name);
 
         if (! $group instanceof Group) {
-            throw new RoutingViolation("Group with type $type and name $name not defined");
+            throw new RoutingViolation(sprintf('Group with type %s and name %s not defined', $type, $name));
         }
 
         return $this->resolve($group);

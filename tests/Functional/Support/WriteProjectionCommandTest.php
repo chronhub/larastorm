@@ -19,17 +19,18 @@ use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Contracts\Projector\ProjectorManager;
+use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Storm\Contracts\Projector\PersistentProjector;
 use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
+use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
 use function str_starts_with;
 
 #[CoversClass(WriteProjectionCommand::class)]
 final class WriteProjectionCommandTest extends OrchestraTestCase
 {
-    private ProjectorManager $projector;
+    private ProjectorManagerInterface $projector;
 
     private StreamName $streamName;
 
@@ -147,7 +148,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
 
         $this->assertFalse($this->projector->exists($this->streamName->name));
 
-        $projection = $this->projector->projectProjection($this->streamName->name);
+        $projection = $this->projector->emitter($this->streamName->name);
 
         $projection
             ->withQueryFilter($this->projector->queryScope()->fromIncludedPosition())
@@ -172,6 +173,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     {
         return[
             ClockServiceProvider::class,
+            MessagerServiceProvider::class,
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];

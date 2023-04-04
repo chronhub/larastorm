@@ -14,12 +14,12 @@ use Chronhub\Larastorm\EventStore\EventStoreManager;
 use Chronhub\Storm\Serializer\JsonSerializerFactory;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
+use Chronhub\Storm\Contracts\Chronicler\ChroniclerFactory;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerProvider;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
-use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerProvider;
+use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 
 class ChroniclerServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -79,15 +79,15 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
     protected function registerProviders(): void
     {
         $this->app->singleton(
-            EventStoreConnectionProvider::class,
-            fn (Application $app): ChroniclerProvider => new EventStoreConnectionProvider(
+            EventStoreConnectionFactory::class,
+            fn (Application $app): ChroniclerFactory => new EventStoreConnectionFactory(
                 fn () => $app, $app[EventStoreDatabaseFactory::class]
             )
         );
 
         $this->app->singleton(
-            InMemoryChroniclerProvider::class,
-            fn (Application $app): ChroniclerProvider => new InMemoryChroniclerProvider(fn () => $app)
+            InMemoryChroniclerFactory::class,
+            fn (Application $app): ChroniclerFactory => new InMemoryChroniclerFactory(fn () => $app)
         );
     }
 
@@ -113,8 +113,8 @@ class ChroniclerServiceProvider extends ServiceProvider implements DeferrablePro
             StreamCategory::class,
             ChroniclerManager::class,
             Chronicle::SERVICE_ID,
-            InMemoryChroniclerProvider::class,
-            EventStoreConnectionProvider::class,
+            InMemoryChroniclerFactory::class,
+            EventStoreConnectionFactory::class,
         ];
     }
 }

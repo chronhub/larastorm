@@ -24,7 +24,7 @@ use Chronhub\Storm\Chronicler\TransactionalEventChronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
-use Chronhub\Larastorm\EventStore\EventStoreConnectionProvider;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Larastorm\EventStore\PgsqlTransactionalEventStore;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 use Chronhub\Larastorm\EventStore\Persistence\EventStreamProvider;
@@ -59,7 +59,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
             'query_loader' => 'cursor',
         ]);
 
-        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionFactory::class);
 
         $eventStore = $this->manager->create('publisher');
 
@@ -104,7 +104,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
             'strategy' => PgsqlSingleStreamPersistence::class,
         ]);
 
-        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionFactory::class);
 
         $eventStore = $this->manager->create('publisher');
 
@@ -131,7 +131,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
             'is_transactional' => false,
         ]);
 
-        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionFactory::class);
 
         $eventStore = $this->manager->create('publisher');
 
@@ -154,7 +154,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
             'is_transactional' => true,
         ]);
 
-        $this->manager->shouldUse('connection', EventStoreConnectionProvider::class);
+        $this->manager->shouldUse('connection', EventStoreConnectionFactory::class);
 
         $eventStore = $this->manager->create('write');
 

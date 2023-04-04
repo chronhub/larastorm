@@ -60,13 +60,13 @@ trait ProvideTestingStore
         $this->assertEquals([$eventAsArray, $eventAsArray], $events);
     }
 
-    public function provideDirection(): Generator
+    public static function provideDirection(): Generator
     {
         yield ['asc'];
         yield ['desc'];
     }
 
-    public function provideBoolean(): Generator
+    public static function provideBoolean(): Generator
     {
         yield [true];
         yield [false];

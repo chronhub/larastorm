@@ -23,7 +23,7 @@ use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
 use Chronhub\Storm\Contracts\Projector\ProjectionRepositoryInterface;
 
 #[CoversClass(DispatcherAwareRepository::class)]
-class StandaloneAwareStoreTest extends UnitTestCase
+class DispatcherAwareRepositoryTest extends UnitTestCase
 {
     private ProjectionRepositoryInterface|MockObject $store;
 
@@ -38,8 +38,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $this->eventDispatcher = $this->createMock(Dispatcher::class);
     }
 
-    #[Test]
-    public function it_dispatch_event_when_projection_started(): void
+    public function testDispatchEventOnProjectionStarted(): void
     {
         $this->store->expects($this->once())->method('create')->willReturn(true);
 
@@ -57,8 +56,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $store->create();
     }
 
-    #[Test]
-    public function it_dispatch_event_exception_when_projection_started(): void
+    public function testDispatchExceptionOnExceptionRaisedWhenStartingProjection(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -82,7 +80,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     }
 
     #[Test]
-    public function it_dispatch_event_when_projection_restarted(): void
+    public function testDispatchEventOnProjectionStartedAgain(): void
     {
         $this->store->expects($this->once())->method('startAgain')->willReturn(true);
 
@@ -101,7 +99,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     }
 
     #[Test]
-    public function it_dispatch_event_exception_when_projection_restarted(): void
+    public function testDispatchExceptionOnExceptionRaisedWhenRestartingProjection(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -124,8 +122,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $store->startAgain();
     }
 
-    #[Test]
-    public function it_dispatch_event_when_projection_stopped(): void
+    public function testDispatchEventOnProjectionStopped(): void
     {
         $this->store->expects($this->once())->method('stop')->willReturn(true);
 
@@ -143,8 +140,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $store->stop();
     }
 
-    #[Test]
-    public function it_dispatch_event_exception_when_projection_stopped(): void
+    public function testDispatchExceptionOnExceptionRaisedWhenStoppingProjection(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -167,8 +163,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $store->stop();
     }
 
-    #[Test]
-    public function it_dispatch_event_when_projection_reset(): void
+    public function testDispatchEventOnProjectionReset(): void
     {
         $this->store->expects($this->once())->method('reset')->willReturn(true);
 
@@ -186,8 +181,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $store->reset();
     }
 
-    #[Test]
-    public function it_dispatch_event_exception_when_projection_reset(): void
+    public function testDispatchExceptionOnExceptionRaisedWhenResettingProjection(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -210,8 +204,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $store->reset();
     }
 
-    #[Test]
-    public function it_dispatch_event_when_projection_deleted(): void
+    public function testDispatchEventOnProjectionDeleted(): void
     {
         $this->store->expects($this->once())->method('delete')->with(false)->willReturn(true);
 
@@ -230,8 +223,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $store->delete(false);
     }
 
-    #[Test]
-    public function it_dispatch_event_exception_when_projection_deleted(): void
+    public function testDispatchExceptionOnExceptionRaisedWhenDeletingProjection(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -254,8 +246,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $store->delete(false);
     }
 
-    #[Test]
-    public function it_dispatch_event_when_projection_deleted_with_emitted_events(): void
+    public function testDispatchEventOnProjectionDeletedWithEmittedEvents(): void
     {
         $this->store->expects($this->once())->method('delete')->with(true)->willReturn(true);
 
@@ -274,8 +265,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $store->delete(true);
     }
 
-    #[Test]
-    public function it_dispatch_event_exception_when_projection_deleted_with_emitted_event(): void
+    public function testDispatchExceptionOnExceptionRaisedWhenDeletingWithEmittedEventsProjection(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -299,8 +289,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_acquire_lock($lockAcquired): void
+    public function testAcquireLock($lockAcquired): void
     {
         $this->store->expects($this->once())->method('acquireLock')->willReturn($lockAcquired);
 
@@ -310,8 +299,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_release_lock($lockReleased): void
+    public function testReleaseLock($lockReleased): void
     {
         $this->store->expects($this->once())->method('releaseLock')->willReturn($lockReleased);
 
@@ -321,8 +309,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_update_lock($lockUpdated): void
+    public function testUpdateLock($lockUpdated): void
     {
         $this->store->expects($this->once())->method('updateLock')->willReturn($lockUpdated);
 
@@ -331,8 +318,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $this->assertEquals($lockUpdated, $store->updateLock());
     }
 
-    #[Test]
-    public function it_load_status(): void
+    public function testLoadProjectionStatus(): void
     {
         $this->store->expects($this->once())->method('loadStatus')->willReturn(ProjectionStatus::IDLE);
 
@@ -342,8 +328,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_persist(bool $isPersisted): void
+    public function testPersistProjection(bool $isPersisted): void
     {
         $this->store->expects($this->once())->method('persist')->willReturn($isPersisted);
 
@@ -353,8 +338,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_check_stream_exits(bool $streamExists): void
+    public function testCheckStreamExists(bool $streamExists): void
     {
         $this->store->expects($this->once())->method('exists')->willReturn($streamExists);
 
@@ -364,8 +348,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_load_state(bool $stateLoaded): void
+    public function testLoadProjectionState(bool $stateLoaded): void
     {
         $this->store->expects($this->once())->method('loadState')->willReturn($stateLoaded);
 
@@ -374,8 +357,7 @@ class StandaloneAwareStoreTest extends UnitTestCase
         $this->assertEquals($stateLoaded, $store->loadState());
     }
 
-    #[Test]
-    public function it_return_current_stream_name(): void
+    public function testGetProjectionName(): void
     {
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 

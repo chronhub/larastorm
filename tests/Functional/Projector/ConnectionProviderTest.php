@@ -9,7 +9,6 @@ use DateTimeZone;
 use JsonSerializable;
 use DateTimeImmutable;
 use Chronhub\Storm\Clock\PointInTime;
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
@@ -21,7 +20,7 @@ use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider as Provider;
 
 #[CoversClass(ConnectionProvider::class)]
-final class ProjectionProviderTest extends OrchestraTestCase
+final class ConnectionProviderTest extends OrchestraTestCase
 {
     use RefreshDatabase;
 
@@ -34,16 +33,14 @@ final class ProjectionProviderTest extends OrchestraTestCase
         $this->provider = new ConnectionProvider($this->app['db']->connection());
     }
 
-    #[Test]
-    public function it_assert_projection_provider(): void
+    public function testProjectionProvider(): void
     {
         $this->assertInstanceOf(Provider::class, $this->provider);
         $this->assertNull($this->findProjectionByName('foo'));
         $this->assertEquals('projections', $this->provider::TABLE_NAME);
     }
 
-    #[Test]
-    public function it_create_projection(): void
+    public function testCreateProjection(): void
     {
         $created = $this->provider->createProjection('balance', ProjectionStatus::IDLE->value);
 
@@ -69,8 +66,7 @@ final class ProjectionProviderTest extends OrchestraTestCase
         $this->assertNull($model->lockedUntil());
     }
 
-    #[Test]
-    public function it_update_projection_by_projection_name(): void
+    public function testUpdateProjection(): void
     {
         $created = $this->provider->createProjection('balance', ProjectionStatus::IDLE->value);
         $this->assertTrue($created);
@@ -115,8 +111,7 @@ final class ProjectionProviderTest extends OrchestraTestCase
         ], $model->jsonSerialize());
     }
 
-    #[Test]
-    public function it_raise_exception_if_projection_name_already_exists(): void
+    public function testExceptionRaisedOnDuplicateProjectionName(): void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('SQLSTATE[23000]: Integrity constraint violation');
@@ -125,8 +120,7 @@ final class ProjectionProviderTest extends OrchestraTestCase
         $this->provider->createProjection('account', ProjectionStatus::RUNNING->value);
     }
 
-    #[Test]
-    public function it_assert_projection_exists(): void
+    public function testProjectionExists(): void
     {
         $this->assertFalse($this->provider->exists('balance'));
 
@@ -135,8 +129,7 @@ final class ProjectionProviderTest extends OrchestraTestCase
         $this->assertTrue($this->provider->exists('balance'));
     }
 
-    #[Test]
-    public function it_find_projection_by_name(): void
+    public function testRetrieveProjectionByName(): void
     {
         $this->provider->createProjection('balance', ProjectionStatus::IDLE->value);
 
@@ -144,8 +137,7 @@ final class ProjectionProviderTest extends OrchestraTestCase
         $this->assertInstanceOf(ProjectionModel::class, $this->provider->retrieve('balance'));
     }
 
-    #[Test]
-    public function it_find_projection_by_sorting_names_ascendant(): void
+    public function testFilterProjectionNamesSortedByAscendantNames(): void
     {
         $this->provider->createProjection('balance', ProjectionStatus::IDLE->value);
         $this->provider->createProjection('account', ProjectionStatus::RUNNING->value);
@@ -156,8 +148,7 @@ final class ProjectionProviderTest extends OrchestraTestCase
         $this->assertEquals(['account', 'balance'], $this->provider->filterByNames('balance', 'unknown_stream', 'account'));
     }
 
-    #[Test]
-    public function it_delete_projection_by_name(): void
+    public function testDeleteProjection(): void
     {
         $this->provider->createProjection('account', ProjectionStatus::IDLE->value);
         $this->provider->createProjection('balance', ProjectionStatus::RUNNING->value);
@@ -171,8 +162,7 @@ final class ProjectionProviderTest extends OrchestraTestCase
         $this->assertNull($this->provider->retrieve('balance'));
     }
 
-    #[Test]
-    public function it_always_acquire_lock_when_locked_until_is_null(): void
+    public function testAlwaysAcquireLockWhenLockNotSet(): void
     {
         $this->provider->createProjection('account', ProjectionStatus::IDLE->value);
 
@@ -190,8 +180,7 @@ final class ProjectionProviderTest extends OrchestraTestCase
         $this->assertEquals($lockedUntil, $updatedProjection->lockedUntil());
     }
 
-    #[Test]
-    public function it_always_acquire_lock_when_locked_until_from_database_is_less_than_now(): void
+    public function testAlwaysAcquireLockWhenRemoteLockIsLessThanNowIncremented(): void
     {
         $this->provider->createProjection('account', ProjectionStatus::IDLE->value);
 

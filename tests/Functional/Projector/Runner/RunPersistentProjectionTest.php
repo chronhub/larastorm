@@ -7,7 +7,6 @@ namespace Chronhub\Larastorm\Tests\Functional\Projector\Runner;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Stream\StreamName;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Reporter\DomainEvent;
 use Chronhub\Storm\Contracts\Message\Header;
 use Chronhub\Larastorm\Support\Facade\Project;
@@ -45,8 +44,7 @@ final class RunPersistentProjectionTest extends OrchestraTestCase
         $this->eventTime = new PointInTime();
     }
 
-    #[Test]
-    public function it_run_projection(): void
+    public function testRunProjection(): void
     {
         $streamName = new StreamName('balance');
 

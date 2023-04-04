@@ -33,8 +33,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
         $this->assertEquals(ProjectorServiceManager::class, $this->serviceManager::class);
     }
 
-    #[Test]
-    public function it_create_projector_manager(): void
+    public function testCreateProjectorManager(): void
     {
         $this->serviceManager->setDefaultDriver('connection');
 
@@ -43,8 +42,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
         $this->assertEquals(ProjectorManager::class, $projectorManager::class);
     }
 
-    #[Test]
-    public function it_raise_exception_if_projector_name_is_not_defined(): void
+    public function testExceptionRaisedWithUndefinedProjectorName(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Projector configuration with name foo is not defined');
@@ -54,8 +52,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
         $this->serviceManager->create('foo');
     }
 
-    #[Test]
-    public function it_raise_exception_if_projector_driver_is_not_defined(): void
+    public function testExceptionRaisedWithUndefinedProjectorDriver(): void
     {
         // same as above but with empty config
         $this->app['config']->set('projector.projectors.foo', ['testing' => []]);
@@ -68,8 +65,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
         $this->serviceManager->create('testing');
     }
 
-    #[Test]
-    public function it_raise_exception_if_projection_provider_key_is_not_defined(): void
+    public function testExceptionRaisedWithUndefinedProviderKey(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Projection provider is not defined');
@@ -85,8 +81,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
         $this->serviceManager->create('default');
     }
 
-    #[Test]
-    public function it_raise_exception_if_projection_provider_key_is_array_and_connection_key_is_not_defined(): void
+    public function testExceptionRaisedWithInvalidProviderName(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Projection provider connection name is not defined');
@@ -100,8 +95,7 @@ final class ConnectionProjectorServiceManagerTest extends OrchestraTestCase
         $this->serviceManager->create('default');
     }
 
-    #[Test]
-    public function it_can_extend_manager(): void
+    public function testExtendManager(): void
     {
         $config = ['any_value'];
 

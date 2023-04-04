@@ -7,7 +7,6 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Generator;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -37,8 +36,7 @@ final class MysqlEventStoreTest extends UnitTestCase
         $this->stream = new Stream(new StreamName('customer'));
     }
 
-    #[Test]
-    public function it_raise_stream_already_exists_during_creation(): void
+    public function testRaiseStreamAlreadyExistsOnCreation(): void
     {
         $this->expectException(StreamAlreadyExists::class);
 
@@ -53,8 +51,7 @@ final class MysqlEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideAnyOtherCodeThanStreamExists')]
-    #[Test]
-    public function it_raise_query_failure_during_creation_on_any_other_error_code(string $errorCode): void
+    public function testRaiseQueryFailureOnCreation(string $errorCode): void
     {
         $this->expectException(ConnectionQueryFailure::class);
 
@@ -68,8 +65,7 @@ final class MysqlEventStoreTest extends UnitTestCase
         $chronicler->firstCommit($this->stream);
     }
 
-    #[Test]
-    public function it_raise_stream_not_found_during_update(): void
+    public function testRaiseStreamNotFoundOnAmend(): void
     {
         $this->expectException(StreamNotFound::class);
 
@@ -83,8 +79,7 @@ final class MysqlEventStoreTest extends UnitTestCase
         $chronicler->amend($this->stream);
     }
 
-    #[Test]
-    public function it_raise_concurrency_exception_during_update(): void
+    public function testConcurrencyExceptionRaisedOnAmend(): void
     {
         $this->expectException(ConnectionConcurrencyException::class);
 
@@ -99,8 +94,7 @@ final class MysqlEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideAnyOtherCodeThanStreamExists')]
-    #[Test]
-    public function it_raise_query_failure_during_update_on_any_other_error_code(string $errorCode): void
+    public function testQueryFailureRaisedOnAmend(string $errorCode): void
     {
         $this->expectException(ConnectionQueryFailure::class);
 

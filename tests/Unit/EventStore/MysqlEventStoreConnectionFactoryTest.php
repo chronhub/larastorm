@@ -31,8 +31,7 @@ use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
 #[CoversClass(EventStoreConnectionFactory::class)]
 class MysqlEventStoreConnectionFactoryTest extends OrchestraTestCase
 {
-    #[Test]
-    public function it_create_mysql_event_store(): void
+    public function testMysqlEventStore(): void
     {
         $provider = $this->newInstance();
 
@@ -49,8 +48,7 @@ class MysqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         $this->assertEquals(EventStoreDatabase::class, $eventStore->innerChronicler()::class);
     }
 
-    #[Test]
-    public function it_create_mysql_transactional_event_store(): void
+    public function testMysqlTransactionalEventStore(): void
     {
         $provider = $this->newInstance();
 
@@ -67,8 +65,7 @@ class MysqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         $this->assertEquals(EventStoreTransactionalDatabase::class, $eventStore->innerChronicler()::class);
     }
 
-    #[Test]
-    public function it_create_mysql_event_store_eventable(): void
+    public function testMysqlEventableEventStore(): void
     {
         $provider = $this->newInstance();
 
@@ -92,8 +89,7 @@ class MysqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         $this->assertEquals(EventStoreDatabase::class, $database::class);
     }
 
-    #[Test]
-    public function it_create_mysql_transactional_event_store_eventable(): void
+    public function testMysqlTransactionalEventableEventStore(): void
     {
         $provider = $this->newInstance();
 
@@ -118,8 +114,7 @@ class MysqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         $this->assertEquals(EventStoreTransactionalDatabase::class, $database::class);
     }
 
-    #[Test]
-    public function it_attach_stream_subscribers_to_event_store_eventable(): void
+    public function testSubscribeToEventStore(): void
     {
         $tracker = new TrackStream();
         $this->app->instance('tracker.stream.default', $tracker);
@@ -156,7 +151,7 @@ class MysqlEventStoreConnectionFactoryTest extends OrchestraTestCase
     }
 
     #[Test]
-    public function it_raise_exception_when_tracker_and_is_transactional_is_not_defined(): void
+    public function testExceptionRaisedWhenIsTransactionalMissingInConfig(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Config key is_transactional is required when no stream tracker is provided for chronicler name');
@@ -173,8 +168,7 @@ class MysqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         ]);
     }
 
-    #[Test]
-    public function it_raise_exception_when_store_drive_is_not_supported(): void
+    public function testExceptionRaisedWhenEventStoreFactoryIsNotDefined(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Connection default name with factory foo is not defined');

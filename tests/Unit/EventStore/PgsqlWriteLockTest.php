@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Generator;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Illuminate\Database\ConnectionInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -16,8 +15,7 @@ use Chronhub\Larastorm\EventStore\WriteLock\PgsqlWriteLock;
 final class PgsqlWriteLockTest extends UnitTestCase
 {
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_acquire_lock(bool $isLocked): void
+    public function testAcquireLock(bool $isLocked): void
     {
         $tableName = 'operation';
         $lockName = '_'.$tableName.'_write_lock';
@@ -36,8 +34,7 @@ final class PgsqlWriteLockTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_release_lock(bool $isReleased): void
+    public function testReleaseLock(bool $isReleased): void
     {
         $tableName = 'operation';
         $lockName = '_'.$tableName.'_write_lock';

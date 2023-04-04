@@ -6,7 +6,6 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Generator;
 use Illuminate\Container\Container;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Routing\CommandGroup;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Producer\ProduceMessage;
@@ -38,8 +37,7 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $this->routes = $this->createMock(RouteCollection::class);
     }
 
-    #[Test]
-    public function it_create_default_message_producer(): void
+    public function testDefaultInstance(): void
     {
         $container = $this->createMock(Container::class);
 
@@ -63,8 +61,7 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $this->assertNull($queueOptions);
     }
 
-    #[Test]
-    public function it_create_message_producer_instance_resolved_from_ioc(): void
+    public function testInstanceResolvedFromIoc(): void
     {
         $instance = $this->createMock(MessageProducer::class);
 
@@ -79,8 +76,7 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $this->assertSame($instance, $factory->createMessageProducer($group));
     }
 
-    #[Test]
-    public function it_create_default_message_producer_instance_with_queue_options_defined(): void
+    public function testInstanceWithDefinedQueueOptions(): void
     {
         $container = $this->createMock(Container::class);
 
@@ -103,8 +99,7 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $this->assertEquals(['foo' => 'bar'], $queueOptions);
     }
 
-    #[Test]
-    public function message_queue_should_no_be_set_when_group_strategy_is_sync(): void
+    public function testMessageQueueNotSetWhenProducerStrategyIsSync(): void
     {
         $container = $this->createMock(Container::class);
 
@@ -126,9 +121,8 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $this->assertNull($queueDispatcher);
     }
 
-    #[Test]
     #[DataProvider('provideNotSyncStrategy')]
-    public function message_queue_should_be_set_when_group_strategy_is_not_sync(string $notSyncStrategy): void
+    public function testMessageQueue(string $notSyncStrategy): void
     {
         $container = $this->createMock(Container::class);
 

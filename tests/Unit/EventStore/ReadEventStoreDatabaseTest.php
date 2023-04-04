@@ -6,7 +6,6 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -24,8 +23,7 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
     use ProvideTestingStore;
 
     #[DataProvider('provideDirection')]
-    #[Test]
-    public function it_retrieve_all_stream_events_with_single_stream_strategy(string $direction): void
+    public function testRetrieveAllStreamWithSingleStrategy(string $direction): void
     {
         $tableName = 'read_customer';
         $builder = $this->createMock(Builder::class);
@@ -67,8 +65,7 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
     }
 
     #[DataProvider('provideDirection')]
-    #[Test]
-    public function it_retrieve_all_stream_events_with_single_stream_strategy_with_query_hint(string $direction): void
+    public function testRetrieveAllStreamWithSingleStrategyWithQueryHint(string $direction): void
     {
         $tableName = 'read_customer';
         $indexName = 'ix_foo';
@@ -122,8 +119,7 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
     }
 
     #[DataProvider('provideDirection')]
-    #[Test]
-    public function it_retrieve_all_stream_events_with_one_stream_per_aggregate_strategy(string $direction): void
+    public function testRetrieveAllStreamWithPerAggregateStrategy(string $direction): void
     {
         $tableName = 'read_customer';
         $builder = $this->createMock(Builder::class);
@@ -171,8 +167,7 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
         $this->assertEquals($expectedStreamsEvents, iterator_to_array($events));
     }
 
-    #[Test]
-    public function it_retrieve_filtered_stream_events(): void
+    public function testRetrieveFilteredStreamEvents(): void
     {
         $tableName = 'read_customer';
         $builder = $this->createMock(Builder::class);
@@ -212,8 +207,7 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
         $this->assertEquals($expectedStreamsEvents, iterator_to_array($events));
     }
 
-    #[Test]
-    public function it_filter_stream_names(): void
+    public function testFilterStreamNames(): void
     {
         $streams = [new StreamName('foo'), new StreamName('bar'), new StreamName('foo_bar')];
 
@@ -227,8 +221,7 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
         $this->assertEquals([$streams[0], $streams[1]], $filteredStreams);
     }
 
-    #[Test]
-    public function it_filter_categories(): void
+    public function testFilterCategories(): void
     {
         $categories = ['foo', 'bar', 'foo_bar'];
 
@@ -243,8 +236,7 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_check_stream_exists(bool $streamExists): void
+    public function testCheckStreamExists(bool $streamExists): void
     {
         $this->eventStreamProvider->expects($this->once())
             ->method('hasRealStreamName')
@@ -254,8 +246,7 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
         $this->assertEquals($streamExists, $this->eventStore()->hasStream($this->streamName));
     }
 
-    #[Test]
-    public function it_assert_read_query_builder(): void
+    public function testReadQueryBuilder(): void
     {
         $tableName = 'read_customer';
 

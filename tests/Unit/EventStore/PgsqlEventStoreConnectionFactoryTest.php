@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Chronicler\TrackStream;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Chronicler\EventChronicler;
@@ -32,8 +31,7 @@ use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
 #[CoversClass(EventStoreConnectionFactory::class)]
 class PgsqlEventStoreConnectionFactoryTest extends OrchestraTestCase
 {
-    #[Test]
-    public function it_create_mysql_event_store(): void
+    public function testPgsqlEventStore(): void
     {
         $provider = $this->newInstance();
 
@@ -50,8 +48,7 @@ class PgsqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         $this->assertEquals(EventStoreDatabase::class, $eventStore->innerChronicler()::class);
     }
 
-    #[Test]
-    public function it_create_mysql_transactional_event_store(): void
+    public function testPgsqlTransactionalEventStore(): void
     {
         $provider = $this->newInstance();
 
@@ -68,8 +65,7 @@ class PgsqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         $this->assertEquals(EventStoreTransactionalDatabase::class, $eventStore->innerChronicler()::class);
     }
 
-    #[Test]
-    public function it_create_mysql_event_store_eventable(): void
+    public function testPgsqlEventableEventStore(): void
     {
         $provider = $this->newInstance();
 
@@ -93,8 +89,7 @@ class PgsqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         $this->assertEquals(EventStoreDatabase::class, $database::class);
     }
 
-    #[Test]
-    public function it_create_mysql_transactional_event_store_eventable(): void
+    public function testPgsqlTransactionalEventableEventStore(): void
     {
         $provider = $this->newInstance();
 
@@ -119,8 +114,7 @@ class PgsqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         $this->assertEquals(EventStoreTransactionalDatabase::class, $database::class);
     }
 
-    #[Test]
-    public function it_attach_stream_subscribers_to_event_store_eventable(): void
+    public function testSubscribeToEventStore(): void
     {
         $tracker = new TrackStream();
         $this->app->instance('tracker.stream.default', $tracker);
@@ -156,8 +150,7 @@ class PgsqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         $this->assertEquals(150, $subscriber->priority());
     }
 
-    #[Test]
-    public function it_raise_exception_when_tracker_and_is_transactional_is_not_defined(): void
+    public function testExceptionRaisedWhenIsTransactionalMissingInConfig(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Config key is_transactional is required when no stream tracker is provided for chronicler name');
@@ -174,8 +167,7 @@ class PgsqlEventStoreConnectionFactoryTest extends OrchestraTestCase
         ]);
     }
 
-    #[Test]
-    public function it_raise_exception_when_store_drive_is_not_supported(): void
+    public function testExceptionRaisedWhenEventStoreFactoryIsNotDefined(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Connection default name with factory foo is not defined');

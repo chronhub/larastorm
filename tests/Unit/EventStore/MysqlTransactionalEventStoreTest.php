@@ -9,7 +9,6 @@ use Exception;
 use Generator;
 use RuntimeException;
 use InvalidArgumentException;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -29,8 +28,7 @@ final class MysqlTransactionalEventStoreTest extends UnitTestCase
         $this->chronicler = $this->createMock(TransactionalChronicler::class);
     }
 
-    #[Test]
-    public function it_start_transaction(): void
+    public function testStartTransaction(): void
     {
         $this->chronicler->expects($this->once())->method('beginTransaction');
 
@@ -40,8 +38,7 @@ final class MysqlTransactionalEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideException')]
-    #[Test]
-    public function it_does_not_hold_exception_on_begin(Exception $exception): void
+    public function testDoesNotHoldExceptionOnBeginTransaction(Exception $exception): void
     {
         $this->expectException($exception::class);
 
@@ -52,8 +49,7 @@ final class MysqlTransactionalEventStoreTest extends UnitTestCase
         $decorator->beginTransaction();
     }
 
-    #[Test]
-    public function it_commit_transaction(): void
+    public function testCommitTransaction(): void
     {
         $this->chronicler->expects($this->once())->method('commitTransaction');
 
@@ -63,8 +59,7 @@ final class MysqlTransactionalEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideException')]
-    #[Test]
-    public function it_does_not_hold_exception_on_commit(Exception $exception): void
+    public function testDoesNotHoldExceptionOnCommitTransaction(Exception $exception): void
     {
         $this->expectException($exception::class);
 
@@ -75,8 +70,7 @@ final class MysqlTransactionalEventStoreTest extends UnitTestCase
         $decorator->commitTransaction();
     }
 
-    #[Test]
-    public function it_rollback_transaction(): void
+    public function testRollbackTransaction(): void
     {
         $this->chronicler->expects($this->once())->method('rollbackTransaction');
 
@@ -86,8 +80,7 @@ final class MysqlTransactionalEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideException')]
-    #[Test]
-    public function it_does_not_hold_exception_on_rollback(Exception $exception): void
+    public function testDoesNotHoldExceptionOnRollbackTransaction(Exception $exception): void
     {
         $this->expectException($exception::class);
 
@@ -99,8 +92,7 @@ final class MysqlTransactionalEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_assert_in_transaction(bool $inTransaction): void
+    public function testCheckInTransaction(bool $inTransaction): void
     {
         $this->chronicler->expects($this->once())->method('inTransaction')->willReturn($inTransaction);
 
@@ -110,8 +102,7 @@ final class MysqlTransactionalEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideValue')]
-    #[Test]
-    public function it_process_fully_transactional(mixed $value): void
+    public function testFullTransactional(mixed $value): void
     {
         $callback = fn (): mixed => $value;
 
@@ -123,8 +114,7 @@ final class MysqlTransactionalEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideException')]
-    #[Test]
-    public function it_does_not_hold_exception_on_fully_transactional(Exception $exception): void
+    public function testDoesNotHoldExceptionOnFullTransactional(Exception $exception): void
     {
         $this->expectException($exception::class);
         $this->expectExceptionMessage('foo');

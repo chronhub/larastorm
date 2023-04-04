@@ -7,7 +7,6 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Generator;
 use Illuminate\Database\Connection;
 use Chronhub\Storm\Stream\StreamName;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Contracts\Message\Header;
 use Illuminate\Database\ConnectionInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,8 +23,7 @@ use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 #[CoversClass(EventStoreDatabase::class)]
 trait ProvideTestingStore
 {
-    #[Test]
-    public function it_can_be_constructed(): void
+    public function testInstance(): void
     {
         $es = $this->eventStore();
 
@@ -33,8 +31,7 @@ trait ProvideTestingStore
         $this->assertSame($this->eventStreamProvider, $es->getEventStreamProvider());
     }
 
-    #[Test]
-    public function it_assert_serialized_stream_events(): void
+    public function testSerializeStreamEvents(): void
     {
         $streamsEvents = [
             SomeEvent::fromContent(['foo' => 'bar']),

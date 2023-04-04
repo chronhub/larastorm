@@ -6,7 +6,6 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Generator;
 use Illuminate\Container\Container;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -32,16 +31,14 @@ final class StreamEventLoaderFactoryTest extends UnitTestCase
     }
 
     #[DataProvider('provideCursorKey')]
-    #[Test]
-    public function it_return_cursor_query_loader_instance(?string $name): void
+    public function testCursorInstance(?string $name): void
     {
         $factory = new EventLoaderConnectionFactory($this->container);
 
         $this->assertInstanceOf(CursorQueryLoader::class, $factory->createEventLoader($name));
     }
 
-    #[Test]
-    public function it_return_lazy_query_loader_instance(): void
+    public function testLazyInstance(): void
     {
         $factory = new EventLoaderConnectionFactory($this->container);
 
@@ -49,8 +46,7 @@ final class StreamEventLoaderFactoryTest extends UnitTestCase
     }
 
     #[DataProvider('provideRandomInteger')]
-    #[Test]
-    public function it_return_lazy_query_loader_instance_with_chunk_size_defined(int $chunkSize): void
+    public function testLazyInstanceWithChunkSizeDefined(int $chunkSize): void
     {
         $this->container->bind(
             StreamEventSerializer::class,
@@ -66,8 +62,7 @@ final class StreamEventLoaderFactoryTest extends UnitTestCase
         $this->assertEquals($chunkSize, $instance->chunkSize);
     }
 
-    #[Test]
-    public function it_finally_resolve_service_with_container(): void
+    public function testResolveEventLoaderFromIoc(): void
     {
         $this->container->bind(
             'stream_event.loader',

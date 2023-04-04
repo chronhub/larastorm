@@ -7,7 +7,6 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Generator;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -34,8 +33,7 @@ final class PgsqlEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideStreamExistsCode')]
-    #[Test]
-    public function it_raise_stream_already_exists_during_creation(string $errorCode): void
+    public function testRaiseStreamAlreadyExistsOnCreation(string $errorCode): void
     {
         $this->expectException(StreamAlreadyExists::class);
 
@@ -50,8 +48,7 @@ final class PgsqlEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideAnyOtherCodeThanStreamExists')]
-    #[Test]
-    public function it_raise_query_failure_during_creation_on_any_other_error_code(string $errorCode): void
+    public function testRaiseQueryFailureOnCreation(string $errorCode): void
     {
         $this->expectException(ConnectionQueryFailure::class);
 
@@ -65,8 +62,7 @@ final class PgsqlEventStoreTest extends UnitTestCase
         $chronicler->firstCommit($this->stream);
     }
 
-    #[Test]
-    public function it_raise_stream_not_found_during_update(): void
+    public function testRaiseStreamNotFoundOnAmend(): void
     {
         $this->expectException(StreamNotFound::class);
 
@@ -81,24 +77,22 @@ final class PgsqlEventStoreTest extends UnitTestCase
     }
 
     #[DataProvider('provideStreamExistsCode')]
-    #[Test]
-    public function it_raise_concurrency_exception_during_update(string $errorCode): void
-    {
-        $this->expectException(ConnectionConcurrencyException::class);
+   public function testConcurrencyExceptionRaisedOnAmend(string $errorCode): void
+   {
+       $this->expectException(ConnectionConcurrencyException::class);
 
-        $queryException = QueryExceptionStub::withCode($errorCode);
+       $queryException = QueryExceptionStub::withCode($errorCode);
 
-        $this->chronicler->expects($this->once())->method('isDuringCreation')->willReturn(false);
-        $this->chronicler->expects($this->once())->method('amend')->with($this->stream)->willThrowException($queryException);
+       $this->chronicler->expects($this->once())->method('isDuringCreation')->willReturn(false);
+       $this->chronicler->expects($this->once())->method('amend')->with($this->stream)->willThrowException($queryException);
 
-        $chronicler = new PgsqlEventStore($this->chronicler);
+       $chronicler = new PgsqlEventStore($this->chronicler);
 
-        $chronicler->amend($this->stream);
-    }
+       $chronicler->amend($this->stream);
+   }
 
     #[DataProvider('provideAnyOtherCodeThanStreamExists')]
-    #[Test]
-    public function it_raise_query_failure_during_update_on_any_other_error_code(string $errorCode): void
+    public function testQueryFailureRaisedOnAmend(string $errorCode): void
     {
         $this->expectException(ConnectionQueryFailure::class);
 

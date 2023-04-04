@@ -8,10 +8,10 @@ use stdClass;
 use Generator;
 use RuntimeException;
 use Illuminate\Database\Connection;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamPersistence;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
@@ -22,7 +22,7 @@ use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 
 #[CoversClass(EventStoreTransactionalDatabase::class)]
-final class StoreTransactionalDatabaseTest extends UnitTestCase
+final class EventStoreTransactionalDatabaseTest extends UnitTestCase
 {
     private Connection|MockObject $connection;
 
@@ -31,16 +31,14 @@ final class StoreTransactionalDatabaseTest extends UnitTestCase
         $this->connection = $this->createMock(Connection::class);
     }
 
-    #[Test]
-    public function it_start_transaction(): void
+    public function testStartTransaction(): void
     {
         $this->connection->expects($this->once())->method('beginTransaction');
 
         $this->eventStore()->beginTransaction();
     }
 
-    #[Test]
-    public function it_raise_exception_when_transaction_already_started(): void
+    public function testExceptionRaisedWhenTransactionAlreadyStarted(): void
     {
         $this->expectException(TransactionAlreadyStarted::class);
 
@@ -49,16 +47,14 @@ final class StoreTransactionalDatabaseTest extends UnitTestCase
         $this->eventStore()->beginTransaction();
     }
 
-    #[Test]
-    public function it_commit_transaction(): void
+    public function testCommitTransaction(): void
     {
         $this->connection->expects($this->once())->method('commit');
 
         $this->eventStore()->commitTransaction();
     }
 
-    #[Test]
-    public function it_raise_exception_when_transaction_not_started_on_commit(): void
+    public function testExceptionRaisedWhenTransactionNotStartedOnCommit(): void
     {
         $this->expectException(TransactionNotStarted::class);
 
@@ -67,16 +63,14 @@ final class StoreTransactionalDatabaseTest extends UnitTestCase
         $this->eventStore()->commitTransaction();
     }
 
-    #[Test]
-    public function it_rollback_transaction(): void
+    public function testRollbackTransaction(): void
     {
         $this->connection->expects($this->once())->method('rollBack');
 
         $this->eventStore()->rollbackTransaction();
     }
 
-    #[Test]
-    public function it_raise_exception_when_transaction_not_started_on_rollback(): void
+    public function testExceptionRaisedWhenTransactionNotStartedOnRollback(): void
     {
         $this->expectException(TransactionNotStarted::class);
 
@@ -85,9 +79,8 @@ final class StoreTransactionalDatabaseTest extends UnitTestCase
         $this->eventStore()->rollbackTransaction();
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('provideValue')]
-    #[Test]
-    public function it_handle_process_fully_transactional(mixed $value): void
+    #[DataProvider('provideValue')]
+    public function testFullTransactional(mixed $value): void
     {
         $this->connection->expects($this->once())->method('beginTransaction');
         $this->connection->expects($this->once())->method('commit');
@@ -97,8 +90,7 @@ final class StoreTransactionalDatabaseTest extends UnitTestCase
         $this->assertEquals($value, $result);
     }
 
-    #[Test]
-    public function it_handle_process_fully_transactional_and_return_true_as_default_when_callback_result_is_null(): void
+    public function testFullTransactionalAndReturnTrueWithNullResult(): void
     {
         $this->connection->expects($this->once())->method('beginTransaction');
         $this->connection->expects($this->once())->method('commit');
@@ -108,8 +100,7 @@ final class StoreTransactionalDatabaseTest extends UnitTestCase
         $this->assertEquals(true, $result);
     }
 
-    #[Test]
-    public function it_raise_exception_and_rollback_on_fully_transactional(): void
+    public function testRollbackOnFullTransactionalWhenExceptionRaised(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('foo');
@@ -122,15 +113,13 @@ final class StoreTransactionalDatabaseTest extends UnitTestCase
         $this->eventStore()->transactional(fn () => throw $exception);
     }
 
-    #[Test]
-    public function it_assert_in_transaction(): void
+    public function testCheckInTransaction(): void
     {
         $this->connection->expects($this->once())->method('transactionLevel')->willReturn(1);
         $this->assertTrue($this->eventStore()->inTransaction());
     }
 
-    #[Test]
-    public function it_assert_not_in_transaction(): void
+    public function testCheckNotInTransaction(): void
     {
         $this->connection->expects($this->any())->method('transactionLevel')->willReturn(0);
         $this->assertFalse($this->eventStore()->inTransaction());

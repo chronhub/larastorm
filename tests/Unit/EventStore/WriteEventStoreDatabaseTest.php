@@ -10,7 +10,6 @@ use RuntimeException;
 use InvalidArgumentException;
 use Chronhub\Storm\Stream\Stream;
 use Illuminate\Database\Query\Builder;
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -35,8 +34,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
     use ProvideTestingStore;
 
     #[DataProvider('provideWriteLock')]
-    #[Test]
-    public function it_assert_write_query_builder(?WriteLockStrategy $writeLock = null): void
+    public function testWriteQueryBuilder(?WriteLockStrategy $writeLock = null): void
     {
         $tableName = 'read_customer';
         $builder = $this->createMock(Builder::class);
@@ -60,8 +58,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $this->assertSame($builder, $queryBuilder);
     }
 
-    #[Test]
-    public function it_assert_write_query_builder_with_mysql_write_lock(): void
+    public function testWriteQueryBuilderWithMysqlWriteLock(): void
     {
         $tableName = 'read_customer';
         $builder = $this->createMock(Builder::class);
@@ -89,8 +86,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $this->assertSame($builder, $queryBuilder);
     }
 
-    #[Test]
-    public function it_create_first_stream(): void
+    public function testCreateFirstCommit(): void
     {
         $tableName = 'read_customer';
         $this->streamPersistence->expects($this->exactly(2))
@@ -118,8 +114,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->firstCommit(new Stream($this->streamName));
     }
 
-    #[Test]
-    public function it_create_first_stream_with_category_detected(): void
+    public function testCreateFirstCommitWithCategory(): void
     {
         $tableName = 'read_customer';
 
@@ -148,8 +143,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->firstCommit(new Stream($this->streamName));
     }
 
-    #[Test]
-    public function it_raise_exception_on_create_first_stream_when_event_stream_provider_failed_to_create(): void
+    public function testExceptionRaisedWhenCreateFailed(): void
     {
         $this->expectException(ConnectionQueryFailure::class);
         $this->expectExceptionMessage("Unable to insert data for stream {$this->streamName->name} in event stream table");
@@ -176,8 +170,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $this->eventStore()->firstCommit(new Stream($this->streamName));
     }
 
-    #[Test]
-    public function it_raise_exception_on_create_first_stream_when_up_stream_failed_to_create(): void
+    public function testExceptionRaisedWhenUpStreamFailed(): void
     {
         $this->expectException(QueryException::class);
 
@@ -221,8 +214,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $this->eventStore()->firstCommit(new Stream($this->streamName));
     }
 
-    #[Test]
-    public function it_amend_stream(): void
+    public function testAmendStream(): void
     {
         $tableName = 'read_customer';
 
@@ -284,8 +276,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->amend(new Stream($this->streamName, $streamEvents));
     }
 
-    #[Test]
-    public function it_raise_exception_on_amend_stream_when_lock_failed_to_be_acquired(): void
+    public function testExceptionRaisedOnAmendWhenAcquireLockFailed(): void
     {
         $this->expectException(ConnectionConcurrencyException::class);
         $this->expectExceptionMessage('Failed to acquire lock');
@@ -316,8 +307,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
     }
 
     #[DataProvider('provideAnyException')]
-    #[Test]
-    public function it_always_release_lock_when_exception_raised_on_amend_stream(Throwable $exception): void
+    public function testAlwaysReleaseLockOnAmendWhenExceptionIsRaised(Throwable $exception): void
     {
         $this->expectException($exception::class);
 
@@ -374,11 +364,8 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->amend(new Stream($this->streamName, $streamEvents));
     }
 
-    #[Test]
-    public function it_return_early_on_amend_streams_whens_stream_events_are_empty(): void
+    public function testReturnEarlyOnAmendWithEmptyStreamEvents(): void
     {
-        $tableName = 'read_customer';
-
         $this->streamPersistence->expects($this->never())->method('tableName');
 
         $this->writeLock->expects($this->never())->method('acquireLock');
@@ -391,8 +378,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->amend(new Stream($this->streamName, []));
     }
 
-    #[Test]
-    public function it_delete_stream(): void
+    public function testDeleteStream(): void
     {
         $tableName = 'read_customer';
 
@@ -419,8 +405,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->delete($this->streamName);
     }
 
-    #[Test]
-    public function it_raise_exception_on_delete_stream_when_event_stream_provider_failed_to_delete(): void
+    public function testExceptionRaisedOnDeleteWhenEventStreamProviderFailedToDelete(): void
     {
         $this->expectException(StreamNotFound::class);
 
@@ -436,8 +421,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->delete($this->streamName);
     }
 
-    #[Test]
-    public function it_raise_exception_on_delete_stream_when_query_exception_is_raised_from_event_stream_provider(): void
+    public function testQueryExceptionRaisedOnDeleteWhenEventStreamProviderFailedToDelete(): void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionCode('1234');
@@ -453,8 +437,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->delete($this->streamName);
     }
 
-    #[Test]
-    public function it_does_not_raise_exception_on_delete_stream_when_query_exception_is_raised_from_event_stream_provider_and_does_not_affected_rows(): void
+    public function testFailedSilentlyOnDeleteWhenNoAffectedRows(): void
     {
         $tableName = 'read_customer';
 
@@ -484,8 +467,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->delete($this->streamName);
     }
 
-    #[Test]
-    public function it_raise_exception_on_delete_stream_when_dropping_table_failed(): void
+    public function testExceptionRaisedWhenDroppingTableFailed(): void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionCode('1234');
@@ -517,8 +499,7 @@ final class WriteEventStoreDatabaseTest extends UnitTestCase
         $eventStore->delete($this->streamName);
     }
 
-    #[Test]
-    public function it_does_not_raise_exception_on_delete_stream_when_dropping_table_failed_and_does_not_affected_rows(): void
+    public function itFailSilentlyWhenDroppingTableFailed(): void
     {
         $tableName = 'read_customer';
         $schemaBuilder = $this->createMock(SchemaBuilder::class);

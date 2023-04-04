@@ -7,7 +7,6 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\LazyCollection;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
@@ -18,8 +17,7 @@ use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 #[CoversClass(CursorQueryLoader::class)]
 final class CursorQueryLoaderTest extends UnitTestCase
 {
-    #[Test]
-    public function it_can_be_instantiated(): void
+    public function testInstance(): void
     {
         $someEvent = SomeEvent::fromContent(['foo' => 'bar']);
 

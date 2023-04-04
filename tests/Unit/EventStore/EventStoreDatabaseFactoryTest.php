@@ -7,7 +7,6 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Generator;
 use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -27,7 +26,7 @@ use Chronhub\Larastorm\EventStore\Persistence\EventStreamProviderFactory;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
 
 #[CoversClass(EventStoreDatabaseFactory::class)]
-final class EventStoreProviderFactoryTest extends UnitTestCase
+final class EventStoreDatabaseFactoryTest extends UnitTestCase
 {
     private Container $container;
 
@@ -54,8 +53,7 @@ final class EventStoreProviderFactoryTest extends UnitTestCase
     }
 
     #[DataProvider('provideBoolean')]
-    #[Test]
-    public function it_return_event_store_database(bool $isTransactional): void
+    public function testReturnEventStoreDatabase(bool $isTransactional): void
     {
         $config = [
             'strategy' => 'stream.persistence.pgsql',

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\Aggregate;
 
 use Illuminate\Container\Container;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Aggregate\AggregateType;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -24,8 +23,7 @@ final class AggregateTypeFactoryTest extends UnitTestCase
         $this->container = Container::getInstance();
     }
 
-    #[Test]
-    public function it_return_aggregate_type_from_string_aggregate_root_class_name(): void
+    public function testDetermineAggregateRootFromRootClassName(): void
     {
         $factory = new AggregateTypeFactory(fn () => $this->container);
 
@@ -36,24 +34,7 @@ final class AggregateTypeFactoryTest extends UnitTestCase
         $this->assertEquals(AggregateRootStub::class, $aggregateType->current());
     }
 
-    #[Test]
-    public function it_return_aggregate_type_from_string_service_id(): void
-    {
-        $instance = new AggregateType(AggregateRootStub::class);
-
-        $this->container->instance('aggregate_type.service', $instance);
-
-        $factory = new AggregateTypeFactory(fn () => $this->container);
-
-        $aggregateType = $factory->createType('aggregate_type.service');
-
-        $this->assertInstanceOf(AggregateType::class, $aggregateType);
-
-        $this->assertEquals(AggregateRootStub::class, $aggregateType->current());
-    }
-
-    #[Test]
-    public function it_return_aggregate_type_from_array(): void
+    public function testDetermineAggregateRootFromRootClassNameAndLineage(): void
     {
         $factory = new AggregateTypeFactory(fn () => $this->container);
 
@@ -68,5 +49,20 @@ final class AggregateTypeFactoryTest extends UnitTestCase
 
         $this->assertTrue($aggregateType->isSupported(AggregateRootChildStub::class));
         $this->assertFalse($aggregateType->isSupported(AggregateRootFinalStub::class));
+    }
+
+    public function testResolveAggregateTypeFromIoc(): void
+    {
+        $instance = new AggregateType(AggregateRootStub::class);
+
+        $this->container->instance('aggregate_type.service', $instance);
+
+        $factory = new AggregateTypeFactory(fn () => $this->container);
+
+        $aggregateType = $factory->createType('aggregate_type.service');
+
+        $this->assertInstanceOf(AggregateType::class, $aggregateType);
+
+        $this->assertEquals(AggregateRootStub::class, $aggregateType->current());
     }
 }

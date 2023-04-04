@@ -18,12 +18,12 @@
   <coverage>
     <include>
       <directory suffix=".php">./src</directory>
-    </ include>
+    </include>
   </coverage>
 
   <source filterDeprecations="true" filterNotices="true" filterWarnings="true">
     <include>
-      <directory suffix=".php">y</directory>
+      <directory suffix=".php">./src</directory>
     </include>
   </source>
 

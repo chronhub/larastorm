@@ -32,8 +32,7 @@ final class EventLoaderTest extends UnitTestCase
         $this->streamName = new StreamName('customer');
     }
 
-    #[Test]
-    public function it_yield_domain_events(): void
+    public function testGenerateDomainEvents(): void
     {
         $event = new stdClass();
         $event->headers = ['some' => 'header'];
@@ -60,8 +59,7 @@ final class EventLoaderTest extends UnitTestCase
         $this->assertEquals(1, $generator->getReturn());
     }
 
-    #[Test]
-    public function it_raise_exception_when_no_stream_event_has_been_yield(): void
+    public function testExceptionRaisedWhenGeneratedEventIsEmpty(): void
     {
         $this->expectException(NoStreamEventReturn::class);
 
@@ -73,7 +71,7 @@ final class EventLoaderTest extends UnitTestCase
     }
 
     #[Test]
-    public function it_raise_exception_when_stream_name_not_found_in_database(): void
+    public function testExceptionRaisedWhenStreamNotFound(): void
     {
         $this->expectException(StreamNotFound::class);
 
@@ -103,8 +101,7 @@ final class EventLoaderTest extends UnitTestCase
         $eventLoader($streamEvents, $this->streamName)->current();
     }
 
-    #[Test]
-    public function it_raise_exception_on_query_exception_when_no_row_has_been_affected(): void
+    public function testExceptionRaisedWhenStreamNotFoundAndNoRowsHaBeenAffected(): void
     {
         $this->expectException(ConnectionQueryFailure::class);
 

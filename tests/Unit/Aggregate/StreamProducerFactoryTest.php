@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Aggregate;
 
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Stream\OneStreamPerAggregate;
@@ -16,8 +15,7 @@ use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 #[CoversClass(StreamProducerFactory::class)]
 final class StreamProducerFactoryTest extends UnitTestCase
 {
-    #[Test]
-    public function it_assert_single_stream_producer(): void
+    public function testAssertSingleStreamProducer(): void
     {
         $factory = new StreamProducerFactory();
 
@@ -30,8 +28,7 @@ final class StreamProducerFactoryTest extends UnitTestCase
         $this->assertEquals('some_stream_name', $streamName->name);
     }
 
-    #[Test]
-    public function it_assert_per_aggregate_stream_producer(): void
+    public function testAssertPerAggregateStreamProducer(): void
     {
         $factory = new StreamProducerFactory();
 
@@ -44,8 +41,7 @@ final class StreamProducerFactoryTest extends UnitTestCase
         $this->assertEquals('some_stream_name', $streamName->name);
     }
 
-    #[Test]
-    public function it_raise_exception_with_unknown_strategy(): void
+    public function testExceptionRaisedWithInvalidStrategy(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Strategy given for stream name some_stream_name is not defined');

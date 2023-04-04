@@ -8,7 +8,6 @@ use Generator;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\LazyCollection;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -22,8 +21,7 @@ use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 final class LazyQueryLoaderTest extends UnitTestCase
 {
     #[DataProvider('provideChunkSize')]
-    #[Test]
-    public function it_can_be_instantiated(int $chunkSize): void
+    public function testInstance(int $chunkSize): void
     {
         $someEvent = SomeEvent::fromContent(['foo' => 'bar']);
 
@@ -52,8 +50,7 @@ final class LazyQueryLoaderTest extends UnitTestCase
         $this->assertEquals(1, $generator->getReturn());
     }
 
-    #[Test]
-    public function it_assert_default_chunk_size(): void
+    public function testDefaultChunkSize(): void
     {
         $serializer = $this->createMock(StreamEventSerializer::class);
 
@@ -64,9 +61,8 @@ final class LazyQueryLoaderTest extends UnitTestCase
         $this->assertSame(1000, $lazyQueryLoader->chunkSize);
     }
 
-    #[Test]
     #[DataProvider('provideChunkSize')]
-    public function it_assert_chunk_size(int $chunkSize): void
+    public function testChunkSize(int $chunkSize): void
     {
         $serializer = $this->createMock(StreamEventSerializer::class);
 
@@ -77,9 +73,8 @@ final class LazyQueryLoaderTest extends UnitTestCase
         $this->assertSame($chunkSize, $lazyQueryLoader->chunkSize);
     }
 
-    #[Test]
     #[DataProvider('provideInvalidChunkSize')]
-    public function it_raise_exception_when_chunk_size_is_less_than_one(int $invalidChunkSize): void
+    public function testExceptionRaisedWhenChunkSizeIsLessThanOne(int $invalidChunkSize): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Chunk size must be greater than 0');

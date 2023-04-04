@@ -11,17 +11,17 @@ use Chronhub\Storm\Stream\StreamName;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\QueryException;
 use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
-use Chronhub\Larastorm\Tests\Stubs\InvalidEventStore;
 use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
 use Chronhub\Larastorm\EventStore\EventStoreConnection;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
 use Chronhub\Larastorm\Tests\Stubs\EventStoreConnectionStub;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Larastorm\Tests\Stubs\DummyDecoratorDatabaseEventStore;
 
 #[CoversClass(EventStoreConnection::class)]
 class EventStoreConnectionTest extends UnitTestCase
@@ -30,9 +30,6 @@ class EventStoreConnectionTest extends UnitTestCase
 
     private Stream $stream;
 
-    /**
-     * @throws Exception
-     */
     protected function setUp(): void
     {
         $this->chronicler = $this->createMock(ChroniclerDB::class);
@@ -40,16 +37,15 @@ class EventStoreConnectionTest extends UnitTestCase
     }
 
     #[Test]
-    public function it_raise_exception_with_event_store_decorator_given(): void
+    public function testExceptionRaisedWhenEventStoreIsAlreadyDecorated(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Chronicle given can not be a decorator:');
 
-        new EventStoreConnectionStub($this->createMock(InvalidEventStore::class));
+        new EventStoreConnectionStub($this->createMock(DummyDecoratorDatabaseEventStore::class));
     }
 
-    #[Test]
-    public function it_create_stream(): void
+    public function testFirstCommit(): void
     {
         $this->chronicler->expects($this->once())->method('firstCommit')->with($this->stream);
 
@@ -58,8 +54,7 @@ class EventStoreConnectionTest extends UnitTestCase
         $es->firstCommit($this->stream);
     }
 
-    #[Test]
-    public function it_update_stream(): void
+    public function testAmendStream(): void
     {
         $this->chronicler->expects($this->once())->method('amend')->with($this->stream);
 
@@ -68,8 +63,7 @@ class EventStoreConnectionTest extends UnitTestCase
         $es->amend($this->stream);
     }
 
-    #[Test]
-    public function it_delete_stream(): void
+    public function testDeleteStream(): void
     {
         $this->chronicler->expects($this->once())->method('delete')->with($this->stream->name());
 
@@ -78,9 +72,8 @@ class EventStoreConnectionTest extends UnitTestCase
         $es->delete($this->stream->name());
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('provideDirection')]
-    #[Test]
-    public function it_retrieve_all_stream_events(string $direction): void
+    #[DataProvider('provideDirection')]
+    public function testRetrieveAllSortedStreamEvents(string $direction): void
     {
         $identity = $this->createMock(AggregateIdentity::class);
 
@@ -91,8 +84,7 @@ class EventStoreConnectionTest extends UnitTestCase
         $es->retrieveAll($this->stream->name(), $identity, $direction);
     }
 
-    #[Test]
-    public function it_retrieve_filtered_stream_events(): void
+    public function testRetrieveFilteredStreamEvents(): void
     {
         $queryFilter = $this->createMock(QueryFilter::class);
 
@@ -103,8 +95,7 @@ class EventStoreConnectionTest extends UnitTestCase
         $es->retrieveFiltered($this->stream->name(), $queryFilter);
     }
 
-    #[Test]
-    public function it_filter_stream_names_ordered_by_name(): void
+    public function testFilterStreamNamesSortedByAscendantNames(): void
     {
         $barStream = new StreamName('bar');
         $fooStream = new StreamName('foo');
@@ -120,8 +111,7 @@ class EventStoreConnectionTest extends UnitTestCase
         $this->assertEquals([$fooStream, $zooStream], $es->filterStreamNames($zooStream, $barStream, $fooStream));
     }
 
-    #[Test]
-    public function it_filter_categories(): void
+    public function testFilterCategories(): void
     {
         $this->chronicler->expects($this->once())
             ->method('filterCategoryNames')
@@ -133,9 +123,8 @@ class EventStoreConnectionTest extends UnitTestCase
         $this->assertEquals(['add', 'subtract'], $es->filterCategoryNames('transaction'));
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('provideBoolean')]
-    #[Test]
-    public function it_check_stream_exists(bool $isStreamExists): void
+    #[DataProvider('provideBoolean')]
+    public function testCheckStreamExists(bool $isStreamExists): void
     {
         $this->chronicler->expects($this->once())
             ->method('hasStream')
@@ -147,8 +136,7 @@ class EventStoreConnectionTest extends UnitTestCase
         $this->assertEquals($isStreamExists, $es->hasStream($this->stream->name()));
     }
 
-    #[Test]
-    public function it_return_event_stream_provider(): void
+    public function testGetEventStreamProviderInstance(): void
     {
         $provider = $this->createMock(EventStreamProvider::class);
 
@@ -161,17 +149,15 @@ class EventStoreConnectionTest extends UnitTestCase
         $this->assertSame($provider, $es->getEventStreamProvider());
     }
 
-    #[Test]
-    public function it_return_inner_chronicler(): void
+    public function testGetUnderlyingEventStore(): void
     {
         $es = new EventStoreConnectionStub($this->chronicler);
 
         $this->assertSame($this->chronicler, $es->innerChronicler());
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('provideBoolean')]
-    #[Test]
-    public function it_check_if_persistence_is_during_creation_of_stream(bool $isCreation): void
+    #[DataProvider('provideBoolean')]
+    public function testCheckIfStreamPersistenceIsDuringCreation(bool $isCreation): void
     {
         $this->chronicler->expects($this->once())
             ->method('isDuringCreation')
@@ -182,8 +168,7 @@ class EventStoreConnectionTest extends UnitTestCase
         $this->assertEquals($isCreation, $es->isDuringCreation());
     }
 
-    #[Test]
-    public function it_raise_exception_during_creation(): void
+    public function testExceptionRaisedDuringCreation(): void
     {
         $exception = new QueryException('some_connection_name', 'some sql', [], new RuntimeException('foo'));
 
@@ -196,8 +181,7 @@ class EventStoreConnectionTest extends UnitTestCase
         $this->assertSame($exception, $es->getRaisedException());
     }
 
-    #[Test]
-    public function it_raise_exception_during_update(): void
+    public function testExceptionRaisedDuringAmend(): void
     {
         $exception = new QueryException('some_connection_name', 'some sql', [], new RuntimeException('foo'));
 

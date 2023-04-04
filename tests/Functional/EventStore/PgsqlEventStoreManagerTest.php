@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
 use Illuminate\Database\Connection;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Chronicler\TrackStream;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Chronicler\EventChronicler;
@@ -46,8 +45,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals('connection', config('chronicler.defaults.provider'));
     }
 
-    #[Test]
-    public function it_return_transactional_eventable_instance(): void
+    public function testTransactionalEventableInstance(): void
     {
         $this->app['config']->set('chronicler.providers.connection.publisher', [
             'store' => 'pgsql',
@@ -93,8 +91,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(DetermineStreamCategory::class, $streamCategory);
     }
 
-    #[Test]
-    public function it_return_eventable_instance(): void
+    public function testEventableInstance(): void
     {
         $this->app['config']->set('chronicler.providers.connection.publisher', [
             'store' => 'pgsql',
@@ -119,8 +116,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(EventStoreDatabase::class, $concreteEventStore);
     }
 
-    #[Test]
-    public function it_return_standalone_instance(): void
+    public function testStandaloneInstance(): void
     {
         $this->app['config']->set('chronicler.providers.connection.publisher', [
             'store' => 'pgsql',
@@ -142,8 +138,7 @@ final class PgsqlEventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(EventStoreDatabase::class, $eventStore->innerChronicler()::class);
     }
 
-    #[Test]
-    public function it_return_transactional_standalone_instance(): void
+    public function testTransactionalStandalone(): void
     {
         $this->app['config']->set('chronicler.providers.connection.write', [
             'store' => 'pgsql',

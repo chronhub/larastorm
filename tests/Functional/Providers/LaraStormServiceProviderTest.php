@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Providers\CqrsServiceProvider;
@@ -25,8 +24,7 @@ class LaraStormServiceProviderTest extends OrchestraTestCase
         ProjectorServiceProvider::class,
     ];
 
-    #[Test]
-    public function it_assert_service_providers_not_registered(): void
+    public function testAssertServiceProvidersNotDiscovered(): void
     {
         $loadedProviders = $this->app->getLoadedProviders();
 
@@ -38,8 +36,7 @@ class LaraStormServiceProviderTest extends OrchestraTestCase
         $this->assertNull($serviceProvider);
     }
 
-    #[Test]
-    public function it_assert_service_providers_registered(): void
+    public function testAssertServiceProvidersRegistered(): void
     {
         $this->app->register(LaraStormServiceProvider::class);
 

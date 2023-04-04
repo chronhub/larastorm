@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Container\Container;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
@@ -36,8 +35,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals('in_memory', config('chronicler.defaults.provider'));
     }
 
-    #[Test]
-    public function it_return_standalone_instance(): void
+    public function testStandaloneInstance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerFactory::class);
 
@@ -46,8 +44,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(StandaloneInMemoryChronicler::class, $eventStore);
     }
 
-    #[Test]
-    public function it_return_transactional_instance(): void
+    public function testTransactionalInstance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerFactory::class);
 
@@ -56,8 +53,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(TransactionalInMemoryChronicler::class, $eventStore);
     }
 
-    #[Test]
-    public function it_return_eventable_instance(): void
+    public function testEventableInstance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerFactory::class);
 
@@ -67,8 +63,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(StandaloneInMemoryChronicler::class, $eventStore->innerChronicler());
     }
 
-    #[Test]
-    public function it_return_transactional_eventable_instance(): void
+    public function testEventableTransactionalInstance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerFactory::class);
 
@@ -79,8 +74,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(TransactionalInMemory::class, $eventStore->innerChronicler());
     }
 
-    #[Test]
-    public function it_always_return_same_instance(): void
+    public function testReturnSameInstance(): void
     {
         $this->manager->shouldUse('in_memory', InMemoryChroniclerFactory::class);
 
@@ -91,8 +85,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertSame($eventStore, $this->manager->create('standalone'));
     }
 
-    #[Test]
-    public function it_should_use_provider_given(): void
+    public function testShouldUseChroniclerFactoryGiven(): void
     {
         $this->app['config']->set('chronicler.providers.foo',
             [
@@ -107,8 +100,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals('foo', $this->manager->getDefaultDriver());
     }
 
-    #[Test]
-    public function it_extends_manager_and_return_chronicler_instance(): void
+    public function testExtendsManager(): void
     {
         $chronicler = $this->manager
             ->extend(
@@ -128,8 +120,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->assertSame($chronicler, $this->manager->create('standalone'));
     }
 
-    #[Test]
-    public function it_raise_exception_when_name_is_not_defined(): void
+    public function testExceptionRaisedWhenConfigNameIsNotDefined(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Chronicler config foo is not defined');
@@ -137,8 +128,7 @@ final class InMemoryEventStoreManagerTest extends OrchestraTestCase
         $this->manager->create('foo');
     }
 
-    #[Test]
-    public function it_raise_exception_when_provider_driver_is_unknown(): void
+    public function testExceptionRaisedWhenChroniclerFactoryIsNotDefined(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Chronicler provider with name standalone and driver driver_not_set is not defined');

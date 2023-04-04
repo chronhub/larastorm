@@ -10,7 +10,6 @@ use Illuminate\Database\Connection;
 use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Support\Facades\Schema;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Contracts\Message\Header;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -42,8 +41,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStreamName')]
-    #[Test]
-    public function it_produce_table_name_from_stream_name(string $streamName): void
+    public function testProduceTableNameFromStreamName(string $streamName): void
     {
         $expectedTableName = '_'.$streamName;
 
@@ -54,8 +52,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals($expectedTableName, $tableName);
     }
 
-    #[Test]
-    public function it_up_stream_table(): void
+    public function testUpStream(): void
     {
         $tableName = '_'.'foo_bar';
 
@@ -89,8 +86,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertArrayHasKey('_foo_bar_aggregate_type_aggregate_id_aggregate_version_unique', $indexes);
     }
 
-    #[Test]
-    public function it_serialize_domain_event(): void
+    public function testSerializeDomainEvent(): void
     {
         $factory = new JsonSerializerFactory(fn () => $this->app);
 
@@ -131,8 +127,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals($jsonSerializer->encode($content), $serializedEvent['content']);
     }
 
-    #[Test]
-    public function it_assert_callback(): void
+    public function testAssertCallback(): void
     {
         $tableName = '_'.'foo_bar';
 
@@ -158,8 +153,7 @@ final class PgsqlSingleStreamPersistenceTest extends OrchestraTestCase
         $addConstraints($connection);
     }
 
-    #[Test]
-    public function it_assert_is_auto_incremented(): void
+    public function testAssertIsAutoIncremented(): void
     {
         $this->assertTrue($this->newInstance()->isAutoIncremented());
     }

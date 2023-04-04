@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Cqrs;
 
 use Generator;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
 use Chronhub\Storm\Reporter\ReportEvent;
@@ -41,72 +40,63 @@ class CqrsManagerTest extends OrchestraTestCase
         $this->manager = $this->app[ReporterManager::class];
     }
 
-    #[Test]
-    public function it_create_default_command_reporter(): void
+    public function testCreateDefaultCommandReporter(): void
     {
         $reporter = $this->manager->command();
 
         $this->assertEquals(ReportCommand::class, $reporter::class);
     }
 
-    #[Test]
-    public function it_create_another_command_reporter(): void
+    public function testCreateAnotherCommandReporter(): void
     {
         $reporter = $this->manager->command('another');
 
         $this->assertEquals(ReportCommand::class, $reporter::class);
     }
 
-    #[Test]
-    public function it_create_command_reporter_with_extended_reporter(): void
+    public function testCreateExtendedCommandReporter(): void
     {
         $reporter = $this->manager->command('dummy');
 
         $this->assertEquals(DummyReportCommand::class, $reporter::class);
     }
 
-    #[Test]
-    public function it_create_default_event_reporter(): void
+    public function testCreateDefaultEventReporter(): void
     {
         $reporter = $this->manager->event();
 
         $this->assertEquals(ReportEvent::class, $reporter::class);
     }
 
-    #[Test]
-    public function it_create_another_event_reporter(): void
+    public function testCreateAnotherEventReporter(): void
     {
         $reporter = $this->manager->event('another');
 
         $this->assertEquals(ReportEvent::class, $reporter::class);
     }
 
-    #[Test]
-    public function it_create_event_reporter_with_extended_reporter(): void
+    public function testCreateExtendedEventReporter(): void
     {
         $reporter = $this->manager->event('dummy');
 
         $this->assertEquals(DummyReportEvent::class, $reporter::class);
     }
 
-    #[Test]
-    public function it_create_default_query_reporter(): void
+    public function testCreateDefaultQueryReporter(): void
     {
         $reporter = $this->manager->query();
 
         $this->assertEquals(ReportQuery::class, $reporter::class);
     }
 
-    #[Test]
-    public function it_create_another_query_reporter(): void
+    public function testCreateAnotherQueryReporter(): void
     {
         $reporter = $this->manager->query('another');
 
         $this->assertEquals(ReportQuery::class, $reporter::class);
     }
 
-    #[Test]
-    public function it_create_query_reporter_with_extended_reporter(): void
+    public function testCreateExtendedQueryReporter(): void
     {
         $reporter = $this->manager->query('dummy');
 
@@ -114,8 +104,7 @@ class CqrsManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideDomainType')]
-    #[Test]
-    public function it_return_new_instance(string $domainType): void
+    public function testInstance(string $domainType): void
     {
         $defaultReporter = $this->manager->create($domainType, 'default');
 
@@ -131,8 +120,7 @@ class CqrsManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideDomainType')]
-    #[Test]
-    public function it_resolve_string_tracker_from_router(string $domainType): void
+    public function testResolveStringTrackerConfigFromIoc(string $domainType): void
     {
         $messageTracker = new TrackMessage();
 
@@ -150,8 +138,7 @@ class CqrsManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideDomainType')]
-    #[Test]
-    public function it_raise_exception_when_router_producer_service_is_not_provided(string $domainType): void
+    public function testExceptionRaisedWhenServiceProducerIsNotProvided(string $domainType): void
     {
         $this->expectException(RoutingViolation::class);
         $this->expectExceptionMessage('Producer strategy can not be null');
@@ -161,8 +148,7 @@ class CqrsManagerTest extends OrchestraTestCase
         $this->manager->create($domainType, 'strategy_not_defined');
     }
 
-    #[Test]
-    public function it_raise_exception_when_group_name_is_not_registered(): void
+    public function testExceptionRaisedWhenGroupNameIsNotRegistered(): void
     {
         $this->expectException(RoutingViolation::class);
         $this->expectExceptionMessage('Group with type command and name foo not defined');
@@ -170,8 +156,7 @@ class CqrsManagerTest extends OrchestraTestCase
         $this->manager->command('foo');
     }
 
-    #[Test]
-    public function it_raise_exception_when_group_type_is_invalid(): void
+    public function testExceptionRaisedWhenGroupTypeIsInvalid(): void
     {
         $this->expectException(RoutingViolation::class);
         $this->expectExceptionMessage('Group type foo is invalid');

@@ -5,24 +5,23 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use Chronhub\Storm\Clock\PointInTime;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Larastorm\Support\Facade\Clock;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 
+#[CoversClass(ClockServiceProvider::class)]
 class ClockServiceProviderTest extends OrchestraTestCase
 {
-    #[Test]
-    public function it_assert_bindings(): void
+    public function testBindings(): void
     {
         $this->assertTrue($this->app->bound(SystemClock::class));
         $this->assertTrue($this->app->bound(Clock::SERVICE_ID));
         $this->assertInstanceOf(PointInTime::class, $this->app[SystemClock::class]);
     }
 
-    #[Test]
-    public function it_assert_provides(): void
+    public function testProvides(): void
     {
         $provider = $this->app->getProvider(ClockServiceProvider::class);
 

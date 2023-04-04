@@ -8,7 +8,6 @@ use Generator;
 use InvalidArgumentException;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Artisan;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
@@ -56,8 +55,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideField')]
-    #[Test]
-    public function it_read_projection(string $field): void
+    public function testReadProjection(string $field): void
     {
         $this->setUpProjection();
         $this->assertEquals([], $this->projector->stateOf('transaction'));
@@ -71,8 +69,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideField')]
-    #[Test]
-    public function it_raise_exception_when_projection_not_found(string $field): void
+    public function testExceptionRaisedWhenProjectionNotFound(string $field): void
     {
         $this->expectException(ProjectionNotFound::class);
 
@@ -83,8 +80,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
             ->run();
     }
 
-    #[Test]
-    public function it_raise_exception_with_invalid_field(): void
+    public function testExceptionRaisedWithInvalidField(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid field');
@@ -101,8 +97,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideField')]
-    #[Test]
-    public function it_raise_exception_with_invalid_projector(string $field): void
+    public function testExceptionRaisedWithInvalidProjectorName(string $field): void
     {
         $this->expectException(\Chronhub\Storm\Projector\Exceptions\InvalidArgumentException::class);
         $this->expectExceptionMessage('Projector configuration with name not_defined is not defined');

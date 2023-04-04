@@ -9,7 +9,6 @@ use Symfony\Component\Uid\Uuid;
 use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Support\Facades\Schema;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Contracts\Message\Header;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -41,8 +40,7 @@ final class MysqlSingleStreamPersistenceTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStreamName')]
-    #[Test]
-    public function it_produce_table_name_from_stream_name(string $streamName): void
+    public function testProduceTableNameFromStreamName(string $streamName): void
     {
         $expectedTableName = '_'.$streamName;
 
@@ -53,8 +51,7 @@ final class MysqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals($expectedTableName, $tableName);
     }
 
-    #[Test]
-    public function it_return_query_index(): void
+    public function testQueryHint(): void
     {
         $this->assertEquals('ix_query_aggregate', MysqlSingleStreamPersistence::QUERY_INDEX);
 
@@ -63,8 +60,7 @@ final class MysqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals('_foo_bar_ix_query_aggregate', $streamPersistence->indexName('_foo_bar'));
     }
 
-    #[Test]
-    public function it_up_stream_table(): void
+    public function testUpStreamTable(): void
     {
         $tableName = '_'.'foo_bar';
 
@@ -98,8 +94,7 @@ final class MysqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertArrayHasKey($streamPersistence->indexName($tableName), $indexes);
     }
 
-    #[Test]
-    public function it_serialize_domain_event(): void
+    public function testSerializeDomainEvent(): void
     {
         $factory = new JsonSerializerFactory(fn () => $this->app);
         $streamSerializer = $factory->createStreamSerializer();
@@ -141,8 +136,7 @@ final class MysqlSingleStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals($jsonSerializer->encode($content), $serializedEvent['content']);
     }
 
-    #[Test]
-    public function it_assert_is_auto_incremented(): void
+    public function testAssertAutoIncremented(): void
     {
         $this->assertTrue($this->newStreamPersistence()->isAutoIncremented());
     }

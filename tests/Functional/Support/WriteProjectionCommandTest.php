@@ -8,7 +8,6 @@ use Generator;
 use InvalidArgumentException;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Artisan;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Facade\Project;
@@ -57,8 +56,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideOperation')]
-    #[Test]
-    public function it_mark_projection(string $operation, ProjectionStatus $status): void
+    public function testUpdateProjection(string $operation, ProjectionStatus $status): void
     {
         $projection = $this->setUpProjection();
 
@@ -84,8 +82,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideOperation')]
-    #[Test]
-    public function it_print_error_when_projection_not_found(string $operation): void
+    public function testErrorPrintedWhenProjectionNotFound(string $operation): void
     {
         $this->artisan(
             'projector:write',
@@ -96,8 +93,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideOperation')]
-    #[Test]
-    public function it_abort_operation_on_answering_question(string $operation): void
+    public function testAbortOperation(string $operation): void
     {
         $this->setUpProjection();
 
@@ -112,8 +108,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
             ->run();
     }
 
-    #[Test]
-    public function it_raise_exception_with_invalid_operation(): void
+    public function testExceptionRaisedWithInvalidOperation(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -129,8 +124,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideOperation')]
-    #[Test]
-    public function it_raise_exception_with_invalid_projector(string $operation): void
+    public function testExceptionRaisedWithInvalidProjectorName(string $operation): void
     {
         $this->expectException(\Chronhub\Storm\Projector\Exceptions\InvalidArgumentException::class);
         $this->expectExceptionMessage('Projector configuration with name not_defined is not defined');

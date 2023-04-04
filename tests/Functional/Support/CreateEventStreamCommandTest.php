@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Support;
 
 use Chronhub\Storm\Stream\StreamName;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
@@ -32,8 +31,7 @@ final class CreateEventStreamCommandTest extends OrchestraTestCase
         return [ChroniclerServiceProvider::class];
     }
 
-    #[Test]
-    public function it_create_stream_from_console(): void
+    public function testCreateStreamCommand(): void
     {
         $streamName = new StreamName('foo');
 
@@ -46,8 +44,7 @@ final class CreateEventStreamCommandTest extends OrchestraTestCase
         $this->assertTrue($this->eventStore->hasStream($streamName));
     }
 
-    #[Test]
-    public function it_print_error_message_if_stream_already_exist(): void
+    public function testErrorPrintedWhenStreamAlreadyExists(): void
     {
         $streamName = new StreamName('foo');
 

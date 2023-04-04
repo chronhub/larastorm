@@ -6,7 +6,6 @@ namespace Chronhub\Larastorm\Tests\Functional\Support;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Database\Schema\Blueprint;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
@@ -23,8 +22,7 @@ final class InteractWithBuilderTest extends OrchestraTestCase
 {
     use RefreshDatabase;
 
-    #[Test]
-    public function it_query_with_builder(): void
+    public function testQueryWithBuilder(): void
     {
         $connection = $this->app->make('db')->connection();
 

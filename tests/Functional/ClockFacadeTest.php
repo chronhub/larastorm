@@ -58,7 +58,7 @@ final class ClockFacadeTest extends OrchestraTestCase
         $this->assertEquals($nowString, $clockString);
     }
 
-    public function testFormatFromDateTimeImmutable_2(): void
+    public function testNormalizeFromDateTimeImmutable(): void
     {
         $clockString = Clock::format(new DateTimeImmutable('2023-02-19T15', new DateTimeZone('UTC')));
 

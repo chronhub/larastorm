@@ -27,7 +27,7 @@ use Chronhub\Larastorm\Support\Supervisor\Command\CheckSupervisedProjectionStatu
 #[CoversClass(ProjectorServiceProvider::class)]
 final class ProjectorServiceProviderTest extends OrchestraTestCase
 {
-    public function testProjectorConfig(): void
+    public function testConfiguration(): void
     {
         $this->assertEquals([
             'defaults' => [

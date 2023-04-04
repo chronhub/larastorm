@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Support;
 
 use Generator;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Storm\Routing\HandleRoute;
 use Illuminate\Support\Facades\Artisan;
@@ -47,8 +46,7 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideReporter')]
-    #[Test]
-    public function it_list_listeners_from_reporter(string $name, string $reporterFqn, string $consumerFqn): void
+    public function testListListeners(string $name, string $reporterFqn, string $consumerFqn): void
     {
         $this->app->resolving(Registrar::class, function (Registrar $registrar) use ($name, $consumerFqn): void {
             $registrar
@@ -76,8 +74,7 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
             ->run();
     }
 
-    #[Test]
-    public function it_raise_exception_when_group_is_not_registered(): void
+    public function testExceptionRaisedWhenGroupNameIsNotRegistered(): void
     {
         $this->expectException(RoutingViolation::class);
 
@@ -85,8 +82,7 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
         $this->artisan('messager:subscribers', ['type' => 'command', 'name' => 'undefined'])->run();
     }
 
-    #[Test]
-    public function it_sort_listeners_per_event_and_descendant_priority(): void
+    public function testSortSubscribersPerEventAndPriority(): void
     {
         $dispatchedEvents = new class() implements MessageSubscriber
         {

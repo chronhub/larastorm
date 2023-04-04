@@ -9,7 +9,6 @@ use Symfony\Component\Uid\Uuid;
 use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Support\Facades\Schema;
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Contracts\Message\Header;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -41,8 +40,7 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStreamName')]
-    #[Test]
-    public function it_produce_table_name_from_stream_name(string $streamName): void
+    public function testProduceTableNameFromStreamName(string $streamName): void
     {
         $expectedTableName = '_'.$streamName;
 
@@ -55,8 +53,7 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStreamName')]
-    #[Test]
-    public function it_up_stream_table(string $streamName): void
+    public function testUpstream(string $streamName): void
     {
         $tableName = '_'.$streamName;
 
@@ -88,8 +85,7 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
         $this->assertArrayHasKey($tableName.'_aggregate_version_unique', $indexes);
     }
 
-    #[Test]
-    public function it_serialize_domain_event_with_no(): void
+    public function testSerializeDomainEventWithSequenceNo(): void
     {
         $factory = new JsonSerializerFactory(fn () => $this->app);
         $streamSerializer = $factory->createStreamSerializer();
@@ -135,8 +131,7 @@ final class PerAggregateStreamPersistenceTest extends OrchestraTestCase
         $this->assertEquals($jsonSerializer->encode($content), $serializedEvent['content']);
     }
 
-    #[Test]
-    public function it_assert_true_is_support_one_stream_per_aggregate(): void
+    public function testAssertIsNotAutoIncremented(): void
     {
         $this->assertFalse($this->newInstance()->isAutoIncremented());
     }

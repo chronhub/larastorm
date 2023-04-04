@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use Chronhub\Storm\Message\UniqueIdV4;
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Artisan;
 use Chronhub\Storm\Message\MessageFactory;
 use Chronhub\Storm\Message\Decorator\EventId;
@@ -28,8 +27,7 @@ use Chronhub\Larastorm\Support\Console\ListMessagerSubscribersCommand;
 #[CoversClass(MessagerServiceProvider::class)]
 final class MessagerServiceProviderTest extends OrchestraTestCase
 {
-    #[Test]
-    public function it_fix_messager_configuration(): void
+    public function testConfiguration(): void
     {
         $this->assertEquals([
             'unique_id' => UniqueIdV4::class,
@@ -56,8 +54,7 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
         ], config('messager'));
     }
 
-    #[Test]
-    public function it_assert_bindings(): void
+    public function testBindings(): void
     {
         $this->assertTrue($this->app->bound(Factory::class));
         $this->assertInstanceOf(MessageFactory::class, $this->app[Factory::class]);
@@ -74,8 +71,7 @@ final class MessagerServiceProviderTest extends OrchestraTestCase
         $this->assertArrayHasKey('messager:subscribers', Artisan::all());
     }
 
-    #[Test]
-    public function it_assert_provides(): void
+    public function testProvides(): void
     {
         $provider = $this->app->getProvider(MessagerServiceProvider::class);
 

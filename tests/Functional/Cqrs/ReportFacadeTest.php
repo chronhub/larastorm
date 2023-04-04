@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Cqrs;
 
-use PHPUnit\Framework\Attributes\Test;
 use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
 use Chronhub\Storm\Reporter\ReportEvent;
@@ -32,8 +31,7 @@ final class ReportFacadeTest extends OrchestraTestCase
         $this->registrar = $this->app[Registrar::class];
     }
 
-    #[Test]
-    public function it_test_facade_root(): void
+    public function testFacadeRoot(): void
     {
         $root = Report::getFacadeRoot();
 
@@ -41,8 +39,7 @@ final class ReportFacadeTest extends OrchestraTestCase
         $this->assertEquals(CqrsManager::class, $root::class);
     }
 
-    #[Test]
-    public function it_create_instance(): void
+    public function testInstance(): void
     {
         $this->registrar
             ->make(DomainType::COMMAND, 'default')
@@ -56,8 +53,7 @@ final class ReportFacadeTest extends OrchestraTestCase
         $this->assertNotSame($reporter, Report::create('command', 'default'));
     }
 
-    #[Test]
-    public function it_create_command_instance(): void
+    public function testCreateReportCommandInstance(): void
     {
         $this->registrar
             ->make(DomainType::COMMAND, 'default')
@@ -68,8 +64,7 @@ final class ReportFacadeTest extends OrchestraTestCase
         $this->assertInstanceOf(ReportCommand::class, $reporter);
     }
 
-    #[Test]
-    public function it_create_event_instance(): void
+    public function testCreateReportEventInstance(): void
     {
         $this->registrar
             ->make(DomainType::EVENT, 'default')
@@ -80,8 +75,7 @@ final class ReportFacadeTest extends OrchestraTestCase
         $this->assertInstanceOf(ReportEvent::class, $reporter);
     }
 
-    #[Test]
-    public function it_create_query_instance(): void
+    public function testCreateReportQueryInstance(): void
     {
         $this->registrar
             ->make(DomainType::QUERY, 'default')
@@ -92,8 +86,7 @@ final class ReportFacadeTest extends OrchestraTestCase
         $this->assertInstanceOf(ReportQuery::class, $reporter);
     }
 
-    #[Test]
-    public function it_access_tracker(): void
+    public function testGetUnderlyingTracker(): void
     {
         $this->registrar
             ->make(DomainType::COMMAND, 'default')
@@ -104,8 +97,7 @@ final class ReportFacadeTest extends OrchestraTestCase
         $this->assertEquals(TrackMessage::class, $reporter->tracker()::class);
     }
 
-    #[Test]
-    public function it_fix_facade_service_id(): void
+    public function testServiceId(): void
     {
         $this->assertEquals('cqrs.manager', Report::SERVICE_ID);
     }

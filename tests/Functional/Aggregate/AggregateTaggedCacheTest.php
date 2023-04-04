@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Aggregate;
 
 use Illuminate\Support\Facades\Cache;
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Contracts\Cache\Repository;
 use Chronhub\Storm\Aggregate\V4AggregateId;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -33,16 +32,14 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
         $this->cache = Cache::store();
     }
 
-    #[Test]
-    public function it_can_be_instantiated_with_empty_cache(): void
+    public function testInstanceWithEmptyCache(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
         $this->assertEquals(0, $cache->count());
     }
 
-    #[Test]
-    public function it_assert_aggregate_is_cached(): void
+    public function testAggregateIsCached(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
@@ -51,16 +48,14 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
         $this->assertTrue($cache->has($this->aggregateId));
     }
 
-    #[Test]
-    public function it_assert_aggregate_is_not_cached(): void
+    public function testAggregateIsNotCached(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
         $this->assertFalse($cache->has($this->aggregateId));
     }
 
-    #[Test]
-    public function it_cache_aggregate_and_increment_counter(): void
+    public function testCacheAggregateAndIncrementCounter(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
@@ -71,8 +66,7 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
         $this->assertEquals(1, $cache->count());
     }
 
-    #[Test]
-    public function it_override_aggregate_in_cache_and_does_not_increment_counter(): void
+    public function testOverrideAggregateInCacheAndDoesNotIncrementCounter(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
@@ -87,8 +81,7 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
         $this->assertEquals(1, $cache->count());
     }
 
-    #[Test]
-    public function it_return_aggregate_from_cache(): void
+    public function testGetAggregateFromCache(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
@@ -97,16 +90,14 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
         $this->assertEquals($this->aggregateRoot, $cache->get($this->aggregateId));
     }
 
-    #[Test]
-    public function it_return_null_aggregate_from_cache(): void
+    public function testGetNullAggregateWhichWasNotCached(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
         $this->assertNull($cache->get($this->aggregateId));
     }
 
-    #[Test]
-    public function it_flush_cache(): void
+    public function testFlushCache(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
@@ -121,8 +112,7 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
         $this->assertEquals(0, $cache->count());
     }
 
-    #[Test]
-    public function it_remove_aggregate_from_cache_and_decrement_counter(): void
+    public function testForgetAggregateAndDecrementCounter(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 2);
 
@@ -137,8 +127,7 @@ final class AggregateTaggedCacheTest extends OrchestraTestCase
         $this->assertEquals(0, $cache->count());
     }
 
-    #[Test]
-    public function it_flush_cache_when_limit_is_hit_and_reset_counter(): void
+    public function testFlushCacheWhenMaxSizeIsReached(): void
     {
         $cache = new AggregateTaggedCache($this->cache, 'operation-', 1);
 

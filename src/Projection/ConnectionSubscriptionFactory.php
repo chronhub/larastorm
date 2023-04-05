@@ -22,9 +22,9 @@ final class ConnectionSubscriptionFactory extends AbstractSubscriptionFactory
         string $streamName,
         ?ReadModel $readModel): ProjectionManagement
     {
-        $store = $this->createStore($subscription, $streamName);
+        $repository = $this->createRepository($subscription, $streamName);
 
-        $adapter = new ConnectionRepository($store);
+        $adapter = new ConnectionRepository($repository);
 
         if ($this->eventDispatcher) {
             $adapter = new DispatcherAwareRepository($adapter, $this->eventDispatcher);

@@ -24,7 +24,7 @@ abstract class ProjectionGeneratorCommand extends Command
 
     protected Filesystem $files;
 
-    public function handle(Filesystem $files)
+    public function handle(Filesystem $files): int
     {
         $this->files = $files;
 
@@ -33,7 +33,7 @@ abstract class ProjectionGeneratorCommand extends Command
         if ($this->files->exists($path)) {
             $this->components->error("File : $path already exits");
 
-            return;
+            return self::FAILURE;
         }
 
         $this->makeDirectory(dirname($path));
@@ -43,6 +43,8 @@ abstract class ProjectionGeneratorCommand extends Command
         $this->files->put($path, $stub);
 
         $this->components->info("File : $path created");
+
+        return self::SUCCESS;
     }
 
     protected function getStubPath(): string

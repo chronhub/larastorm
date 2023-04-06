@@ -34,7 +34,7 @@ final class Balance implements AggregateRoot
         $this->recordThat(BalanceWasDebited::withAmount($this->balanceId(), abs($amount)));
     }
 
-    public function balanceId(): BalanceId&AggregateIdentity
+    public function balanceId(): BalanceId|AggregateIdentity
     {
         return $this->aggregateId();
     }

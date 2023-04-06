@@ -11,11 +11,8 @@ use function str_starts_with;
 
 class EventLoaderConnectionFactory
 {
-    public readonly string $default;
-
     public function __construct(protected readonly Container $container)
     {
-        $this->default = 'cursor';
     }
 
     public function createEventLoader(?string $name): StreamEventLoaderConnection

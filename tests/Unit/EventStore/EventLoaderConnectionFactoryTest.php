@@ -17,7 +17,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 #[CoversClass(EventLoaderConnectionFactory::class)]
-final class StreamEventLoaderFactoryTest extends UnitTestCase
+final class EventLoaderConnectionFactoryTest extends UnitTestCase
 {
     private ContainerContract $container;
 

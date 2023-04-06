@@ -19,7 +19,6 @@ use Generator;
 use Illuminate\Database\QueryException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use RuntimeException;
 
@@ -36,7 +35,6 @@ class EventStoreConnectionTest extends UnitTestCase
         $this->stream = new Stream(new StreamName('customer'));
     }
 
-    #[Test]
     public function testExceptionRaisedWhenEventStoreIsAlreadyDecorated(): void
     {
         $this->expectException(InvalidArgumentException::class);

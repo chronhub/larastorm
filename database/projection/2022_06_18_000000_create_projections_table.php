@@ -11,6 +11,8 @@ class CreateProjectionsTable extends Migration
 {
     public function up(): void
     {
+        $this->connection = config('projector.providers.connection.name');
+
         Schema::create(ConnectionProvider::TABLE_NAME, static function (Blueprint $table): void {
             $table->bigInteger('no', true);
             $table->string('name', 150)->unique();
@@ -23,6 +25,8 @@ class CreateProjectionsTable extends Migration
 
     public function down(): void
     {
+        $this->connection = config('projector.providers.connection.name');
+
         Schema::dropIfExists(ConnectionProvider::TABLE_NAME);
     }
 }

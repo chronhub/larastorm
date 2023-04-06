@@ -11,6 +11,8 @@ final class CreateEventStreamsTable extends Migration
 {
     public function up(): void
     {
+        $this->connection = config('chronicler.event_stream_provider.connection.name');
+
         Schema::create(EventStreamProvider::TABLE_NAME, static function (Blueprint $table): void {
             $table->bigInteger('id', true);
             $table->string('real_stream_name', 150)->unique();
@@ -23,6 +25,8 @@ final class CreateEventStreamsTable extends Migration
 
     public function down(): void
     {
+        $this->connection = config('chronicler.event_stream_provider.connection.name');
+
         Schema::dropIfExists(EventStreamProvider::TABLE_NAME);
     }
 }

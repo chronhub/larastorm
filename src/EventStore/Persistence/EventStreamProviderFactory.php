@@ -26,6 +26,8 @@ class EventStreamProviderFactory
         if ($providerKey === null || is_array($providerKey)) {
             $tableName = $providerKey['table_name'] ?? null;
 
+            //checkMe do we need to check if the connection name match one in config?
+
             return new EventStreamProvider($connection, $tableName);
         }
 

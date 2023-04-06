@@ -37,7 +37,12 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
             ],
             'defaults' => [
                 'provider' => 'connection',
-                'event_stream_provider' => [],
+                'event_stream_provider' => [
+                    'connection' => [
+                        'name' => 'pgsql',
+                        'table_name' => 'event_streams',
+                    ],
+                ],
                 'providers' => [
                     'connection' => EventStoreConnectionFactory::class,
                     'in_memory' => InMemoryChroniclerFactory::class,

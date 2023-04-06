@@ -32,7 +32,7 @@ class $$CLASS_NAME$$ extends Command implements SignalableCommandInterface
 
         $readModel = $this->laravel['$$READ_MODEL_SERVICE$$'];
 
-        $this->projection = $projector->projectReadModel('$$PROJECTION_NAME$$', $readModel);
+        $this->projection = $projector->readModel('$$PROJECTION_NAME$$', $readModel);
 
         $this->projection
             ->initialize(fn (): array => ['count' => 0])

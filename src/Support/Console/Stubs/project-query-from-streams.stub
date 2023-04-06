@@ -30,7 +30,7 @@ class $$CLASS_NAME$$ extends Command implements SignalableCommandInterface
 
         $projector = Project::create($this->option('name'));
 
-        $this->projection = $projector->projectQuery();
+        $this->projection = $projector->query();
 
         $this->projection
             ->initialize(fn (): array => ['count' => 0])

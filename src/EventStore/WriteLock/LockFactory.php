@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\WriteLock;
 
-use Illuminate\Database\Connection;
-use Illuminate\Contracts\Container\Container;
-use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Database\Connection;
 
 class LockFactory
 {

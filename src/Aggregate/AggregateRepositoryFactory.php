@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Aggregate;
 
-use Closure;
-use InvalidArgumentException;
-use Illuminate\Contracts\Container\Container;
-use Chronhub\Storm\Aggregate\AggregateRepository;
-use Chronhub\Storm\Message\ChainMessageDecorator;
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
-use Chronhub\Storm\Contracts\Message\MessageDecorator;
 use Chronhub\Storm\Aggregate\AbstractAggregateRepository;
+use Chronhub\Storm\Aggregate\AggregateRepository;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as Repository;
-use function is_a;
+use Chronhub\Storm\Contracts\Message\MessageDecorator;
+use Chronhub\Storm\Message\ChainMessageDecorator;
+use Closure;
+use Illuminate\Contracts\Container\Container;
+use InvalidArgumentException;
 use function array_map;
-use function is_string;
 use function array_merge;
+use function is_a;
+use function is_string;
 
 class AggregateRepositoryFactory
 {

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Storm\Contracts\Chronicler\InMemoryChronicler;
+use Chronhub\Larastorm\Support\Facade\Chronicle;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
 use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
+use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
+use Chronhub\Storm\Contracts\Chronicler\InMemoryChronicler;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Chronicle::class)]
 final class ChronicleFacadeTest extends OrchestraTestCase

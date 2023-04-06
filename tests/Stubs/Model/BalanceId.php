@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Stubs\Model;
 
-use Symfony\Component\Uid\Uuid;
 use Chronhub\Storm\Aggregate\HasAggregateIdentity;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
+use Symfony\Component\Uid\Uuid;
 
 final class BalanceId implements AggregateIdentity
 {

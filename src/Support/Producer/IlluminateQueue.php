@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Producer;
 
-use Chronhub\Storm\Message\Message;
-use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Chronhub\Storm\Contracts\Producer\MessageQueue;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
-use function is_array;
+use Chronhub\Storm\Message\Message;
+use Illuminate\Contracts\Bus\QueueingDispatcher;
 use function array_merge;
+use function is_array;
 
 final readonly class IlluminateQueue implements MessageQueue
 {

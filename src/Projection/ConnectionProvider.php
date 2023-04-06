@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Projection;
 
-use StdClass;
-use Illuminate\Database\Connection;
-use Illuminate\Database\Query\Builder;
 use Chronhub\Storm\Contracts\Projector\ProjectionModel;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
+use Illuminate\Database\Connection;
+use Illuminate\Database\Query\Builder;
+use StdClass;
 
 final readonly class ConnectionProvider implements ProjectionProvider
 {

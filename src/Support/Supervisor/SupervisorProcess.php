@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Supervisor;
 
-use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ExceptionInterface;
+use Symfony\Component\Process\Process;
 
 class SupervisorProcess
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
-use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\EventStore\Persistence\EventStream;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\EventStore\Persistence\EventStream;
+use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(EventStream::class)]
 class EventStreamTest extends UnitTestCase

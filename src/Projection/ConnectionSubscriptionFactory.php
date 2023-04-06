@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Projection;
 
-use Illuminate\Contracts\Events\Dispatcher;
-use Chronhub\Storm\Contracts\Projector\ReadModel;
-use Chronhub\Storm\Projector\Repository\EmitterManager;
-use Chronhub\Storm\Projector\AbstractSubscriptionFactory;
-use Chronhub\Storm\Projector\Repository\ReadModelManager;
-use Chronhub\Storm\Contracts\Projector\ProjectionManagement;
 use Chronhub\Storm\Contracts\Projector\EmitterSubscriptionInterface;
+use Chronhub\Storm\Contracts\Projector\ProjectionManagement;
+use Chronhub\Storm\Contracts\Projector\ReadModel;
 use Chronhub\Storm\Contracts\Projector\ReadModelSubscriptionInterface;
+use Chronhub\Storm\Projector\AbstractSubscriptionFactory;
+use Chronhub\Storm\Projector\Repository\EmitterManager;
+use Chronhub\Storm\Projector\Repository\ReadModelManager;
+use Illuminate\Contracts\Events\Dispatcher;
 
 final class ConnectionSubscriptionFactory extends AbstractSubscriptionFactory
 {

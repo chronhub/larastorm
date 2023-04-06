@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Projection;
 
-use JsonSerializable;
 use Chronhub\Storm\Contracts\Projector\ProjectionModel;
+use JsonSerializable;
 
 final readonly class Projection implements ProjectionModel, JsonSerializable
 {

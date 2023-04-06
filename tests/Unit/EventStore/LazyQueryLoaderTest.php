@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use Generator;
-use Chronhub\Storm\Stream\StreamName;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\LazyCollection;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
 use Chronhub\Larastorm\EventStore\Loader\LazyQueryLoader;
-use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
+use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
+use Chronhub\Storm\Stream\StreamName;
+use Generator;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\LazyCollection;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 #[CoversClass(LazyQueryLoader::class)]
 final class LazyQueryLoaderTest extends UnitTestCase

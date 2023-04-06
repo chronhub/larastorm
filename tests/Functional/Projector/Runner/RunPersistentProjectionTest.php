@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Projector\Runner;
 
-use Chronhub\Storm\Stream\Stream;
-use Chronhub\Storm\Clock\PointInTime;
-use Chronhub\Storm\Stream\StreamName;
-use Chronhub\Storm\Reporter\DomainEvent;
-use Chronhub\Storm\Contracts\Message\Header;
-use Chronhub\Larastorm\Support\Facade\Project;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\Support\Facade\Chronicle;
-use Chronhub\Larastorm\Tests\Stubs\Model\Balance;
-use Chronhub\Storm\Contracts\Message\EventHeader;
-use Chronhub\Larastorm\Tests\Stubs\Model\BalanceId;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
-use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Larastorm\Tests\Stubs\Model\BalanceWasDebited;
+use Chronhub\Larastorm\Support\Facade\Chronicle;
+use Chronhub\Larastorm\Support\Facade\Project;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Tests\Stubs\Model\Balance;
+use Chronhub\Larastorm\Tests\Stubs\Model\BalanceId;
 use Chronhub\Larastorm\Tests\Stubs\Model\BalanceWasCredited;
+use Chronhub\Larastorm\Tests\Stubs\Model\BalanceWasDebited;
 use Chronhub\Larastorm\Tests\Stubs\Model\BalanceWasRegistered;
+use Chronhub\Storm\Clock\PointInTime;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Storm\Contracts\Message\EventHeader;
+use Chronhub\Storm\Contracts\Message\Header;
 use Chronhub\Storm\Contracts\Projector\EmitterCasterInterface;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
+use Chronhub\Storm\Reporter\DomainEvent;
+use Chronhub\Storm\Stream\Stream;
+use Chronhub\Storm\Stream\StreamName;
 use function random_int;
 
 final class RunPersistentProjectionTest extends OrchestraTestCase

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Persistence;
 
-use Chronhub\Storm\Stream\StreamName;
-use Chronhub\Storm\Reporter\DomainEvent;
-use Chronhub\Storm\Contracts\Message\Header;
 use Chronhub\Storm\Contracts\Message\EventHeader;
-use Chronhub\Storm\Contracts\Stream\StreamPersistence;
+use Chronhub\Storm\Contracts\Message\Header;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
+use Chronhub\Storm\Contracts\Stream\StreamPersistence;
+use Chronhub\Storm\Reporter\DomainEvent;
+use Chronhub\Storm\Stream\StreamName;
 
 abstract class AbstractStreamPersistence implements StreamPersistence
 {

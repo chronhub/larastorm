@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use Generator;
+use Chronhub\Larastorm\EventStore\MysqlEventStore;
+use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
+use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
+use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Chronhub\Storm\Chronicler\Exceptions\StreamAlreadyExists;
+use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\MockObject\MockObject;
+use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\EventStore\MysqlEventStore;
-use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
-use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
-use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
-use Chronhub\Storm\Chronicler\Exceptions\StreamAlreadyExists;
-use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
-use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(MysqlEventStore::class)]
 final class MysqlEventStoreTest extends UnitTestCase

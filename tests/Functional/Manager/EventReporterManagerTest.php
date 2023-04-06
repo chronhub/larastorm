@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Manager;
 
-use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
+use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Storm\Reporter\ReportEvent;
 use Chronhub\Storm\Tracker\TrackMessage;
 use PHPUnit\Framework\Attributes\CoversClass;

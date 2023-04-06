@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Stubs\Model;
 
+use Chronhub\Storm\Clock\PointInTime;
+use Chronhub\Storm\Contracts\Message\EventHeader;
+use Chronhub\Storm\Contracts\Message\Header;
 use Generator;
 use Symfony\Component\Uid\Uuid;
-use Chronhub\Storm\Clock\PointInTime;
-use Chronhub\Storm\Contracts\Message\Header;
-use Chronhub\Storm\Contracts\Message\EventHeader;
 use function abs;
 
 trait ProvideBalanceEvents

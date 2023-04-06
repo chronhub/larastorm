@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Projection;
 
-use Illuminate\Support\Str;
-use Illuminate\Contracts\Container\Container;
-use Chronhub\Storm\Projector\ProjectorManager;
+use Chronhub\Larastorm\EventStore\EventStoreResolver;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
-use Chronhub\Larastorm\EventStore\EventStoreResolver;
-use Chronhub\Storm\Serializer\ProjectorJsonSerializer;
 use Chronhub\Storm\Contracts\Projector\ProjectionOption;
-use Chronhub\Storm\Projector\InMemorySubscriptionFactory;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
-use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
-use function ucfirst;
+use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Projector\InMemorySubscriptionFactory;
+use Chronhub\Storm\Projector\ProjectorManager;
+use Chronhub\Storm\Serializer\ProjectorJsonSerializer;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Str;
 use function is_array;
+use function ucfirst;
 
 final class ProjectorServiceManager implements ServiceManager
 {

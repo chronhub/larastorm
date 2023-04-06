@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore;
 
-use Closure;
-use Illuminate\Contracts\Container\Container;
-use Illuminate\Contracts\Foundation\Application;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerFactory;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
-use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
-use function sprintf;
+use Closure;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Foundation\Application;
 use function is_string;
+use function sprintf;
 
 final class EventStoreManager implements ChroniclerManager
 {

@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Projector;
 
-use Generator;
-use RuntimeException;
-use PHPUnit\Framework\Attributes\Test;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use Illuminate\Contracts\Events\Dispatcher;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Storm\Projector\ProjectionStatus;
-use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Projection\Events\ProjectionReset;
+use Chronhub\Larastorm\Projection\DispatcherAwareRepository;
 use Chronhub\Larastorm\Projection\Events\ProjectionDeleted;
 use Chronhub\Larastorm\Projection\Events\ProjectionOnError;
+use Chronhub\Larastorm\Projection\Events\ProjectionReset;
+use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
 use Chronhub\Larastorm\Projection\Events\ProjectionStarted;
 use Chronhub\Larastorm\Projection\Events\ProjectionStopped;
-use Chronhub\Larastorm\Projection\DispatcherAwareRepository;
-use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Projector\ProjectionRepositoryInterface;
+use Chronhub\Storm\Projector\ProjectionStatus;
+use Generator;
+use Illuminate\Contracts\Events\Dispatcher;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
+use RuntimeException;
 
 #[CoversClass(DispatcherAwareRepository::class)]
 class DispatcherAwareRepositoryTest extends UnitTestCase

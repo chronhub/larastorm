@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\ReadModel;
 
-use Illuminate\Database\Connection;
 use Chronhub\Storm\Contracts\Projector\ReadModel;
 use Chronhub\Storm\Projector\ReadModel\InteractWithStack;
+use Illuminate\Database\Connection;
 
 abstract class ReadModelConnection implements ReadModel
 {

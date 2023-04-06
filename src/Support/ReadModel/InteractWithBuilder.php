@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\ReadModel;
 
-use Illuminate\Database\Query\Builder;
 use Chronhub\Storm\Reporter\DomainEvent;
+use Illuminate\Database\Query\Builder;
 
 trait InteractWithBuilder
 {

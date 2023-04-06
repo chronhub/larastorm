@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Aggregate;
 
-use Illuminate\Contracts\Cache\Repository;
-use Chronhub\Storm\Contracts\Aggregate\AggregateRoot;
 use Chronhub\Storm\Contracts\Aggregate\AggregateCache;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
+use Chronhub\Storm\Contracts\Aggregate\AggregateRoot;
+use Illuminate\Contracts\Cache\Repository;
 
 final class AggregateTaggedCache implements AggregateCache
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Persistence;
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 final class MysqlSingleStreamPersistence extends AbstractStreamPersistence implements StreamPersistenceWithQueryHint
 {

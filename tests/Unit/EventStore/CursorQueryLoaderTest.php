@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
+use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
+use Chronhub\Larastorm\EventStore\Loader\EventLoader;
+use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\LazyCollection;
-use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
-use Chronhub\Larastorm\EventStore\Loader\EventLoader;
-use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
-use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 
 #[CoversClass(CursorQueryLoader::class)]
 final class CursorQueryLoaderTest extends UnitTestCase

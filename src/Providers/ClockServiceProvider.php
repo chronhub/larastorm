@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Providers;
 
-use Chronhub\Storm\Clock\PointInTime;
-use Illuminate\Support\ServiceProvider;
 use Chronhub\Larastorm\Support\Facade\Clock;
+use Chronhub\Storm\Clock\PointInTime;
 use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
 
 class ClockServiceProvider extends ServiceProvider implements DeferrableProvider
 {

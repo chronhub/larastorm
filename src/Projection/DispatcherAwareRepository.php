@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Projection;
 
-use Throwable;
-use Illuminate\Contracts\Events\Dispatcher;
-use Chronhub\Storm\Projector\ProjectionStatus;
-use Chronhub\Larastorm\Projection\Events\ProjectionReset;
 use Chronhub\Larastorm\Projection\Events\ProjectionDeleted;
 use Chronhub\Larastorm\Projection\Events\ProjectionOnError;
+use Chronhub\Larastorm\Projection\Events\ProjectionReset;
+use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
 use Chronhub\Larastorm\Projection\Events\ProjectionStarted;
 use Chronhub\Larastorm\Projection\Events\ProjectionStopped;
-use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
 use Chronhub\Storm\Contracts\Projector\ProjectionRepositoryInterface;
+use Chronhub\Storm\Projector\ProjectionStatus;
+use Illuminate\Contracts\Events\Dispatcher;
+use Throwable;
 
 final readonly class DispatcherAwareRepository implements ProjectionRepositoryInterface
 {

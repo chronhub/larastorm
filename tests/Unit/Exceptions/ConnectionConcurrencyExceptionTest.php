@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Exceptions;
 
-use PDOException;
-use PHPUnit\Framework\Attributes\Test;
-use Illuminate\Database\QueryException;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
+use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Illuminate\Database\QueryException;
+use PDOException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(ConnectionConcurrencyException::class)]
 final class ConnectionConcurrencyExceptionTest extends UnitTestCase

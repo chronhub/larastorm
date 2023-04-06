@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use Generator;
-use Illuminate\Database\Connection;
-use Chronhub\Storm\Stream\StreamName;
-use Chronhub\Storm\Contracts\Message\Header;
-use Illuminate\Database\ConnectionInterface;
-use PHPUnit\Framework\MockObject\MockObject;
-use Chronhub\Larastorm\Tests\Stubs\StoreStub;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Storm\Contracts\Stream\StreamCategory;
-use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
-use Chronhub\Storm\Contracts\Stream\StreamPersistence;
-use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
-use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
+use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
+use Chronhub\Larastorm\Tests\Stubs\StoreStub;
+use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
+use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
+use Chronhub\Storm\Contracts\Message\Header;
+use Chronhub\Storm\Contracts\Stream\StreamCategory;
+use Chronhub\Storm\Contracts\Stream\StreamPersistence;
+use Chronhub\Storm\Stream\StreamName;
+use Generator;
+use Illuminate\Database\Connection;
+use Illuminate\Database\ConnectionInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(EventStoreDatabase::class)]
 trait ProvideTestingStore

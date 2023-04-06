@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Aggregate;
 
-use Illuminate\Container\Container;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use Chronhub\Storm\Aggregate\AggregateType;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
 use Chronhub\Larastorm\Aggregate\AggregateTypeFactory;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootChildStub;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootFinalStub;
+use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Chronhub\Storm\Aggregate\AggregateType;
+use Illuminate\Container\Container;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(AggregateTypeFactory::class)]
 final class AggregateTypeFactoryTest extends UnitTestCase

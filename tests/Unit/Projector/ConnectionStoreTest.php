@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
-use Generator;
-use RuntimeException;
-use PHPUnit\Framework\Attributes\Test;
-use Illuminate\Database\QueryException;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Storm\Projector\ProjectionStatus;
-use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Projection\ConnectionRepository;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
-use Chronhub\Storm\Projector\Exceptions\ProjectionAlreadyRunning;
+use Chronhub\Larastorm\Projection\ConnectionRepository;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Projector\ProjectionRepositoryInterface;
+use Chronhub\Storm\Projector\Exceptions\ProjectionAlreadyRunning;
+use Chronhub\Storm\Projector\ProjectionStatus;
+use Generator;
+use Illuminate\Database\QueryException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
+use RuntimeException;
 
 #[CoversClass(ConnectionRepository::class)]
 final class ConnectionStoreTest extends UnitTestCase

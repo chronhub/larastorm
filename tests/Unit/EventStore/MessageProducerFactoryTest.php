@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use Generator;
-use Illuminate\Container\Container;
-use Chronhub\Storm\Routing\CommandGroup;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use Chronhub\Storm\Producer\ProduceMessage;
-use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\MockObject\MockObject;
-use Chronhub\Storm\Producer\ProducerStrategy;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Chronhub\Larastorm\Cqrs\MessageProducerFactory;
+use Chronhub\Larastorm\Support\Producer\IlluminateQueue;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
+use Chronhub\Storm\Contracts\Producer\MessageProducer;
 use Chronhub\Storm\Contracts\Producer\MessageQueue;
 use Chronhub\Storm\Contracts\Producer\ProducerUnity;
-use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Storm\Contracts\Routing\RouteCollection;
-use Chronhub\Storm\Contracts\Producer\MessageProducer;
-use Chronhub\Larastorm\Support\Producer\IlluminateQueue;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
+use Chronhub\Storm\Producer\ProduceMessage;
+use Chronhub\Storm\Producer\ProducerStrategy;
+use Chronhub\Storm\Routing\CommandGroup;
+use Generator;
+use Illuminate\Container\Container;
+use Illuminate\Contracts\Bus\QueueingDispatcher;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(MessageProducerFactory::class)]
 final class MessageProducerFactoryTest extends UnitTestCase

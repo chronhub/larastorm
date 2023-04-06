@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Facade;
 
-use Illuminate\Support\Facades\Facade;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerFactory;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
+use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static Chronicler create(string $name)

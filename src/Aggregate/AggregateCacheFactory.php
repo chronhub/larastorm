@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Aggregate;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
 use Chronhub\Storm\Aggregate\NullAggregateCache;
 use Chronhub\Storm\Contracts\Aggregate\AggregateCache;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 final class AggregateCacheFactory
 {

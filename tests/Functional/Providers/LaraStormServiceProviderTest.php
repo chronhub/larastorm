@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\Providers\CqrsServiceProvider;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
-use Chronhub\Larastorm\Providers\LaraStormServiceProvider;
-use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
-use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\AggregateRepositoryServiceProvider;
+use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
+use Chronhub\Larastorm\Providers\CqrsServiceProvider;
+use Chronhub\Larastorm\Providers\LaraStormServiceProvider;
+use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(LaraStormServiceProvider::class)]
 class LaraStormServiceProviderTest extends OrchestraTestCase

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Persistence;
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 final class PerAggregateStreamPersistence extends AbstractStreamPersistence
 {

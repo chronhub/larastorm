@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Chronhub\Storm\Contracts\Chronicler\EventStreamModel;
 use Chronhub\Larastorm\EventStore\Persistence\EventStream;
-use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\EventStore\Persistence\EventStreamProvider;
+use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Chronicler\EventStreamModel;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(EventStreamProvider::class)]
 final class EventStreamProviderTest extends OrchestraTestCase

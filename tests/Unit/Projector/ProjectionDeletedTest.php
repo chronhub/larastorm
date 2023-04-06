@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
-use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Projection\Events\ProjectionDeleted;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Projection\Events\ProjectionDeleted;
+use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(ProjectionDeleted::class)]
 class ProjectionDeletedTest extends UnitTestCase

@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Support;
 
-use Generator;
-use InvalidArgumentException;
-use Chronhub\Storm\Stream\Stream;
-use Chronhub\Storm\Stream\StreamName;
-use Illuminate\Support\Facades\Artisan;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Support\Facade\Project;
-use Chronhub\Storm\Projector\ProjectionStatus;
-use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\Support\Facade\Chronicle;
-use Chronhub\Storm\Projector\InMemoryQueryScope;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
-use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Storm\Contracts\Projector\PersistentProjector;
 use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
+use Chronhub\Larastorm\Support\Facade\Chronicle;
+use Chronhub\Larastorm\Support\Facade\Project;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Storm\Contracts\Projector\PersistentProjector;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
+use Chronhub\Storm\Projector\InMemoryQueryScope;
+use Chronhub\Storm\Projector\ProjectionStatus;
+use Chronhub\Storm\Stream\Stream;
+use Chronhub\Storm\Stream\StreamName;
+use Generator;
+use Illuminate\Support\Facades\Artisan;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function str_starts_with;
 
 #[CoversClass(WriteProjectionCommand::class)]
@@ -165,7 +165,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
 
     protected function getPackageProviders($app): array
     {
-        return[
+        return [
             ClockServiceProvider::class,
             MessagerServiceProvider::class,
             ChroniclerServiceProvider::class,

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
-use JsonSerializable;
-use PHPUnit\Framework\Attributes\Test;
-use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Larastorm\Projection\Projection;
-use PHPUnit\Framework\Attributes\CoversClass;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Projector\ProjectionModel;
+use JsonSerializable;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(Projection::class)]
 class ProjectionTest extends UnitTestCase

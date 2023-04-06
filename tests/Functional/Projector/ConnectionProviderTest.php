@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Projector;
 
-use DateInterval;
-use DateTimeZone;
-use JsonSerializable;
-use DateTimeImmutable;
-use Chronhub\Storm\Clock\PointInTime;
-use Illuminate\Database\QueryException;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Storm\Projector\ProjectionStatus;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Chronhub\Larastorm\Projection\ConnectionProvider;
-use Chronhub\Storm\Contracts\Projector\ProjectionModel;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Clock\PointInTime;
+use Chronhub\Storm\Contracts\Projector\ProjectionModel;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider as Provider;
+use Chronhub\Storm\Projector\ProjectionStatus;
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeZone;
+use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use JsonSerializable;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(ConnectionProvider::class)]
 final class ConnectionProviderTest extends OrchestraTestCase

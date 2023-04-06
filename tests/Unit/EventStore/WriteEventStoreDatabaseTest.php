@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use Generator;
-use Throwable;
-use RuntimeException;
-use InvalidArgumentException;
-use Chronhub\Storm\Stream\Stream;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Database\QueryException;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
+use Chronhub\Larastorm\EventStore\Database\AbstractEventStoreDatabase;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
+use Chronhub\Larastorm\EventStore\WriteLock\FakeWriteLock;
+use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
+use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
+use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
-use Illuminate\Database\Schema\Builder as SchemaBuilder;
-use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
-use Chronhub\Larastorm\EventStore\WriteLock\FakeWriteLock;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
-use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
-use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
-use Chronhub\Larastorm\EventStore\Database\AbstractEventStoreDatabase;
+use Chronhub\Storm\Stream\Stream;
+use Generator;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Schema\Builder as SchemaBuilder;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use RuntimeException;
+use Throwable;
 use function iterator_to_array;
 
 #[CoversClass(EventStoreDatabase::class)]

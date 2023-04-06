@@ -4,38 +4,38 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
-use Generator;
-use Throwable;
-use RuntimeException;
-use PHPUnit\Framework\Attributes\Test;
-use Illuminate\Database\QueryException;
+use Chronhub\Larastorm\Projection\ConnectionSubscriptionFactory;
 use Chronhub\Larastorm\Tests\UnitTestCase;
-use Chronhub\Storm\Projector\ProjectQuery;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
+use Chronhub\Storm\Contracts\Clock\SystemClock;
+use Chronhub\Storm\Contracts\Message\MessageAlias;
+use Chronhub\Storm\Contracts\Projector\EmitterProjector;
+use Chronhub\Storm\Contracts\Projector\ProjectionModel;
+use Chronhub\Storm\Contracts\Projector\ProjectionOption;
+use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
+use Chronhub\Storm\Contracts\Projector\ProjectionQueryScope;
+use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
+use Chronhub\Storm\Contracts\Projector\QueryProjector;
+use Chronhub\Storm\Contracts\Projector\ReadModel;
+use Chronhub\Storm\Contracts\Projector\ReadModelProjector;
+use Chronhub\Storm\Contracts\Serializer\JsonSerializer;
+use Chronhub\Storm\Projector\Exceptions\ProjectionFailed;
+use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
+use Chronhub\Storm\Projector\Options\DefaultProjectionOption;
 use Chronhub\Storm\Projector\ProjectEmitter;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use Chronhub\Storm\Projector\ProjectorManager;
+use Chronhub\Storm\Projector\ProjectQuery;
 use Chronhub\Storm\Projector\ProjectReadModel;
+use Generator;
+use Illuminate\Database\QueryException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Storm\Contracts\Clock\SystemClock;
-use Chronhub\Storm\Contracts\Projector\ReadModel;
-use Chronhub\Storm\Contracts\Message\MessageAlias;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
-use Chronhub\Storm\Contracts\Projector\QueryProjector;
-use Chronhub\Storm\Contracts\Projector\ProjectionModel;
-use Chronhub\Storm\Contracts\Serializer\JsonSerializer;
-use Chronhub\Storm\Contracts\Projector\EmitterProjector;
-use Chronhub\Storm\Contracts\Projector\ProjectionOption;
-use Chronhub\Storm\Projector\Exceptions\ProjectionFailed;
-use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
-use Chronhub\Storm\Contracts\Projector\ReadModelProjector;
-use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
-use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
-use Chronhub\Storm\Contracts\Projector\ProjectionQueryScope;
-use Chronhub\Storm\Projector\Options\DefaultProjectionOption;
-use Chronhub\Larastorm\Projection\ConnectionSubscriptionFactory;
-use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
+use RuntimeException;
+use Throwable;
 use function sprintf;
 
 #[CoversClass(ProjectorManager::class)]
@@ -495,8 +495,8 @@ final class ConnectionProjectorManagerTest extends UnitTestCase
 
     public static function provideBoolean(): Generator
     {
-        yield[true];
-        yield[false];
+        yield [true];
+        yield [false];
     }
 
     private Chronicler|MockObject $chronicler;

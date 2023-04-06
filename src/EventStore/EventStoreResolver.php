@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore;
 
-use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
+use Illuminate\Contracts\Container\Container;
 use function is_string;
 
 final readonly class EventStoreResolver

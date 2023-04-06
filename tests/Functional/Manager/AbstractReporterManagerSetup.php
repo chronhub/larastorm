@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Manager;
 
-use Generator;
-use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Routing\Registrar;
-use Chronhub\Larastorm\Providers\CqrsServiceProvider;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Contracts\Reporter\ReporterManager;
+use Chronhub\Larastorm\Providers\CqrsServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Reporter\ReporterManager;
+use Chronhub\Storm\Contracts\Routing\Registrar;
+use Chronhub\Storm\Reporter\DomainType;
+use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(CqrsManager::class)]
 abstract class AbstractReporterManagerSetup extends OrchestraTestCase

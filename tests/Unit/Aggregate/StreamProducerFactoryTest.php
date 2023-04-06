@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Aggregate;
 
+use Chronhub\Larastorm\Aggregate\StreamProducerFactory;
 use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
+use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Stream\OneStreamPerAggregate;
 use Chronhub\Storm\Stream\SingleStreamPerAggregate;
-use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
-use Chronhub\Larastorm\Aggregate\StreamProducerFactory;
-use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(StreamProducerFactory::class)]
 final class StreamProducerFactoryTest extends UnitTestCase

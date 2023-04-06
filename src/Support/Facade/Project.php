@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Facade;
 
-use Illuminate\Support\Facades\Facade;
-use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
+use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager;
+use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static ProjectorManagerInterface create(string $name)

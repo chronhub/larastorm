@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
-use Chronhub\Storm\Message\UniqueIdV4;
-use Illuminate\Support\Facades\Artisan;
-use Chronhub\Storm\Message\MessageFactory;
-use Chronhub\Storm\Message\Decorator\EventId;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Storm\Contracts\Message\UniqueId;
-use Chronhub\Storm\Message\AliasFromClassName;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Message\Decorator\EventTime;
-use Chronhub\Storm\Message\Decorator\EventType;
-use Chronhub\Storm\Contracts\Message\MessageAlias;
-use Chronhub\Storm\Serializer\MessagingSerializer;
-use Chronhub\Storm\Reporter\Subscribers\MakeMessage;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
-use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
-use Symfony\Component\Serializer\Normalizer\UidNormalizer;
-use Chronhub\Storm\Contracts\Message\MessageFactory as Factory;
 use Chronhub\Larastorm\Support\Console\ListMessagerSubscribersCommand;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Message\MessageAlias;
+use Chronhub\Storm\Contracts\Message\MessageFactory as Factory;
+use Chronhub\Storm\Contracts\Message\UniqueId;
+use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
+use Chronhub\Storm\Message\AliasFromClassName;
+use Chronhub\Storm\Message\Decorator\EventId;
+use Chronhub\Storm\Message\Decorator\EventTime;
+use Chronhub\Storm\Message\Decorator\EventType;
+use Chronhub\Storm\Message\MessageFactory;
+use Chronhub\Storm\Message\UniqueIdV4;
+use Chronhub\Storm\Reporter\Subscribers\MakeMessage;
+use Chronhub\Storm\Serializer\MessagingSerializer;
+use Illuminate\Support\Facades\Artisan;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 
 #[CoversClass(MessagerServiceProvider::class)]
 final class MessagerServiceProviderTest extends OrchestraTestCase

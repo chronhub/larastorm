@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore;
 
-use Generator;
-use Chronhub\Storm\Stream\Stream;
-use Chronhub\Storm\Stream\StreamName;
-use Illuminate\Database\QueryException;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
-use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
-use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
-use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
+use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Chronicler\Exceptions\StreamAlreadyExists;
+use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerDecorator;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
-use Chronhub\Storm\Chronicler\Exceptions\StreamAlreadyExists;
-use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
+use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
-use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
-use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Stream\Stream;
+use Chronhub\Storm\Stream\StreamName;
+use Generator;
+use Illuminate\Database\QueryException;
 
 abstract class EventStoreConnection implements ChroniclerConnection, ChroniclerDecorator
 {

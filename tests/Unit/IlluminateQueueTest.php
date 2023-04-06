@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit;
 
-use Chronhub\Storm\Message\Message;
-use PHPUnit\Framework\Attributes\Test;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Illuminate\Contracts\Bus\QueueingDispatcher;
+use Chronhub\Larastorm\Support\Producer\IlluminateQueue;
 use Chronhub\Larastorm\Support\Producer\MessageJob;
 use Chronhub\Larastorm\Tests\Stubs\Double\SomeCommand;
-use Chronhub\Larastorm\Support\Producer\IlluminateQueue;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
+use Chronhub\Storm\Message\Message;
+use Illuminate\Contracts\Bus\QueueingDispatcher;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(IlluminateQueue::class)]
 final class IlluminateQueueTest extends UnitTestCase

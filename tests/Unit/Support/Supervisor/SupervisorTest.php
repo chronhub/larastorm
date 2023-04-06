@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Support\Supervisor;
 
-use InvalidArgumentException;
-use PHPUnit\Framework\Attributes\Test;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
 use Chronhub\Larastorm\Support\Supervisor\Supervisor;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(Supervisor::class)]
 final class SupervisorTest extends UnitTestCase

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Support\Console\Generator;
 
 use Illuminate\Support\Str;
-use function trim;
-use function ltrim;
+use function array_slice;
 use function explode;
 use function implode;
-use function array_slice;
+use function ltrim;
 use function str_replace;
+use function trim;
 
 trait ProvideGeneratorCommand
 {

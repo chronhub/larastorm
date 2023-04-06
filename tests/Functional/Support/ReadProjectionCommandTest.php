@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Support;
 
-use Generator;
-use InvalidArgumentException;
-use Chronhub\Storm\Stream\Stream;
-use Chronhub\Storm\Stream\StreamName;
-use Illuminate\Support\Facades\Artisan;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Support\Facade\Project;
-use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\Support\Facade\Chronicle;
-use Chronhub\Storm\Projector\InMemoryQueryScope;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
-use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
 use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
+use Chronhub\Larastorm\Support\Facade\Chronicle;
+use Chronhub\Larastorm\Support\Facade\Project;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
+use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
+use Chronhub\Storm\Projector\InMemoryQueryScope;
+use Chronhub\Storm\Stream\Stream;
+use Chronhub\Storm\Stream\StreamName;
+use Generator;
+use Illuminate\Support\Facades\Artisan;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 #[CoversClass(ReadProjectionCommand::class)]
 final class ReadProjectionCommandTest extends OrchestraTestCase
@@ -135,7 +135,7 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
 
     protected function getPackageProviders($app): array
     {
-        return[
+        return [
             ClockServiceProvider::class,
             MessagerServiceProvider::class,
             ChroniclerServiceProvider::class,

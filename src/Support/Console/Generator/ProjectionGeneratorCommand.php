@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Console\Generator;
 
-use Illuminate\Support\Str;
-use InvalidArgumentException;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use function trim;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 use function dirname;
 use function is_array;
+use function trim;
 
 /**
  * todo config path and namespace (tied to laravel app namespace)

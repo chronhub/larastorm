@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Projection\Query;
 
-use Illuminate\Contracts\Database\Query\Builder;
 use Chronhub\Storm\Contracts\Projector\ProjectionQueryFilter;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
+use Illuminate\Contracts\Database\Query\Builder;
 
 final class FromIncludedPositionWithLimit implements ProjectionQueryFilter
 {

@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Cqrs;
 
-use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
+use Chronhub\Larastorm\Providers\CqrsServiceProvider;
+use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Support\Facade\Report;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Reporter\ReporterManager;
+use Chronhub\Storm\Contracts\Routing\Registrar;
+use Chronhub\Storm\Reporter\DomainType;
+use Chronhub\Storm\Reporter\ReportCommand;
 use Chronhub\Storm\Reporter\ReportEvent;
 use Chronhub\Storm\Reporter\ReportQuery;
 use Chronhub\Storm\Tracker\TrackMessage;
-use Chronhub\Storm\Reporter\ReportCommand;
-use Chronhub\Larastorm\Support\Facade\Report;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Routing\Registrar;
-use Chronhub\Larastorm\Providers\CqrsServiceProvider;
-use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Contracts\Reporter\ReporterManager;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 
 #[CoversClass(Report::class)]
 final class ReportFacadeTest extends OrchestraTestCase

@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use Chronhub\Larastorm\Cqrs\CqrsManager;
-use Chronhub\Storm\Routing\GroupRegistrar;
-use Chronhub\Storm\Producer\LogicalProducer;
-use Chronhub\Larastorm\Support\Facade\Report;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Routing\Registrar;
-use Chronhub\Storm\Contracts\Producer\ProducerUnity;
 use Chronhub\Larastorm\Providers\CqrsServiceProvider;
-use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Support\Facade\Report;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Producer\ProducerUnity;
+use Chronhub\Storm\Contracts\Reporter\ReporterManager;
+use Chronhub\Storm\Contracts\Routing\Registrar;
+use Chronhub\Storm\Producer\LogicalProducer;
+use Chronhub\Storm\Routing\GroupRegistrar;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(CqrsServiceProvider::class)]
 final class CqrsServiceProviderTest extends OrchestraTestCase

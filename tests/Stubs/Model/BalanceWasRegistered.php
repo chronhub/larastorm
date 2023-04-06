@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Stubs\Model;
 
-use Chronhub\Storm\Reporter\DomainEvent;
 use Chronhub\Storm\Message\HasConstructableContent;
+use Chronhub\Storm\Reporter\DomainEvent;
 
 class BalanceWasRegistered extends DomainEvent
 {

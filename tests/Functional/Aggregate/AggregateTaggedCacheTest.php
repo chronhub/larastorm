@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Aggregate;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Contracts\Cache\Repository;
-use Chronhub\Storm\Aggregate\V4AggregateId;
-use PHPUnit\Framework\Attributes\CoversClass;
+use Chronhub\Larastorm\Aggregate\AggregateTaggedCache;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
-use Chronhub\Storm\Contracts\Aggregate\AggregateRoot;
-use Chronhub\Larastorm\Aggregate\AggregateTaggedCache;
+use Chronhub\Storm\Aggregate\V4AggregateId;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
+use Chronhub\Storm\Contracts\Aggregate\AggregateRoot;
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Support\Facades\Cache;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(AggregateTaggedCache::class)]
 final class AggregateTaggedCacheTest extends OrchestraTestCase

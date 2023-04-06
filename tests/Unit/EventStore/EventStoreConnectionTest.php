@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use Generator;
-use RuntimeException;
+use Chronhub\Larastorm\EventStore\EventStoreConnection;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
+use Chronhub\Larastorm\Tests\Stubs\DummyDecoratorDatabaseEventStore;
+use Chronhub\Larastorm\Tests\Stubs\EventStoreConnectionStub;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
+use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
+use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
-use PHPUnit\Framework\Attributes\Test;
+use Generator;
 use Illuminate\Database\QueryException;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
-use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
-use Chronhub\Larastorm\EventStore\EventStoreConnection;
-use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
-use Chronhub\Larastorm\Tests\Stubs\EventStoreConnectionStub;
-use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
-use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
-use Chronhub\Larastorm\Tests\Stubs\DummyDecoratorDatabaseEventStore;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
+use RuntimeException;
 
 #[CoversClass(EventStoreConnection::class)]
 class EventStoreConnectionTest extends UnitTestCase

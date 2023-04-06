@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Exceptions;
 
-use Illuminate\Database\QueryException;
 use Chronhub\Storm\Chronicler\Exceptions\ConcurrencyException;
-use function sprintf;
+use Illuminate\Database\QueryException;
 use function is_array;
+use function sprintf;
 
 class ConnectionConcurrencyException extends ConcurrencyException
 {

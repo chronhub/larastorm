@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
-use Illuminate\Contracts\Container\Container;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
-use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
-use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
+use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
 use Chronhub\Storm\Chronicler\InMemory\StandaloneInMemoryChronicler;
 use Chronhub\Storm\Chronicler\InMemory\TransactionalInMemoryChronicler;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
+use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
+use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalInMemoryChronicler as TransactionalInMemory;
+use Illuminate\Contracts\Container\Container;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(EventStoreManager::class)]
 final class InMemoryEventStoreManagerTest extends OrchestraTestCase

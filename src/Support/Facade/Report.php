@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Facade;
 
-use Illuminate\Support\Facades\Facade;
 use Chronhub\Storm\Contracts\Reporter\Reporter;
+use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static Reporter create(string $type, string $name)

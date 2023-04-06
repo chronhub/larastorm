@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Support\Facade\Project;
+use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
-use Chronhub\Larastorm\Projection\ProjectorServiceManager;
-use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
+use Illuminate\Support\ServiceProvider;
 
 class ProjectorServiceProvider extends ServiceProvider implements DeferrableProvider
 {

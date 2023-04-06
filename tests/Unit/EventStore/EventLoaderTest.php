@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use stdClass;
-use Illuminate\Support\Collection;
-use Chronhub\Storm\Stream\StreamName;
-use PHPUnit\Framework\Attributes\Test;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
-use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
-use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
+use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
+use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Chronicler\Exceptions\NoStreamEventReturn;
+use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
+use Chronhub\Storm\Stream\StreamName;
+use Illuminate\Support\Collection;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
+use stdClass;
 
 #[CoversClass(EventLoader::class)]
 final class EventLoaderTest extends UnitTestCase

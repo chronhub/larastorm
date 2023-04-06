@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Database;
 
-use Generator;
-use Chronhub\Storm\Stream\Stream;
-use Chronhub\Storm\Stream\StreamName;
-use Illuminate\Database\QueryException;
-use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
+use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
-use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
-use function count;
+use Chronhub\Storm\Contracts\Chronicler\QueryFilter;
+use Chronhub\Storm\Stream\Stream;
+use Chronhub\Storm\Stream\StreamName;
+use Generator;
+use Illuminate\Database\QueryException;
 use function array_map;
+use function count;
 
 class EventStoreDatabase extends AbstractEventStoreDatabase
 {

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Aggregate;
 
-use Closure;
-use InvalidArgumentException;
-use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Aggregate\AggregateRepository;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as Repository;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as Manager;
+use Closure;
+use Illuminate\Contracts\Container\Container;
+use InvalidArgumentException;
 
 final class AggregateRepositoryManager implements Manager
 {

@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\EventStore;
 
-use Generator;
-use Symfony\Component\Uid\Uuid;
-use Chronhub\Storm\Clock\PointInTime;
-use Chronhub\Storm\Stream\StreamName;
-use Illuminate\Support\Facades\Schema;
-use Chronhub\Storm\Contracts\Message\Header;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Storm\Serializer\SerializeToJson;
-use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Message\EventHeader;
-use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
-use Chronhub\Storm\Serializer\JsonSerializerFactory;
-use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
-use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
 use Chronhub\Larastorm\EventStore\Persistence\AbstractStreamPersistence;
 use Chronhub\Larastorm\EventStore\Persistence\MysqlSingleStreamPersistence;
+use Chronhub\Larastorm\Providers\ClockServiceProvider;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Tests\Stubs\AggregateRootStub;
+use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
+use Chronhub\Storm\Clock\PointInTime;
+use Chronhub\Storm\Contracts\Message\EventHeader;
+use Chronhub\Storm\Contracts\Message\Header;
+use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
+use Chronhub\Storm\Contracts\Stream\StreamPersistenceWithQueryHint;
+use Chronhub\Storm\Serializer\JsonSerializerFactory;
+use Chronhub\Storm\Serializer\SerializeToJson;
+use Chronhub\Storm\Stream\StreamName;
+use Generator;
+use Illuminate\Support\Facades\Schema;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\Uid\Uuid;
 use function array_keys;
 
 #[CoversClass(MysqlSingleStreamPersistence::class)]

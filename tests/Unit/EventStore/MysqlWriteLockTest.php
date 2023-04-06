@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use Generator;
+use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
 
 #[CoversClass(MysqlWriteLock::class)]
 final class MysqlWriteLockTest extends UnitTestCase

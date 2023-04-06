@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
+use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
+use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
+use Chronhub\Larastorm\EventStore\Persistence\EventStreamProviderFactory;
+use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
+use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
+use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
+use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
+use Chronhub\Storm\Contracts\Stream\StreamCategory;
+use Chronhub\Storm\Contracts\Stream\StreamPersistence;
 use Generator;
 use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Storm\Contracts\Stream\StreamCategory;
-use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
-use Chronhub\Storm\Contracts\Stream\StreamPersistence;
-use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
-use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
-use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
-use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
-use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
-use Chronhub\Larastorm\EventStore\Persistence\EventStreamProviderFactory;
-use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(EventStoreDatabaseFactory::class)]
 final class EventStoreDatabaseFactoryTest extends UnitTestCase

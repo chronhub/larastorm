@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Projection;
 
 use Chronhub\Larastorm\Projection\Query\FromIncludedPosition;
-use Chronhub\Storm\Contracts\Projector\ProjectionQueryFilter;
 use Chronhub\Larastorm\Projection\Query\FromIncludedPositionWithLimit;
 use Chronhub\Larastorm\Support\Contracts\ProjectionQueryScopeConnection;
+use Chronhub\Storm\Contracts\Projector\ProjectionQueryFilter;
 
 class ConnectionQueryScope implements ProjectionQueryScopeConnection
 {

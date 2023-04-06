@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit;
 
-use Illuminate\Container\Container;
-use Illuminate\Contracts\Queue\Queue;
-use PHPUnit\Framework\Attributes\Test;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use Chronhub\Storm\Contracts\Message\Header;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Chronhub\Larastorm\Support\Producer\MessageJob;
 use Chronhub\Larastorm\Tests\Stubs\Double\SomeCommand;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Chronhub\Storm\Contracts\Message\Header;
+use Chronhub\Storm\Contracts\Reporter\Reporter;
+use Illuminate\Container\Container;
+use Illuminate\Contracts\Queue\Queue;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(MessageJob::class)]
 final class MessageJobTest extends UnitTestCase

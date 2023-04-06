@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore;
 
-use Chronhub\Storm\Stream\StreamName;
-use Illuminate\Database\QueryException;
-use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
+use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
 use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Storm\Chronicler\Exceptions\StreamAlreadyExists;
-use Chronhub\Larastorm\Exceptions\ConnectionConcurrencyException;
+use Chronhub\Storm\Chronicler\Exceptions\StreamNotFound;
+use Chronhub\Storm\Stream\StreamName;
+use Illuminate\Database\QueryException;
 
 class PgsqlEventStore extends EventStoreConnection
 {

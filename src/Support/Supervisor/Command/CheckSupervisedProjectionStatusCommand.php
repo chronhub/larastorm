@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Supervisor\Command;
 
-use Illuminate\Console\Command;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Support\Supervisor\Supervisor;
+use Illuminate\Console\Command;
 
 class CheckSupervisedProjectionStatusCommand extends Command
 {

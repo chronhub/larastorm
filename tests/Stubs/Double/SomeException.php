@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Stubs\Double;
 
-use Throwable;
 use RuntimeException;
+use Throwable;
 
 final class SomeException extends RuntimeException
 {

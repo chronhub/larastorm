@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Stubs;
 
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 
 final class StoreStub extends EventStoreDatabase
 {

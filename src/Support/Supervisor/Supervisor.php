@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Support\Supervisor;
 
 use Closure;
-use RuntimeException;
-use InvalidArgumentException;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\Process\Process;
 use function sleep;
 use function usleep;

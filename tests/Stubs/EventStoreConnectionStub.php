@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Stubs;
 
+use Chronhub\Larastorm\EventStore\EventStoreConnection;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\QueryException;
-use Chronhub\Larastorm\EventStore\EventStoreConnection;
 
 class EventStoreConnectionStub extends EventStoreConnection
 {

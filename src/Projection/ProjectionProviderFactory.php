@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Projection;
 
-use Closure;
-use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Projector\ProjectionProvider;
 use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
+use Closure;
+use Illuminate\Contracts\Container\Container;
 use function is_string;
 
 final readonly class ProjectionProviderFactory

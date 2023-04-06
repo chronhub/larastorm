@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Support;
 
+use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
+use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Support\ReadModel\InteractWithBuilder;
+use Chronhub\Larastorm\Support\ReadModel\ReadModelConnection;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
+use Chronhub\Storm\Contracts\Projector\ReadModel;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Schema\Blueprint;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Projector\ReadModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
-use Chronhub\Larastorm\Providers\MessagerServiceProvider;
-use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Larastorm\Support\ReadModel\InteractWithBuilder;
-use Chronhub\Larastorm\Support\ReadModel\ReadModelConnection;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(InteractWithBuilder::class)]
 final class InteractWithBuilderTest extends OrchestraTestCase

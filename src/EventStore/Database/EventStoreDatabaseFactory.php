@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Database;
 
-use Illuminate\Database\Connection;
-use Illuminate\Contracts\Container\Container;
-use Chronhub\Storm\Contracts\Stream\StreamCategory;
-use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
-use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
 use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
 use Chronhub\Larastorm\EventStore\Persistence\EventStreamProviderFactory;
+use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
+use Chronhub\Storm\Contracts\Stream\StreamCategory;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Database\Connection;
 
 class EventStoreDatabaseFactory
 {

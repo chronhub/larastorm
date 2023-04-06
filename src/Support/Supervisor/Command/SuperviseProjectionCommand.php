@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Supervisor\Command;
 
+use Chronhub\Larastorm\Support\Supervisor\Supervisor;
 use Closure;
 use Illuminate\Console\Command;
-use Chronhub\Larastorm\Support\Supervisor\Supervisor;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use function max;
 use function pcntl_async_signals;

@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
-use Illuminate\Support\Facades\Artisan;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Support\Facade\Project;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Larastorm\Projection\ConnectionQueryScope;
-use Chronhub\Storm\Contracts\Projector\ProjectionOption;
-use Chronhub\Storm\Projector\InMemoryProjectionProvider;
 use Chronhub\Larastorm\Projection\ProjectorServiceManager;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
-use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
-use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
-use Chronhub\Storm\Projector\Options\InMemoryProjectionOption;
 use Chronhub\Larastorm\Support\Console\Edges\ProjectAllStreamCommand;
 use Chronhub\Larastorm\Support\Console\Edges\ProjectMessageNameCommand;
 use Chronhub\Larastorm\Support\Console\Edges\ProjectStreamCategoryCommand;
-use Chronhub\Larastorm\Support\Console\Generator\MakeQueryProjectionCommand;
-use Chronhub\Larastorm\Support\Supervisor\Command\SuperviseProjectionCommand;
-use Chronhub\Larastorm\Support\Console\Generator\MakeReadModelProjectionCommand;
 use Chronhub\Larastorm\Support\Console\Generator\MakePersistentProjectionCommand;
-use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
+use Chronhub\Larastorm\Support\Console\Generator\MakeQueryProjectionCommand;
+use Chronhub\Larastorm\Support\Console\Generator\MakeReadModelProjectionCommand;
+use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
+use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
+use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Support\Supervisor\Command\CheckSupervisedProjectionStatusCommand;
+use Chronhub\Larastorm\Support\Supervisor\Command\SuperviseProjectionCommand;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Contracts\Projector\ProjectionOption;
+use Chronhub\Storm\Contracts\Projector\ProjectorServiceManager as ServiceManager;
+use Chronhub\Storm\Projector\InMemoryProjectionProvider;
+use Chronhub\Storm\Projector\InMemoryQueryScope;
+use Chronhub\Storm\Projector\Options\InMemoryProjectionOption;
+use Illuminate\Support\Facades\Artisan;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(ProjectorServiceProvider::class)]
 final class ProjectorServiceProviderTest extends OrchestraTestCase

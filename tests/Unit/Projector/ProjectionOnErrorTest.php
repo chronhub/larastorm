@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
+use Chronhub\Larastorm\Projection\Events\ProjectionOnError;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Error;
 use Generator;
-use Throwable;
-use RuntimeException;
-use PHPUnit\Framework\Attributes\Test;
-use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Projection\Events\ProjectionOnError;
+use PHPUnit\Framework\Attributes\Test;
+use RuntimeException;
+use Throwable;
 
 #[CoversClass(ProjectionOnError::class)]
 class ProjectionOnErrorTest extends UnitTestCase

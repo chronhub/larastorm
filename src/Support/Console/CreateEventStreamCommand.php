@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Console;
 
-use Illuminate\Console\Command;
+use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
-use Chronhub\Larastorm\Support\Facade\Chronicle;
+use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'stream:create', description: 'create first commit for one stream for single stream strategy')]

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Chronhub\Storm\Contracts\Message\UniqueId;
-use Illuminate\Contracts\Foundation\Application;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
-use Chronhub\Storm\Serializer\JsonSerializerFactory;
-use Illuminate\Contracts\Support\DeferrableProvider;
-use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 use Chronhub\Storm\Contracts\Message\MessageFactory as Factory;
+use Chronhub\Storm\Contracts\Message\UniqueId;
+use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
+use Chronhub\Storm\Serializer\JsonSerializerFactory;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
 
 class MessagerServiceProvider extends ServiceProvider implements DeferrableProvider
 {

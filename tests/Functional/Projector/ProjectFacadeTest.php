@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Projector;
 
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Support\Facade\Project;
-use Chronhub\Storm\Projector\ProjectorManager;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Projection\ProjectorServiceManager as ServiceManager;
+use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
-use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Larastorm\Projection\ProjectorServiceManager as ServiceManager;
+use Chronhub\Larastorm\Support\Facade\Project;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Projector\ProjectorManager;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Project::class)]
 final class ProjectFacadeTest extends OrchestraTestCase

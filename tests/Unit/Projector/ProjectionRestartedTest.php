@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
-use PHPUnit\Framework\Attributes\Test;
+use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Projection\Events\ProjectionRestarted;
+use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(ProjectionRestarted::class)]
 

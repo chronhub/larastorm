@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
-use Chronhub\Storm\Chronicler\TrackStream;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Larastorm\Support\Facade\Chronicle;
-use Chronhub\Storm\Stream\DetermineStreamCategory;
-use Chronhub\Storm\Contracts\Stream\StreamCategory;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
-use Chronhub\Storm\Serializer\DomainEventSerializer;
+use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
+use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Publisher\EventPublisherSubscriber;
+use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
+use Chronhub\Larastorm\Support\Facade\Chronicle;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
+use Chronhub\Storm\Chronicler\TrackStream;
 use Chronhub\Storm\Chronicler\TrackTransactionalStream;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
-use Symfony\Component\Serializer\Normalizer\UidNormalizer;
-use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
-use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Larastorm\Support\Console\CreateEventStreamCommand;
-use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
-use Chronhub\Larastorm\EventStore\Persistence\PgsqlSingleStreamPersistence;
+use Chronhub\Storm\Contracts\Stream\StreamCategory;
+use Chronhub\Storm\Publisher\EventPublisherSubscriber;
+use Chronhub\Storm\Serializer\DomainEventSerializer;
+use Chronhub\Storm\Stream\DetermineStreamCategory;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 
 #[CoversClass(ChroniclerServiceProvider::class)]
 final class ChroniclerServiceProviderTest extends OrchestraTestCase

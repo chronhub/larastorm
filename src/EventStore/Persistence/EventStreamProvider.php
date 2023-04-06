@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Persistence;
 
-use Illuminate\Database\Connection;
-use Chronhub\Storm\Stream\StreamName;
-use Illuminate\Database\Query\Builder;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider as Provider;
+use Chronhub\Storm\Stream\StreamName;
+use Illuminate\Database\Connection;
+use Illuminate\Database\Query\Builder;
 use function array_map;
 
 final readonly class EventStreamProvider implements Provider

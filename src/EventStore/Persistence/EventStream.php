@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Persistence;
 
-use JsonSerializable;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamModel;
+use JsonSerializable;
 
 final readonly class EventStream implements EventStreamModel, JsonSerializable
 {

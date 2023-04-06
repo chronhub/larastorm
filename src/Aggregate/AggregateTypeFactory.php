@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Aggregate;
 
 use Chronhub\Storm\Aggregate\AggregateType;
-use Illuminate\Contracts\Container\Container;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRoot;
 use Chronhub\Storm\Contracts\Aggregate\AggregateType as Type;
+use Illuminate\Contracts\Container\Container;
 use function is_a;
 use function is_string;
 

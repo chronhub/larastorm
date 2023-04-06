@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use Illuminate\Container\Container;
-use Illuminate\Database\Connection;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
 use Chronhub\Larastorm\EventStore\WriteLock\FakeWriteLock;
+use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
 use Chronhub\Larastorm\EventStore\WriteLock\MysqlWriteLock;
 use Chronhub\Larastorm\EventStore\WriteLock\PgsqlWriteLock;
+use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\Container as ContainerContract;
+use Illuminate\Database\Connection;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(LockFactory::class)]
 final class WriteLockFactoryTest extends UnitTestCase

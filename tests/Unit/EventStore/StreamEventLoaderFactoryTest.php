@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
+use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
+use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
+use Chronhub\Larastorm\EventStore\Loader\LazyQueryLoader;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
+use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Generator;
 use Illuminate\Container\Container;
-use Chronhub\Larastorm\Tests\UnitTestCase;
+use Illuminate\Contracts\Container\Container as ContainerContract;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\EventStore\Loader\LazyQueryLoader;
-use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
-use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
-use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Illuminate\Contracts\Container\Container as ContainerContract;
-use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
 
 #[CoversClass(EventLoaderConnectionFactory::class)]
 final class StreamEventLoaderFactoryTest extends UnitTestCase

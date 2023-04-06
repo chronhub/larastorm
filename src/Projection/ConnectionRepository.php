@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Projection;
 
-use Illuminate\Database\QueryException;
-use Chronhub\Storm\Projector\ProjectionStatus;
 use Chronhub\Larastorm\Exceptions\ConnectionProjectionFailed;
 use Chronhub\Storm\Contracts\Projector\ProjectionRepositoryInterface;
+use Chronhub\Storm\Projector\ProjectionStatus;
+use Illuminate\Database\QueryException;
 
 final readonly class ConnectionRepository implements ProjectionRepositoryInterface
 {

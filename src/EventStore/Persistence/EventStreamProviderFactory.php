@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Persistence;
 
+use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider as Provider;
 use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
-use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider as Provider;
 use function is_array;
 
 class EventStreamProviderFactory

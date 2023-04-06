@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Cqrs;
 
-use Chronhub\Storm\Routing\Group;
+use Chronhub\Storm\Contracts\Reporter\Reporter;
+use Chronhub\Storm\Contracts\Reporter\ReporterManager;
+use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Storm\Reporter\DomainType;
+use Chronhub\Storm\Reporter\ReportCommand;
 use Chronhub\Storm\Reporter\ReportEvent;
 use Chronhub\Storm\Reporter\ReportQuery;
-use Chronhub\Storm\Tracker\TrackMessage;
-use Chronhub\Storm\Reporter\ReportCommand;
-use Illuminate\Contracts\Container\Container;
-use Chronhub\Storm\Contracts\Reporter\Reporter;
-use Chronhub\Storm\Contracts\Routing\Registrar;
-use Chronhub\Storm\Contracts\Reporter\ReporterManager;
 use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
-use function sprintf;
+use Chronhub\Storm\Routing\Group;
+use Chronhub\Storm\Tracker\TrackMessage;
+use Illuminate\Contracts\Container\Container;
 use function is_string;
+use function sprintf;
 
 final readonly class CqrsManager implements ReporterManager
 {

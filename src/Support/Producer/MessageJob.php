@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Producer;
 
+use Chronhub\Storm\Contracts\Message\Header;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Queue\InteractsWithQueue;
-use Chronhub\Storm\Contracts\Message\Header;
-use Illuminate\Contracts\Container\Container;
 
 final class MessageJob
 {

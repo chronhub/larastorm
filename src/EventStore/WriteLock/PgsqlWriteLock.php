@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\WriteLock;
 
-use Illuminate\Database\ConnectionInterface;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
+use Illuminate\Database\ConnectionInterface;
 
 final readonly class PgsqlWriteLock implements WriteLockStrategy
 {

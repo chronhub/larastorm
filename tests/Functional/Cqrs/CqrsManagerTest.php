@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Cqrs;
 
-use Generator;
-use Chronhub\Storm\Reporter\DomainType;
 use Chronhub\Larastorm\Cqrs\CqrsManager;
-use Chronhub\Storm\Reporter\ReportEvent;
-use Chronhub\Storm\Reporter\ReportQuery;
-use Chronhub\Storm\Tracker\TrackMessage;
-use Chronhub\Storm\Reporter\ReportCommand;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Routing\Registrar;
 use Chronhub\Larastorm\Cqrs\MessageProducerFactory;
-use Chronhub\Larastorm\Providers\CqrsServiceProvider;
 use Chronhub\Larastorm\Cqrs\MessageSubscribersFactory;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
-use Chronhub\Storm\Contracts\Reporter\ReporterManager;
-use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
+use Chronhub\Larastorm\Providers\CqrsServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Larastorm\Tests\Stubs\Dummy\DummyReportCommand;
 use Chronhub\Larastorm\Tests\Stubs\Dummy\DummyReportEvent;
 use Chronhub\Larastorm\Tests\Stubs\Dummy\DummyReportQuery;
-use Chronhub\Larastorm\Tests\Stubs\Dummy\DummyReportCommand;
+use Chronhub\Storm\Contracts\Reporter\ReporterManager;
+use Chronhub\Storm\Contracts\Routing\Registrar;
+use Chronhub\Storm\Reporter\DomainType;
+use Chronhub\Storm\Reporter\ReportCommand;
+use Chronhub\Storm\Reporter\ReportEvent;
+use Chronhub\Storm\Reporter\ReportQuery;
+use Chronhub\Storm\Routing\Exceptions\RoutingViolation;
+use Chronhub\Storm\Tracker\TrackMessage;
+use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 #[CoversClass(CqrsManager::class)]
 #[CoversClass(MessageProducerFactory::class)]

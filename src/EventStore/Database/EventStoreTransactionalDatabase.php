@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore\Database;
 
-use Throwable;
+use Chronhub\Storm\Chronicler\Exceptions\TransactionAlreadyStarted;
 use Chronhub\Storm\Chronicler\Exceptions\TransactionNotStarted;
 use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
-use Chronhub\Storm\Chronicler\Exceptions\TransactionAlreadyStarted;
+use Throwable;
 
 final class EventStoreTransactionalDatabase extends EventStoreDatabase implements TransactionalChronicler
 {

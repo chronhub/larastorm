@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
-use Chronhub\Storm\Clock\PointInTime;
-use Chronhub\Larastorm\Support\Facade\Clock;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
+use Chronhub\Larastorm\Support\Facade\Clock;
+use Chronhub\Larastorm\Tests\OrchestraTestCase;
+use Chronhub\Storm\Clock\PointInTime;
+use Chronhub\Storm\Contracts\Clock\SystemClock;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(ClockServiceProvider::class)]
 class ClockServiceProviderTest extends OrchestraTestCase

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
+use Chronhub\Larastorm\Projection\ConnectionQueryScope;
+use Chronhub\Larastorm\Tests\UnitTestCase;
+use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use Generator;
 use Illuminate\Database\Query\Builder;
-use PHPUnit\Framework\Attributes\Test;
-use Chronhub\Larastorm\Tests\UnitTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\Projection\ConnectionQueryScope;
-use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(ConnectionQueryScope::class)]
 final class ConnectionProjectionQueryScopeTest extends UnitTestCase

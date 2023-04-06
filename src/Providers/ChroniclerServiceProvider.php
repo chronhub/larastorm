@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Contracts\Container\Container;
-use Chronhub\Larastorm\Support\Facade\Chronicle;
-use Illuminate\Contracts\Foundation\Application;
-use Chronhub\Storm\Stream\DetermineStreamCategory;
-use Chronhub\Storm\Contracts\Stream\StreamCategory;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
+use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Larastorm\EventStore\EventStoreManager;
-use Chronhub\Storm\Serializer\JsonSerializerFactory;
-use Illuminate\Contracts\Support\DeferrableProvider;
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
+use Chronhub\Larastorm\Support\Facade\Chronicle;
+use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerFactory;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerManager;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
-use Chronhub\Larastorm\EventStore\EventStoreConnectionFactory;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
-use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
+use Chronhub\Storm\Contracts\Stream\StreamCategory;
+use Chronhub\Storm\Serializer\JsonSerializerFactory;
+use Chronhub\Storm\Stream\DetermineStreamCategory;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
 
 class ChroniclerServiceProvider extends ServiceProvider implements DeferrableProvider
 {

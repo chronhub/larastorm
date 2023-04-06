@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Stubs\Model;
 
 use Chronhub\Storm\Aggregate\HasAggregateBehaviour;
-use Chronhub\Storm\Contracts\Aggregate\AggregateRoot;
 use Chronhub\Storm\Contracts\Aggregate\AggregateIdentity;
+use Chronhub\Storm\Contracts\Aggregate\AggregateRoot;
 use function abs;
 
 final class Balance implements AggregateRoot

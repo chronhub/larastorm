@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Exceptions;
 
-use Throwable;
-use PDOException;
-use Illuminate\Database\QueryException;
 use Chronhub\Storm\Chronicler\Exceptions\QueryFailure;
+use Illuminate\Database\QueryException;
+use PDOException;
+use Throwable;
 use function sprintf;
 
 class ConnectionQueryFailure extends QueryFailure

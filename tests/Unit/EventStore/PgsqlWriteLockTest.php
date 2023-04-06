@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
-use Generator;
+use Chronhub\Larastorm\EventStore\WriteLock\PgsqlWriteLock;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use Generator;
 use Illuminate\Database\ConnectionInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Chronhub\Larastorm\EventStore\WriteLock\PgsqlWriteLock;
 
 #[CoversClass(PgsqlWriteLock::class)]
 final class PgsqlWriteLockTest extends UnitTestCase

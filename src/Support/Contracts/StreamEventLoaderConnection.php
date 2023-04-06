@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Support\Contracts;
 
-use stdClass;
-use Generator;
-use Chronhub\Storm\Stream\StreamName;
-use Illuminate\Database\Query\Builder;
-use Chronhub\Storm\Reporter\DomainEvent;
 use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
+use Chronhub\Storm\Reporter\DomainEvent;
+use Chronhub\Storm\Stream\StreamName;
+use Generator;
+use Illuminate\Database\Query\Builder;
+use stdClass;
 
 interface StreamEventLoaderConnection extends StreamEventLoader
 {

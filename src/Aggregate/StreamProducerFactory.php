@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Aggregate;
 
-use Chronhub\Storm\Stream\StreamName;
-use Chronhub\Storm\Stream\OneStreamPerAggregate;
-use Chronhub\Storm\Contracts\Stream\StreamProducer;
-use Chronhub\Storm\Stream\SingleStreamPerAggregate;
 use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
+use Chronhub\Storm\Contracts\Stream\StreamProducer;
+use Chronhub\Storm\Stream\OneStreamPerAggregate;
+use Chronhub\Storm\Stream\SingleStreamPerAggregate;
+use Chronhub\Storm\Stream\StreamName;
 
 final class StreamProducerFactory
 {

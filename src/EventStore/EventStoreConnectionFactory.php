@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore;
 
-use Closure;
-use Illuminate\Support\Str;
-use Illuminate\Database\Connection;
-use Chronhub\Storm\Contracts\Chronicler\Chronicler;
-use Chronhub\Storm\Contracts\Tracker\StreamTracker;
+use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
+use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
 use Chronhub\Larastorm\Support\Contracts\ChroniclerDB;
+use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
 use Chronhub\Storm\Chronicler\ProvideChroniclerFactory;
+use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Chronicler\ChroniclerFactory;
 use Chronhub\Storm\Contracts\Chronicler\EventableChronicler;
-use Chronhub\Larastorm\Support\Contracts\ChroniclerConnection;
+use Chronhub\Storm\Contracts\Tracker\StreamTracker;
 use Chronhub\Storm\Contracts\Tracker\TransactionalStreamTracker;
-use Chronhub\Storm\Chronicler\Exceptions\InvalidArgumentException;
-use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
+use Closure;
+use Illuminate\Database\Connection;
+use Illuminate\Support\Str;
 use function is_bool;
+use function method_exists;
 use function sprintf;
 use function ucfirst;
-use function method_exists;
 
 final class EventStoreConnectionFactory implements ChroniclerFactory
 {

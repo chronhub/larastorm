@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\Cqrs;
 
-use Closure;
-use Illuminate\Support\Arr;
-use Chronhub\Storm\Routing\Group;
-use Chronhub\Storm\Routing\FindRoute;
-use Chronhub\Storm\Routing\HandleRoute;
-use Chronhub\Storm\Message\DecorateMessage;
-use Illuminate\Contracts\Container\Container;
-use Chronhub\Storm\Message\ChainMessageDecorator;
 use Chronhub\Storm\Contracts\Message\MessageAlias;
-use Chronhub\Storm\Contracts\Producer\ProducerUnity;
-use Chronhub\Storm\Producer\ProducerMessageDecorator;
 use Chronhub\Storm\Contracts\Message\MessageDecorator;
+use Chronhub\Storm\Contracts\Producer\ProducerUnity;
 use Chronhub\Storm\Contracts\Tracker\MessageSubscriber;
+use Chronhub\Storm\Message\ChainMessageDecorator;
+use Chronhub\Storm\Message\DecorateMessage;
+use Chronhub\Storm\Producer\ProducerMessageDecorator;
 use Chronhub\Storm\Reporter\Subscribers\NameReporterService;
+use Chronhub\Storm\Routing\FindRoute;
+use Chronhub\Storm\Routing\Group;
+use Chronhub\Storm\Routing\HandleRoute;
+use Closure;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Arr;
 use function array_map;
 use function is_string;
 

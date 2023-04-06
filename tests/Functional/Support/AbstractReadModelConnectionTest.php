@@ -6,7 +6,7 @@ namespace Chronhub\Larastorm\Tests\Functional\Support;
 
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
-use Chronhub\Larastorm\Support\ReadModel\ReadModelConnection;
+use Chronhub\Larastorm\Support\ReadModel\AbstractReadModelConnection;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
 use Chronhub\Storm\Contracts\Projector\ReadModel;
@@ -17,8 +17,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\Uid\Uuid;
 
-#[CoversClass(ReadModelConnection::class)]
-final class ReadModelConnectionTest extends OrchestraTestCase
+#[CoversClass(AbstractReadModelConnection::class)]
+final class AbstractReadModelConnectionTest extends OrchestraTestCase
 {
     use RefreshDatabase;
 
@@ -116,7 +116,7 @@ final class ReadModelConnectionTest extends OrchestraTestCase
 
     private function readModelInstance(Connection $connection): ReadModel
     {
-        return new class($connection) extends ReadModelConnection
+        return new class($connection) extends AbstractReadModelConnection
         {
             public function insert(string $uid, string $email): void
             {

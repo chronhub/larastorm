@@ -6,8 +6,8 @@ namespace Chronhub\Larastorm\Tests\Functional\Support;
 
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
+use Chronhub\Larastorm\Support\ReadModel\AbstractReadModelConnection;
 use Chronhub\Larastorm\Support\ReadModel\InteractWithBuilder;
-use Chronhub\Larastorm\Support\ReadModel\ReadModelConnection;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
 use Chronhub\Storm\Contracts\Projector\ReadModel;
@@ -56,7 +56,7 @@ final class InteractWithBuilderTest extends OrchestraTestCase
 
     private function readModelInstance(Connection $connection): ReadModel
     {
-        return new class($connection) extends ReadModelConnection
+        return new class($connection) extends AbstractReadModelConnection
         {
             use InteractWithBuilder;
 

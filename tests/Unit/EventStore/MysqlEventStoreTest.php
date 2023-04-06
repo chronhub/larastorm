@@ -17,7 +17,6 @@ use Chronhub\Storm\Stream\StreamName;
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(MysqlEventStore::class)]
@@ -27,9 +26,6 @@ final class MysqlEventStoreTest extends UnitTestCase
 
     private Stream $stream;
 
-    /**
-     * @throws Exception
-     */
     protected function setUp(): void
     {
         $this->chronicler = $this->createMock(ChroniclerConnection::class);

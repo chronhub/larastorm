@@ -5,89 +5,40 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\Projector;
 
 use Chronhub\Larastorm\Projection\ConnectionQueryScope;
+use Chronhub\Larastorm\Projection\Query\FromIncludedPosition;
+use Chronhub\Larastorm\Projection\Query\FromIncludedPositionWithLimit;
 use Chronhub\Larastorm\Tests\UnitTestCase;
-use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException;
 use Generator;
-use Illuminate\Database\Query\Builder;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\MockObject\MockObject;
+use function get_class;
 
 #[CoversClass(ConnectionQueryScope::class)]
 final class ConnectionProjectionQueryScopeTest extends UnitTestCase
 {
-    private MockObject|Builder $builder;
-
-    public function setUp(): void
+    public function testFromIncludedPositionInstance(): void
     {
-        parent::setUp();
-
-        $this->builder = $this->createMock(Builder::class);
-    }
-
-    #[DataProvider('provideInvalidPosition')]
-    #[Test]
-    public function it_raise_exception_when_current_position_is_less_or_equals_than_zero(int $invalidPosition): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Position must be greater than 0, current is '.$invalidPosition);
-
         $scope = new ConnectionQueryScope();
 
-        $query = $scope->fromIncludedPosition();
-        $query->setCurrentPosition($invalidPosition);
+        $this->assertSame(FromIncludedPosition::class, get_class($scope->fromIncludedPosition()));
 
-        $query->apply()($this->builder);
     }
 
-    #[Test]
-    public function it_filter_query(): void
+    #[DataProvider('provideLimit')]
+    public function testFromIncludedPositionInstanceWithLimit(int $limit): void
     {
-        $this->builder->expects($this->once())->method('where')->with('no', '>=', 20)->willReturn($this->builder);
-        $this->builder->expects($this->once())->method('orderBy')->with('no')->willReturn($this->builder);
-
         $scope = new ConnectionQueryScope();
 
-        $query = $scope->fromIncludedPosition();
-        $query->setCurrentPosition(20);
+        $queryFilter = $scope->fromIncludedPositionWithLimit($limit);
 
-        $query->apply()($this->builder);
+        $this->assertInstanceOf(FromIncludedPositionWithLimit::class, $queryFilter);
+        $this->assertSame($limit, $queryFilter->limit);
     }
 
-    #[DataProvider('provideInvalidPosition')]
-    #[Test]
-    public function it_raise_exception_when_current_position_is_less_or_equals_than_zero_with_limit(int $invalidPosition): void
+    public static function provideLimit(): Generator
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Position must be greater than 0, current is '.$invalidPosition);
-
-        $scope = new ConnectionQueryScope();
-
-        $query = $scope->fromIncludedPositionWithLimit();
-        $query->setCurrentPosition($invalidPosition);
-
-        $query->apply()($this->builder);
-    }
-
-    #[Test]
-    public function it_filter_query_with_limit(): void
-    {
-        $this->builder->expects($this->once())->method('where')->with('no', '>=', 20)->willReturn($this->builder);
-        $this->builder->expects($this->once())->method('orderBy')->with('no')->willReturn($this->builder);
-        $this->builder->expects($this->once())->method('limit')->with(100)->willReturn($this->builder);
-
-        $scope = new ConnectionQueryScope();
-
-        $query = $scope->fromIncludedPositionWithLimit(100);
-        $query->setCurrentPosition(20);
-
-        $query->apply()($this->builder);
-    }
-
-    public static function provideInvalidPosition(): Generator
-    {
-        yield [0];
-        yield [-5];
+        yield [500];
+        yield [1000];
+        yield [10000];
     }
 }

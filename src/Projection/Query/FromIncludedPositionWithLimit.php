@@ -12,7 +12,7 @@ final class FromIncludedPositionWithLimit implements ProjectionQueryFilter
 {
     private int $currentPosition = 0;
 
-    public function __construct(private readonly int $limit)
+    public function __construct(public readonly int $limit)
     {
     }
 

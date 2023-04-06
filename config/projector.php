@@ -135,13 +135,23 @@ return [
         'load_migrations' => true,
 
         'commands' => [
+            // projection ops
             \Chronhub\Larastorm\Support\Console\ReadProjectionCommand::class,
             \Chronhub\Larastorm\Support\Console\WriteProjectionCommand::class,
+
+            // projection stubs
             \Chronhub\Larastorm\Support\Console\Generator\MakePersistentProjectionCommand::class,
             \Chronhub\Larastorm\Support\Console\Generator\MakeReadModelProjectionCommand::class,
             \Chronhub\Larastorm\Support\Console\Generator\MakeQueryProjectionCommand::class,
+
+            // dummy supervisor
             \Chronhub\Larastorm\Support\Supervisor\Command\SuperviseProjectionCommand::class,
             \Chronhub\Larastorm\Support\Supervisor\Command\CheckSupervisedProjectionStatusCommand::class,
+
+            // edges
+            \Chronhub\Larastorm\Support\Console\Edges\ProjectAllStreamCommand::class,
+            \Chronhub\Larastorm\Support\Console\Edges\ProjectStreamCategoryCommand::class,
+            \Chronhub\Larastorm\Support\Console\Edges\ProjectMessageNameCommand::class,
         ],
     ],
 ];

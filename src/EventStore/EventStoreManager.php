@@ -62,9 +62,9 @@ final class EventStoreManager implements ChroniclerManager
         return $this;
     }
 
-    public function addProvider(string $driver, string|ChroniclerFactory $chroniclerProvider): self
+    public function addProvider(string $driver, string|ChroniclerFactory $chroniclerFactory): self
     {
-        $this->providers[$driver] = $chroniclerProvider;
+        $this->providers[$driver] = $chroniclerFactory;
 
         return $this;
     }
@@ -88,7 +88,9 @@ final class EventStoreManager implements ChroniclerManager
         $config = $this->app['config']["chronicler.providers.$driver.$name"];
 
         if ($config === null) {
-            throw new InvalidArgumentException(sprintf('Chronicler config %s is not defined', $name));
+            throw new InvalidArgumentException(
+                sprintf('Chronicler config %s is not defined', $name)
+            );
         }
 
         if (isset($this->customCreators[$name])) {
@@ -110,7 +112,9 @@ final class EventStoreManager implements ChroniclerManager
             return $provider->createEventStore($name, $config);
         }
 
-        throw new InvalidArgumentException(sprintf('Chronicler provider with name %s and driver %s is not defined', $name, $driver));
+        throw new InvalidArgumentException(
+            sprintf('Chronicler provider with name %s and driver %s is not defined', $name, $driver)
+        );
     }
 
     private function callCustomCreator(string $name, array $config): Chronicler

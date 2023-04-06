@@ -72,8 +72,6 @@ class MessageSubscribersFactory
     }
 
     /**
-     * Resolve services
-     *
      * @param  array<int, string|MessageSubscriber|MessageDecorator>  ...$services
      * @return array<int, MessageSubscriber|MessageDecorator>
      */

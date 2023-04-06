@@ -28,15 +28,21 @@ return [
         'provider' => 'connection',
 
         /**
-         * connection is normally provided by the event store unless you switch to your own service id
+         * Connection is normally provided by the event store unless you switch to your own service id
          *
          * you can add a table key to change the table name but,
          * you should also change the migration and disable migration below
          *
+         * also, your event stream table should use the same connection as your event store
+         * (in case you use a different connection for query/write side)
+         *
          * @see \Chronhub\Larastorm\EventStore\Persistence\EventStreamProvider::TABLE_NAME
          */
         'event_stream_provider' => [
-            //'connection' => ['table_name' => 'event_streams'],
+            'connection' => [
+                'name' => 'pgsql',
+                'table_name' => 'event_streams',
+            ],
         ],
 
         'providers' => [

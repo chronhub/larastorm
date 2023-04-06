@@ -17,6 +17,9 @@ use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
 use Chronhub\Larastorm\Support\Console\ReadProjectionCommand;
 use Chronhub\Larastorm\Support\Console\WriteProjectionCommand;
 use Chronhub\Storm\Projector\Options\InMemoryProjectionOption;
+use Chronhub\Larastorm\Support\Console\Edges\ProjectAllStreamCommand;
+use Chronhub\Larastorm\Support\Console\Edges\ProjectMessageNameCommand;
+use Chronhub\Larastorm\Support\Console\Edges\ProjectStreamCategoryCommand;
 use Chronhub\Larastorm\Support\Console\Generator\MakeQueryProjectionCommand;
 use Chronhub\Larastorm\Support\Supervisor\Command\SuperviseProjectionCommand;
 use Chronhub\Larastorm\Support\Console\Generator\MakeReadModelProjectionCommand;
@@ -90,6 +93,10 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
                     MakeQueryProjectionCommand::class,
                     SuperviseProjectionCommand::class,
                     CheckSupervisedProjectionStatusCommand::class,
+                    ProjectAllStreamCommand::class,
+                    ProjectStreamCategoryCommand::class,
+                    ProjectMessageNameCommand::class,
+
                 ],
             ],
         ], $this->app['config']['projector']);
@@ -118,6 +125,9 @@ final class ProjectorServiceProviderTest extends OrchestraTestCase
 
         $this->assertArrayHasKey('projector:write', $commands);
         $this->assertArrayHasKey('projector:read', $commands);
+        $this->assertArrayHasKey('projector:edge-all', $commands);
+        $this->assertArrayHasKey('projector:edge-message-name', $commands);
+        $this->assertArrayHasKey('projector:edge-category', $commands);
     }
 
     protected function getPackageProviders($app): array

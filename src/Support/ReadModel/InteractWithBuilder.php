@@ -10,7 +10,7 @@ use Illuminate\Database\Query\Builder;
 trait InteractWithBuilder
 {
     /**
-     * @param  callable(Builder, string, DomainEvent): void  $callback
+     * @param callable(Builder, string, DomainEvent): void $callback
      *
      * @example $this->readModel()->stack(
      *          'query', function(Builder $query, string $key, DomainEvent $event): void{

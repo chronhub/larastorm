@@ -72,7 +72,7 @@ class MessageSubscribersFactory
     }
 
     /**
-     * @param  array<int, string|MessageSubscriber|MessageDecorator>  ...$services
+     * @param  array<int, string|MessageSubscriber|MessageDecorator> ...$services
      * @return array<int, MessageSubscriber|MessageDecorator>
      */
     private function resolveServices(array ...$services): array

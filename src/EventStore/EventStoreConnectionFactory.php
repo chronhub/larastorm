@@ -97,7 +97,7 @@ final class EventStoreConnectionFactory implements ChroniclerFactory
     }
 
     /**
-     * @param  array{store: string, is_transactional: bool|null}  $config
+     * @param array{store: string, is_transactional: bool|null} $config
      * @return array{StreamTracker|null, string, bool}
      */
     private function determineStore(string $name, array $config): array

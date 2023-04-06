@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static ProjectorManagerInterface create(string $name)
- * @method static ProjectorServiceManager extend(string $name, callable $callback)
- * @method static ProjectorServiceManager setDefaultDriver(string $driver)
- * @method static string getDefaultDriver()
+ * @method static ProjectorServiceManager   extend(string $name, callable $callback)
+ * @method static ProjectorServiceManager   setDefaultDriver(string $driver)
+ * @method static string                    getDefaultDriver()
  */
 final class Project extends Facade
 {

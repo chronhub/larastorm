@@ -51,7 +51,7 @@ final class ProjectorServiceManager implements ServiceManager
     }
 
     /**
-     * @param  callable(Container, string, array): ProjectorManagerInterface  $callback
+     * @param callable(Container, string, array): ProjectorManagerInterface $callback
      */
     public function extend(string $name, callable $callback): ServiceManager
     {

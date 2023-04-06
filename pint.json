@@ -12,6 +12,7 @@
       "statements" : ["break", "continue", "declare", "return", "throw", "try"]
     },
     "method_argument_space" : {"on_multiline" : "ignore", "keep_multiple_spaces_after_comma" : false},
+    "phpdoc_align" : {"align" : "vertical"},
     "global_namespace_import" : {
       "import_classes" : true,
       "import_constants" : true,

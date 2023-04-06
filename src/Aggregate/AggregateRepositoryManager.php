@@ -34,7 +34,7 @@ final class AggregateRepositoryManager implements Manager
     }
 
     /**
-     * @param  non-empty-string  $streamName
+     * @param non-empty-string $streamName
      */
     public function create(string $streamName): Repository
     {

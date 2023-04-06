@@ -44,7 +44,7 @@ final class EventStoreManager implements ChroniclerManager
     }
 
     /**
-     * @param  callable(Container, string, array): Chronicler  $callback
+     * @param callable(Container, string, array): Chronicler $callback
      */
     public function extend(string $name, callable $callback): self
     {

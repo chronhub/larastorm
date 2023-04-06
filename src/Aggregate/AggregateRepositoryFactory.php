@@ -40,7 +40,7 @@ class AggregateRepositoryFactory
     }
 
     /**
-     * @param  class-string|null  $extendedRepository
+     * @param class-string|null $extendedRepository
      */
     public function createRepository(string $streamName, array $config, ?string $extendedRepository = null): Repository
     {

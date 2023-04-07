@@ -15,7 +15,7 @@ class LockFactory
     {
     }
 
-    public function createLock(Connection $connection, null|bool|string $lock): WriteLockStrategy
+    public function createLock(Connection $connection, bool|string|null $lock): WriteLockStrategy
     {
         if ($lock === false || $lock === null) {
             return new FakeWriteLock();

@@ -7,14 +7,12 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabaseFactory;
 use Chronhub\Larastorm\EventStore\Database\EventStoreTransactionalDatabase;
-use Chronhub\Larastorm\EventStore\Loader\EventLoaderConnectionFactory;
-use Chronhub\Larastorm\EventStore\Persistence\EventStreamProviderFactory;
-use Chronhub\Larastorm\EventStore\WriteLock\LockFactory;
-use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
+use Chronhub\Larastorm\EventStore\Loader\CursorQueryLoader;
+use Chronhub\Larastorm\EventStore\WriteLock\FakeWriteLock;
 use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Larastorm\Tests\Util\ReflectionProperty;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
-use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
+use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Storm\Contracts\Stream\StreamCategory;
 use Chronhub\Storm\Contracts\Stream\StreamPersistence;
 use Generator;
@@ -22,7 +20,6 @@ use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(EventStoreDatabaseFactory::class)]
@@ -30,25 +27,13 @@ final class EventStoreDatabaseFactoryTest extends UnitTestCase
 {
     private Container $container;
 
-    private LockFactory|MockObject $lockFactory;
-
-    private EventLoaderConnectionFactory|MockObject $streamEventLoaderFactory;
-
-    private EventStreamProviderFactory|MockObject $eventStreamProviderFactory;
-
     private Connection|MockObject $connection;
 
-    /**
-     * @throws Exception
-     */
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->container = Container::getInstance();
-        $this->lockFactory = $this->createMock(LockFactory::class);
-        $this->streamEventLoaderFactory = $this->createMock(EventLoaderConnectionFactory::class);
-        $this->eventStreamProviderFactory = $this->createMock(EventStreamProviderFactory::class);
         $this->connection = $this->createMock(Connection::class);
     }
 
@@ -62,41 +47,16 @@ final class EventStoreDatabaseFactoryTest extends UnitTestCase
             'event_stream_provider' => null,
         ];
 
-        $writeLock = $this->createMock(WriteLockStrategy::class);
-        $eventLoader = $this->createMock(StreamEventLoaderConnection::class);
         $persistence = $this->createMock(StreamPersistence::class);
         $streamCategory = $this->createMock(StreamCategory::class);
-        $streamProvider = $this->createMock(EventStreamProvider::class);
 
-        $this->lockFactory
-            ->expects($this->once())
-            ->method('createLock')
-            ->with($this->connection, false)
-            ->willReturn($writeLock);
-
-        $this->streamEventLoaderFactory
-            ->expects($this->once())
-            ->method('createEventLoader')
-            ->with('cursor')
-            ->willReturn($eventLoader);
-
-        $this->eventStreamProviderFactory
-            ->expects($this->once())
-            ->method('createProvider')
-            ->with($this->connection, null)
-            ->willReturn($streamProvider);
-
+        $this->container->instance(StreamEventLoader::class, $this->createMock(StreamEventLoader::class));
         $this->container->instance('stream.persistence.pgsql', $persistence);
         $this->container->instance(StreamCategory::class, $streamCategory);
 
         $this->assertFalse($this->container->bound(EventStreamProvider::class));
 
-        $factory = new EventStoreDatabaseFactory(
-            $this->lockFactory,
-            $this->streamEventLoaderFactory,
-            $this->eventStreamProviderFactory,
-        );
-
+        $factory = new EventStoreDatabaseFactory();
         $factory->setContainer($this->container);
 
         $instance = $factory->createStore($this->connection, $isTransactional, $config);
@@ -109,11 +69,10 @@ final class EventStoreDatabaseFactoryTest extends UnitTestCase
 
         $streamPersistence = ReflectionProperty::getProperty($instance, 'streamPersistence');
         $this->assertSame($persistence, $streamPersistence);
-
-        $this->assertSame($writeLock, ReflectionProperty::getProperty($instance, 'writeLock'));
-        $this->assertSame($eventLoader, ReflectionProperty::getProperty($instance, 'eventLoader'));
-        $this->assertSame($persistence, ReflectionProperty::getProperty($instance, 'streamPersistence'));
         $this->assertSame($streamCategory, ReflectionProperty::getProperty($instance, 'streamCategory'));
+
+        $this->assertInstanceOf(FakeWriteLock::class, ReflectionProperty::getProperty($instance, 'writeLock'));
+        $this->assertInstanceOf(CursorQueryLoader::class, ReflectionProperty::getProperty($instance, 'eventLoader'));
         $this->assertInstanceOf(EventStreamProvider::class, ReflectionProperty::getProperty($instance, 'eventStreamProvider'));
     }
 

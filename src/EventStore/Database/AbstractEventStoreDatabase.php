@@ -26,13 +26,14 @@ abstract class AbstractEventStoreDatabase implements ChroniclerDB
      */
     protected bool $isCreation = false;
 
-    public function __construct(protected readonly Connection $connection,
-                                protected readonly StreamPersistence $streamPersistence,
-                                protected readonly StreamEventLoaderConnection $eventLoader,
-                                protected readonly EventStreamProvider $eventStreamProvider,
-                                protected readonly StreamCategory $streamCategory,
-                                protected readonly WriteLockStrategy $writeLock)
-    {
+    public function __construct(
+        protected readonly Connection $connection,
+        protected readonly StreamPersistence $streamPersistence,
+        protected readonly StreamEventLoaderConnection $eventLoader,
+        protected readonly EventStreamProvider $eventStreamProvider,
+        protected readonly StreamCategory $streamCategory,
+        protected readonly WriteLockStrategy $writeLock
+    ) {
     }
 
     public function isDuringCreation(): bool

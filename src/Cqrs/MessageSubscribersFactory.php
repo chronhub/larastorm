@@ -27,8 +27,10 @@ class MessageSubscribersFactory
 
     private MessageProducerFactory $producerFactory;
 
-    public function __construct(Closure $container, MessageProducerFactory $producerFactory)
-    {
+    public function __construct(
+        Closure $container,
+        MessageProducerFactory $producerFactory
+    ) {
         $this->container = $container();
         $this->producerFactory = $producerFactory;
     }

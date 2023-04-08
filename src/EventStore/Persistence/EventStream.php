@@ -9,10 +9,11 @@ use JsonSerializable;
 
 final readonly class EventStream implements EventStreamModel, JsonSerializable
 {
-    public function __construct(private string $streamName,
-                                private string $tableName,
-                                private ?string $category = null)
-    {
+    public function __construct(
+        private string $streamName,
+        private string $tableName,
+        private ?string $category = null
+    ) {
     }
 
     public function realStreamName(): string

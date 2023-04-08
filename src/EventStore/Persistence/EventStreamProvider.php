@@ -16,8 +16,10 @@ final readonly class EventStreamProvider implements Provider
 
     private string $tableName;
 
-    public function __construct(private Connection $connection, ?string $tableName = null)
-    {
+    public function __construct(
+        private Connection $connection,
+        ?string $tableName = null
+    ) {
         $this->tableName = $tableName ?? self::TABLE_NAME;
     }
 

@@ -17,9 +17,10 @@ use Throwable;
 
 final readonly class DispatcherAwareRepository implements ProjectionRepositoryInterface
 {
-    public function __construct(private ProjectionRepositoryInterface $store,
-                                private Dispatcher $eventDispatcher)
-    {
+    public function __construct(
+        private ProjectionRepositoryInterface $store,
+        private Dispatcher $eventDispatcher
+    ) {
     }
 
     public function create(): bool

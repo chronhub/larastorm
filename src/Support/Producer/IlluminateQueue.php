@@ -13,10 +13,11 @@ use function is_array;
 
 final readonly class IlluminateQueue implements MessageQueue
 {
-    public function __construct(public QueueingDispatcher $queueingDispatcher,
-                                public MessageSerializer $messageSerializer,
-                                public ?array $groupQueueOptions = null)
-    {
+    public function __construct(
+        public QueueingDispatcher $queueingDispatcher,
+        public MessageSerializer $messageSerializer,
+        public ?array $groupQueueOptions = null
+    ) {
     }
 
     public function toQueue(Message $message): void

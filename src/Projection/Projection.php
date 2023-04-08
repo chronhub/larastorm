@@ -13,12 +13,13 @@ final readonly class Projection implements ProjectionModel, JsonSerializable
 
     private string $state;
 
-    public function __construct(private string $name,
-                                private string $status,
-                                ?string $position,
-                                ?string $state,
-                                private ?string $lockedUntil)
-    {
+    public function __construct(
+        private string $name,
+        private string $status,
+        ?string $position,
+        ?string $state,
+        private ?string $lockedUntil
+    ) {
         $this->position = $position ?? '{}';
         $this->state = $state ?? '{}';
     }

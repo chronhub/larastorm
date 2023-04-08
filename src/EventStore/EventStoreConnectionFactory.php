@@ -26,9 +26,10 @@ final class EventStoreConnectionFactory implements ChroniclerFactory
 {
     use ProvideChroniclerFactory;
 
-    public function __construct(Closure $container,
-                                private readonly EventStoreDatabaseFactory $storeDatabaseFactory)
-    {
+    public function __construct(
+        Closure $container,
+        private readonly EventStoreDatabaseFactory $storeDatabaseFactory
+    ) {
         $this->container = $container();
 
         $this->storeDatabaseFactory->setContainer($this->container);

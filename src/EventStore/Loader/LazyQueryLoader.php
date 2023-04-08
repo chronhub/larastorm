@@ -13,9 +13,10 @@ use Illuminate\Database\Query\Builder;
 
 final readonly class LazyQueryLoader implements StreamEventLoaderConnection
 {
-    public function __construct(private StreamEventLoader $eventLoader,
-                                public int $chunkSize = 1000)
-    {
+    public function __construct(
+        private StreamEventLoader $eventLoader,
+        public int $chunkSize = 1000
+    ) {
         if ($chunkSize < 1) {
             throw new InvalidArgumentException('Chunk size must be greater than 0');
         }

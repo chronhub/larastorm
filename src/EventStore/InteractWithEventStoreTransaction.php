@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chronhub\Larastorm\EventStore;
 
-trait InteractWithTransactionEventStore
+trait InteractWithEventStoreTransaction
 {
     public function beginTransaction(): void
     {

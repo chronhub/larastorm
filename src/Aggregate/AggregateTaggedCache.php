@@ -13,10 +13,11 @@ final class AggregateTaggedCache implements AggregateCache
 {
     private int $count = 0;
 
-    public function __construct(private readonly Repository $cache,
-                                public readonly string $tag,
-                                public readonly int $limit)
-    {
+    public function __construct(
+        private readonly Repository $cache,
+        public readonly string $tag,
+        public readonly int $limit
+    ) {
     }
 
     public function put(AggregateRoot $aggregateRoot): void

@@ -8,5 +8,5 @@ use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 
 final class PgsqlTransactionalEventStore extends PgsqlEventStore implements TransactionalChronicler
 {
-    use ProvideEventStoreTransaction;
+    use InteractWithTransactionEventStore;
 }

@@ -18,6 +18,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\QueryException;
 use function is_callable;
+use function sprintf;
 
 abstract class AbstractEventStoreDatabase implements ChroniclerDB
 {
@@ -120,7 +121,7 @@ abstract class AbstractEventStoreDatabase implements ChroniclerDB
 
         if (! $created) {
             throw new ConnectionQueryFailure(
-                "Unable to insert data for stream $streamName in event stream table"
+                sprintf('Unable to insert data for stream %s in event stream table', $streamName)
             );
         }
     }

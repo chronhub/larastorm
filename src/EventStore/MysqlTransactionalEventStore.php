@@ -8,5 +8,5 @@ use Chronhub\Storm\Contracts\Chronicler\TransactionalChronicler;
 
 final class MysqlTransactionalEventStore extends MysqlEventStore implements TransactionalChronicler
 {
-    use ProvideEventStoreTransaction;
+    use InteractWithTransactionEventStore;
 }

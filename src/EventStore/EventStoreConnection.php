@@ -21,13 +21,16 @@ use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
 use Generator;
 use Illuminate\Database\QueryException;
+use function sprintf;
 
 abstract class EventStoreConnection implements ChroniclerConnection, ChroniclerDecorator
 {
     public function __construct(protected readonly ChroniclerDB|TransactionalChronicler $chronicler)
     {
         if ($this->chronicler instanceof ChroniclerDecorator) {
-            throw new InvalidArgumentException('Chronicle given can not be a decorator: '.$this->chronicler::class);
+            throw new InvalidArgumentException(
+                sprintf('Chronicle given can not be a decorator: %s', $this->chronicler::class)
+            );
         }
     }
 

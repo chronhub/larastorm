@@ -6,25 +6,12 @@ namespace Chronhub\Larastorm\Tests\Unit\Support\Supervisor;
 
 use Chronhub\Larastorm\Support\Supervisor\Supervisor;
 use Chronhub\Larastorm\Tests\UnitTestCase;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Supervisor::class)]
 final class SupervisorTest extends UnitTestCase
 {
-    private Collection $commands;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->commands = new Collection([
-            'php artisan project:one' => 'projector1',
-            'php artisan project:two' => 'projector2',
-        ]);
-    }
-
     public function testSupervisorInstance(): void
     {
         $commands = collect(['foo' => 'bar']);

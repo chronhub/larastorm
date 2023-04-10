@@ -6,15 +6,26 @@ namespace Chronhub\Larastorm\Tests\Unit\Support\Supervisor;
 
 use Chronhub\Larastorm\Support\Supervisor\Supervisor;
 use Chronhub\Larastorm\Tests\UnitTestCase;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(Supervisor::class)]
 final class SupervisorTest extends UnitTestCase
 {
-    #[Test]
-    public function it_assert_supervisor(): void
+    private Collection $commands;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->commands = new Collection([
+            'php artisan project:one' => 'projector1',
+            'php artisan project:two' => 'projector2',
+        ]);
+    }
+
+    public function testSupervisorInstance(): void
     {
         $commands = collect(['foo' => 'bar']);
         $supervisor = new SupervisorStub($commands);
@@ -27,8 +38,7 @@ final class SupervisorTest extends UnitTestCase
         $this->assertEquals('project', $supervisor->namespace);
     }
 
-    #[Test]
-    public function it_raise_exception_when_commands_is_empty(): void
+    public function testExceptionRaisedWhenCommandsAreEmpty(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No commands given.');

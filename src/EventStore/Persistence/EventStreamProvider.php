@@ -14,7 +14,7 @@ final readonly class EventStreamProvider implements Provider
 {
     final public const TABLE_NAME = 'event_streams';
 
-    private string $tableName;
+    public string $tableName;
 
     public function __construct(
         private Connection $connection,

@@ -9,9 +9,9 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Connection;
 use function is_array;
 
-class EventStreamProviderFactory
+final readonly class EventStreamProviderFactory
 {
-    public function __construct(private readonly Container $container)
+    public function __construct(private Container $container)
     {
     }
 
@@ -31,6 +31,6 @@ class EventStreamProviderFactory
             return new EventStreamProvider($connection, $tableName);
         }
 
-        return $this->container[$providerKey];
+        return $this->container[$provider];
     }
 }

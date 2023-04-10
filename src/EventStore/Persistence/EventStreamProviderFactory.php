@@ -15,16 +15,16 @@ class EventStreamProviderFactory
     {
     }
 
-    public function createProvider(Connection $connection, ?string $provider): Provider
+    public function createProvider(Connection $connection, ?string $providerKey): Provider
     {
-        if ($provider === null) {
-            $provider = 'connection';
+        if ($providerKey === null) {
+            $providerKey = 'connection';
         }
 
-        $providerKey = $this->container['config']['chronicler.defaults.event_stream_provider'][$provider] ?? null;
+        $provider = $this->container['config']['chronicler.defaults.event_stream_provider'][$providerKey] ?? null;
 
-        if ($providerKey === null || is_array($providerKey)) {
-            $tableName = $providerKey['table_name'] ?? null;
+        if ($provider === null || is_array($provider)) {
+            $tableName = $provider['table_name'] ?? null;
 
             //checkMe do we need to check if the connection name match one in config?
 

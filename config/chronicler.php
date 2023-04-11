@@ -30,9 +30,8 @@ return [
         /**
          * Connection is normally provided by the event store unless you switch to your own service id
          * but, your event stream table should use the same connection as your event store
-         * in case you use a different connection for query/write side
          *
-         * if you pan to change the table name,
+         * if you plan to change the table name,
          * you should also change the migration and disable migration below
          *
          * @see \Chronhub\Larastorm\EventStore\Persistence\EventStreamProvider::TABLE_NAME

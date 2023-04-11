@@ -17,16 +17,19 @@
       <directory>./tests/Functional/</directory>
     </testsuite>
   </testsuites>
+
   <coverage>
     <include>
       <directory suffix=".php">./src</directory>
     </include>
   </coverage>
+
   <source filterDeprecations="true" filterNotices="true" filterWarnings="true">
     <include>
       <directory suffix=".php">./src</directory>
     </include>
   </source>
+
   <php>
     <server name="APP_ENV" value="testing"/>
     <server name="BCRYPT_ROUNDS" value="4"/>

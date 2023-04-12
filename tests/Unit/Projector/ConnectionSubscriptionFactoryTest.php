@@ -21,8 +21,6 @@ use Chronhub\Storm\Contracts\Serializer\JsonSerializer;
 use Chronhub\Storm\Projector\EmitterSubscription;
 use Chronhub\Storm\Projector\Options\DefaultProjectionOption;
 use Chronhub\Storm\Projector\ReadModelSubscription;
-use Chronhub\Storm\Projector\Repository\EmitterManager;
-use Chronhub\Storm\Projector\Repository\ReadModelManager;
 use Illuminate\Contracts\Events\Dispatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -59,14 +57,11 @@ final class ConnectionSubscriptionFactoryTest extends UnitTestCase
     {
         $factory = $this->subscriptionFactory(new DefaultProjectionOption());
 
-        $subscription = $factory->createEmitterSubscription();
+        $subscription = $factory->createEmitterSubscription('foo');
+
         $this->assertSame(EmitterSubscription::class, $subscription::class);
 
-        $management = $factory->createSubscriptionManagement($subscription, 'foo', null);
-
-        $this->assertSame(EmitterManager::class, $management::class);
-
-        $repository = ReflectionProperty::getProperty($management, 'repository');
+        $repository = ReflectionProperty::getProperty($subscription, 'repository');
         $this->assertInstanceOf(ConnectionRepository::class, $repository);
     }
 
@@ -75,14 +70,10 @@ final class ConnectionSubscriptionFactoryTest extends UnitTestCase
         $factory = $this->subscriptionFactory(new DefaultProjectionOption());
         $factory->setEventDispatcher($this->createMock(Dispatcher::class));
 
-        $subscription = $factory->createEmitterSubscription();
+        $subscription = $factory->createEmitterSubscription('foo');
         $this->assertSame(EmitterSubscription::class, $subscription::class);
 
-        $management = $factory->createSubscriptionManagement($subscription, 'foo', null);
-
-        $this->assertSame(EmitterManager::class, $management::class);
-
-        $repository = ReflectionProperty::getProperty($management, 'repository');
+        $repository = ReflectionProperty::getProperty($subscription, 'repository');
         $this->assertInstanceOf(DispatcherAwareRepository::class, $repository);
     }
 
@@ -92,14 +83,10 @@ final class ConnectionSubscriptionFactoryTest extends UnitTestCase
 
         $factory = $this->subscriptionFactory(new DefaultProjectionOption());
 
-        $subscription = $factory->createReadModelSubscription();
+        $subscription = $factory->createReadModelSubscription('foo', $readModel);
         $this->assertSame(ReadModelSubscription::class, $subscription::class);
 
-        $management = $factory->createSubscriptionManagement($subscription, 'foo', $readModel);
-
-        $this->assertSame(ReadModelManager::class, $management::class);
-
-        $repository = ReflectionProperty::getProperty($management, 'repository');
+        $repository = ReflectionProperty::getProperty($subscription, 'repository');
         $this->assertInstanceOf(ConnectionRepository::class, $repository);
     }
 
@@ -110,14 +97,10 @@ final class ConnectionSubscriptionFactoryTest extends UnitTestCase
         $factory = $this->subscriptionFactory(new DefaultProjectionOption());
         $factory->setEventDispatcher($this->createMock(Dispatcher::class));
 
-        $subscription = $factory->createReadModelSubscription();
+        $subscription = $factory->createReadModelSubscription('foo', $readModel);
         $this->assertSame(ReadModelSubscription::class, $subscription::class);
 
-        $management = $factory->createSubscriptionManagement($subscription, 'foo', $readModel);
-
-        $this->assertSame(ReadModelManager::class, $management::class);
-
-        $repository = ReflectionProperty::getProperty($management, 'repository');
+        $repository = ReflectionProperty::getProperty($subscription, 'repository');
         $this->assertInstanceOf(DispatcherAwareRepository::class, $repository);
     }
 

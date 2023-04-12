@@ -18,7 +18,6 @@ use Generator;
 use Illuminate\Contracts\Events\Dispatcher;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use RuntimeException;
 
@@ -40,9 +39,14 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
     public function testDispatchEventOnProjectionStarted(): void
     {
-        $this->store->expects($this->once())->method('create')->willReturn(true);
+        $this->store
+            ->expects($this->once())
+            ->method('create')
+            ->with(ProjectionStatus::RUNNING)
+            ->willReturn(true);
 
-        $this->eventDispatcher->expects($this->once())
+        $this->eventDispatcher
+            ->expects($this->once())
             ->method('dispatch')
             ->with($this->callback(function ($event): bool {
                 $this->assertEquals(ProjectionStarted::class, $event::class);
@@ -53,7 +57,7 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $store->create();
+        $store->create(ProjectionStatus::RUNNING);
     }
 
     public function testDispatchExceptionOnExceptionRaisedWhenStartingProjection(): void
@@ -76,10 +80,9 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $store->create();
+        $store->create(ProjectionStatus::RUNNING);
     }
 
-    #[Test]
     public function testDispatchEventOnProjectionStartedAgain(): void
     {
         $this->store->expects($this->once())->method('startAgain')->willReturn(true);
@@ -98,7 +101,6 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
         $store->startAgain();
     }
 
-    #[Test]
     public function testDispatchExceptionOnExceptionRaisedWhenRestartingProjection(): void
     {
         $this->expectException(RuntimeException::class);
@@ -124,7 +126,11 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
     public function testDispatchEventOnProjectionStopped(): void
     {
-        $this->store->expects($this->once())->method('stop')->willReturn(true);
+        $this->store
+            ->expects($this->once())
+            ->method('stop')
+            ->with(['foo' => 10], ['bar'])
+            ->willReturn(true);
 
         $this->eventDispatcher->expects($this->once())
             ->method('dispatch')
@@ -137,7 +143,7 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $store->stop();
+        $store->stop(['foo' => 10], ['bar']);
     }
 
     public function testDispatchExceptionOnExceptionRaisedWhenStoppingProjection(): void
@@ -146,7 +152,11 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $exception = new RuntimeException('error');
 
-        $this->store->expects($this->once())->method('stop')->willThrowException($exception);
+        $this->store
+            ->expects($this->once())
+            ->method('stop')
+            ->with(['foo' => 1], ['bar'])
+            ->willThrowException($exception);
 
         $this->eventDispatcher->expects($this->once())
             ->method('dispatch')
@@ -160,12 +170,16 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $store->stop();
+        $store->stop(['foo' => 1], ['bar']);
     }
 
     public function testDispatchEventOnProjectionReset(): void
     {
-        $this->store->expects($this->once())->method('reset')->willReturn(true);
+        $this->store
+            ->expects($this->once())
+            ->method('reset')
+            ->with(['foo' => 1], ['bar'], ProjectionStatus::RESETTING)
+            ->willReturn(true);
 
         $this->eventDispatcher->expects($this->once())
             ->method('dispatch')
@@ -178,7 +192,7 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $store->reset();
+        $store->reset(['foo' => 1], ['bar'], ProjectionStatus::RESETTING);
     }
 
     public function testDispatchExceptionOnExceptionRaisedWhenResettingProjection(): void
@@ -187,7 +201,11 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $exception = new RuntimeException('error');
 
-        $this->store->expects($this->once())->method('reset')->willThrowException($exception);
+        $this->store
+            ->expects($this->once())
+            ->method('reset')
+            ->with(['foo' => 1], ['bar'], ProjectionStatus::RESETTING)
+            ->willThrowException($exception);
 
         $this->eventDispatcher->expects($this->once())
             ->method('dispatch')
@@ -201,18 +219,17 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $store->reset();
+        $store->reset(['foo' => 1], ['bar'], ProjectionStatus::RESETTING);
     }
 
     public function testDispatchEventOnProjectionDeleted(): void
     {
-        $this->store->expects($this->once())->method('delete')->with(false)->willReturn(true);
+        $this->store->expects($this->once())->method('delete')->willReturn(true);
 
         $this->eventDispatcher->expects($this->once())
             ->method('dispatch')
             ->with($this->callback(function ($event): bool {
                 $this->assertEquals(ProjectionDeleted::class, $event::class);
-                $this->assertFalse($event->withEmittedEvents);
                 $this->assertEquals('stream_name', $event->streamName);
 
                 return true;
@@ -220,7 +237,7 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $store->delete(false);
+        $store->delete();
     }
 
     public function testDispatchExceptionOnExceptionRaisedWhenDeletingProjection(): void
@@ -229,7 +246,7 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $exception = new RuntimeException('error');
 
-        $this->store->expects($this->once())->method('delete')->with(false)->willThrowException($exception);
+        $this->store->expects($this->once())->method('delete')->willThrowException($exception);
 
         $this->eventDispatcher->expects($this->once())
             ->method('dispatch')
@@ -243,49 +260,7 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $store->delete(false);
-    }
-
-    public function testDispatchEventOnProjectionDeletedWithEmittedEvents(): void
-    {
-        $this->store->expects($this->once())->method('delete')->with(true)->willReturn(true);
-
-        $this->eventDispatcher->expects($this->once())
-            ->method('dispatch')
-            ->with($this->callback(function ($event): bool {
-                $this->assertEquals(ProjectionDeleted::class, $event::class);
-                $this->assertTrue($event->withEmittedEvents);
-                $this->assertEquals('stream_name', $event->streamName);
-
-                return true;
-            }))->willReturn(true);
-
-        $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
-
-        $store->delete(true);
-    }
-
-    public function testDispatchExceptionOnExceptionRaisedWhenDeletingWithEmittedEventsProjection(): void
-    {
-        $this->expectException(RuntimeException::class);
-
-        $exception = new RuntimeException('error');
-
-        $this->store->expects($this->once())->method('delete')->with(true)->willThrowException($exception);
-
-        $this->eventDispatcher->expects($this->once())
-            ->method('dispatch')
-            ->with($this->callback(function ($event) use ($exception): bool {
-                $this->assertEquals(ProjectionOnError::class, $event::class);
-                $this->assertEquals('stream_name', $event->streamName);
-                $this->assertEquals($exception, $event->exception);
-
-                return true;
-            }));
-
-        $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
-
-        $store->delete(true);
+        $store->delete();
     }
 
     #[DataProvider('provideBoolean')]
@@ -311,11 +286,15 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
     #[DataProvider('provideBoolean')]
     public function testUpdateLock($lockUpdated): void
     {
-        $this->store->expects($this->once())->method('updateLock')->willReturn($lockUpdated);
+        $this->store
+            ->expects($this->once())
+            ->method('updateLock')
+            ->with(['foo' => 144])
+            ->willReturn($lockUpdated);
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $this->assertEquals($lockUpdated, $store->updateLock());
+        $this->assertEquals($lockUpdated, $store->updateLock(['foo' => 144]));
     }
 
     public function testLoadProjectionStatus(): void
@@ -330,11 +309,15 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
     #[DataProvider('provideBoolean')]
     public function testPersistProjection(bool $isPersisted): void
     {
-        $this->store->expects($this->once())->method('persist')->willReturn($isPersisted);
+        $this->store
+            ->expects($this->once())
+            ->method('persist')
+            ->with(['foo' => 144], ['bar'])
+            ->willReturn($isPersisted);
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $this->assertEquals($isPersisted, $store->persist());
+        $this->assertEquals($isPersisted, $store->persist(['foo' => 144], ['bar']));
     }
 
     #[DataProvider('provideBoolean')]
@@ -347,14 +330,16 @@ class DispatcherAwareRepositoryTest extends UnitTestCase
         $this->assertEquals($streamExists, $store->exists());
     }
 
-    #[DataProvider('provideBoolean')]
-    public function testLoadProjectionState(bool $stateLoaded): void
+    public function testLoadProjectionState(): void
     {
-        $this->store->expects($this->once())->method('loadState')->willReturn($stateLoaded);
+        $this->store
+            ->expects($this->once())
+            ->method('loadState')
+            ->willReturn([['foo' => 10], ['count' => 1]]);
 
         $store = new DispatcherAwareRepository($this->store, $this->eventDispatcher);
 
-        $this->assertEquals($stateLoaded, $store->loadState());
+        $this->assertEquals([['foo' => 10], ['count' => 1]], $store->loadState());
     }
 
     public function testGetProjectionName(): void

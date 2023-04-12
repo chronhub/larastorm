@@ -23,10 +23,10 @@ final readonly class DispatcherAwareRepository implements ProjectionRepositoryIn
     ) {
     }
 
-    public function create(): bool
+    public function create(ProjectionStatus $status): bool
     {
         try {
-            $created = $this->store->create();
+            $created = $this->store->create($status);
 
             $this->eventDispatcher->dispatch(new ProjectionStarted($this->store->projectionName()));
 
@@ -38,10 +38,10 @@ final readonly class DispatcherAwareRepository implements ProjectionRepositoryIn
         }
     }
 
-    public function stop(): bool
+    public function stop(array $streamPositions, array $state): bool
     {
         try {
-            $stopped = $this->store->stop();
+            $stopped = $this->store->stop($streamPositions, $state);
 
             $this->eventDispatcher->dispatch(new ProjectionStopped($this->store->projectionName()));
 
@@ -68,10 +68,10 @@ final readonly class DispatcherAwareRepository implements ProjectionRepositoryIn
         }
     }
 
-    public function reset(): bool
+    public function reset(array $streamPositions, array $state, ProjectionStatus $currentStatus): bool
     {
         try {
-            $reset = $this->store->reset();
+            $reset = $this->store->reset($streamPositions, $state, $currentStatus);
 
             $this->eventDispatcher->dispatch(new ProjectionReset($this->store->projectionName()));
 
@@ -83,12 +83,12 @@ final readonly class DispatcherAwareRepository implements ProjectionRepositoryIn
         }
     }
 
-    public function delete(bool $withEmittedEvents): bool
+    public function delete(): bool
     {
         try {
-            $deleted = $this->store->delete($withEmittedEvents);
+            $deleted = $this->store->delete();
 
-            $this->eventDispatcher->dispatch(new ProjectionDeleted($this->store->projectionName(), $withEmittedEvents));
+            $this->eventDispatcher->dispatch(new ProjectionDeleted($this->store->projectionName()));
 
             return $deleted;
         } catch (Throwable $e) {
@@ -98,7 +98,7 @@ final readonly class DispatcherAwareRepository implements ProjectionRepositoryIn
         }
     }
 
-    public function loadState(): bool
+    public function loadState(): array
     {
         return $this->store->loadState();
     }
@@ -108,9 +108,9 @@ final readonly class DispatcherAwareRepository implements ProjectionRepositoryIn
         return $this->store->loadStatus();
     }
 
-    public function persist(): bool
+    public function persist(array $streamPositions, array $state): bool
     {
-        return $this->store->persist();
+        return $this->store->persist($streamPositions, $state);
     }
 
     public function exists(): bool
@@ -123,9 +123,9 @@ final readonly class DispatcherAwareRepository implements ProjectionRepositoryIn
         return $this->store->acquireLock();
     }
 
-    public function updateLock(): bool
+    public function updateLock(array $streamPositions): bool
     {
-        return $this->store->updateLock();
+        return $this->store->updateLock($streamPositions);
     }
 
     public function releaseLock(): bool

@@ -31,7 +31,6 @@ use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Container\Container;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 use stdClass;
 
 #[CoversClass(AggregateRepositoryManager::class)]
@@ -47,8 +46,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->repositoryManager = $this->app[RepositoryManager::class];
     }
 
-    #[Test]
-    public function it_return_a_generic_aggregate_repository(): void
+    public function testReturnGenericAggregateRepository(): void
     {
         $this->assertTrue($this->app['config']['aggregate.repository.use_messager_decorators']);
 
@@ -87,8 +85,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(ChainMessageDecorator::class, $eventDecorators);
     }
 
-    #[Test]
-    public function it_return_a_extended_aggregate_repository(): void
+    public function testReturnExtendedAggregateRepository(): void
     {
         $this->assertTrue($this->app['config']['aggregate.repository.use_messager_decorators']);
 
@@ -109,8 +106,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertEquals(DummyExtendedAggregateRepository::class, $aggregateRepository::class);
     }
 
-    #[Test]
-    public function it_raise_exception_when_concrete_given_is_not_a_subclass_of_defined_abstract(): void
+    public function testExceptionRaisedWhenExtendDoesNotInheritFromAbstractRepository(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Extended repository must be a subclass of '.AbstractAggregateRepository::class);
@@ -134,8 +130,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertEquals(DummyExtendedAggregateRepository::class, $aggregateRepository::class);
     }
 
-    #[Test]
-    public function it_raise_exception_when_concrete_key_missing_to_extend_aggregate_repository(): void
+    public function testExceptionRaisedWhenExtendNotDefinedInConfig(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Missing concrete key for aggregate repository with stream name transaction');
@@ -158,8 +153,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertEquals(DummyExtendedAggregateRepository::class, $aggregateRepository::class);
     }
 
-    #[Test]
-    public function it_configure_aggregate_cache(): void
+    public function testConfigureCache(): void
     {
         $this->assertTrue($this->app['config']['aggregate.repository.use_messager_decorators']);
 
@@ -196,8 +190,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertInstanceOf(RedisStore::class, $cacheDriver->getStore());
     }
 
-    #[Test]
-    public function it_configure_aggregate_producer_strategy(): void
+    public function testStreamProducer(): void
     {
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
@@ -219,8 +212,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertEquals(OneStreamPerAggregate::class, $aggregateRepository->streamProducer::class);
     }
 
-    #[Test]
-    public function it_configure_event_store_as_registered_service(): void
+    public function testReturnSameInstance(): void
     {
         $eventStore = Chronicle::setDefaultDriver('in_memory')->create('standalone');
 
@@ -243,8 +235,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertSame($eventStore, $aggregateRepository->chronicler);
     }
 
-    #[Test]
-    public function it_configure_aggregate_type_as_string_aggregate_root(): void
+    public function testDefineAggregateTypeFromRootString(): void
     {
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
@@ -267,8 +258,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertEquals(AggregateRootStub::class, $aggregateType->current());
     }
 
-    #[Test]
-    public function it_configure_aggregate_type_as_registered_service(): void
+    public function testDefineAggregateTypeResolvedFromIoc(): void
     {
         $instance = new AggregateType(AggregateRootStub::class);
         $this->app->instance('aggregate.type.transaction', $instance);
@@ -294,8 +284,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertEquals(AggregateRootStub::class, $aggregateType->current());
     }
 
-    #[Test]
-    public function it_configure_aggregate_type_with_children(): void
+    public function testDefineAggregateTypeFromRootWithChildren(): void
     {
         $this->app['config']->set('aggregate.repository.repositories', [
             'transaction' => [
@@ -323,8 +312,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertFalse($aggregateType->isSupported(AggregateRootFinalStub::class));
     }
 
-    #[Test]
-    public function it_extend_repository_manager(): void
+    public function testExtendsRepositoryManager(): void
     {
         $expectedConfig = [
             'repository' => null,
@@ -348,8 +336,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->assertSame($mock, $this->repositoryManager->create('withdraw'));
     }
 
-    #[Test]
-    public function it_raise_exception_when_stream_name_is_not_configured(): void
+    public function testExceptionRaisedWhenStreamNameNotDefined(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Repository config with stream name foo is not defined');
@@ -359,8 +346,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->repositoryManager->create('foo');
     }
 
-    #[Test]
-    public function it_raise_exception_when_repository_driver_is_not_configured(): void
+    public function testExceptionRaisedWhenRepositoryDriverNotDefined(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Aggregate repository with stream name transaction is not defined');
@@ -374,8 +360,7 @@ final class AggregateRepositoryManagerTest extends OrchestraTestCase
         $this->repositoryManager->create('transaction');
     }
 
-    #[Test]
-    public function it_raise_exception_when_aggregate_producer_strategy_is_not_configured(): void
+    public function testExceptionRaisedWhenProducerStrategyNotDefined(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Strategy given for stream name transaction is not defined');

@@ -12,7 +12,6 @@ use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 use Chronhub\Storm\Message\Message;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(IlluminateQueue::class)]
@@ -30,8 +29,7 @@ final class IlluminateQueueTest extends UnitTestCase
         $this->serializer = $this->createMock(MessageSerializer::class);
     }
 
-    #[Test]
-    public function it_dispatch_serialize_message_to_queue(): void
+    public function testQueueSerializedMessage(): void
     {
         $message = new Message(SomeCommand::fromContent(['name' => 'steph bug']));
 
@@ -58,8 +56,7 @@ final class IlluminateQueueTest extends UnitTestCase
         $illuminateQueue->toQueue($message);
     }
 
-    #[Test]
-    public function it_add_queue_options_to_header(): void
+    public function testAddQueueOptionsToHeaders(): void
     {
         $queueOptions = ['connection' => 'rabbitmq', 'name' => 'customer'];
 
@@ -94,8 +91,7 @@ final class IlluminateQueueTest extends UnitTestCase
         $illuminateQueue->toQueue($message);
     }
 
-    #[Test]
-    public function it_merge_message_queue_options_into_group_queue_options(): void
+    public function testMergeQueueOptionsToGroupQueueOptions(): void
     {
         $queueOptions = ['connection' => 'rabbitmq', 'name' => 'default'];
 

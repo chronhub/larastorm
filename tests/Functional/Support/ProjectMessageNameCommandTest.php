@@ -8,6 +8,7 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
+use Chronhub\Larastorm\Support\Console\Edges\ProjectMessageNameCommand;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
@@ -19,11 +20,13 @@ use Chronhub\Larastorm\Tests\UnitTestCase;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Projector\EmitterCasterInterface;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
-use Chronhub\Storm\Contracts\Projector\QueryCaster;
+use Chronhub\Storm\Contracts\Projector\QueryCasterInterface;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(ProjectMessageNameCommand::class)]
 final class ProjectMessageNameCommandTest extends OrchestraTestCase
 {
     use ProvideBalanceEvents;
@@ -102,7 +105,7 @@ final class ProjectMessageNameCommandTest extends OrchestraTestCase
             ->withQueryFilter($this->projector->queryScope()->fromIncludedPosition())
             ->fromCategories('$mn')
             ->whenAny(function (BalanceWasCredited|BalanceWasDebited $event, array $state): array {
-               /** @var QueryCaster $this */
+               /** @var QueryCasterInterface $this */
                $state['$mn'][] = $this->streamName();
 
                 return $state;

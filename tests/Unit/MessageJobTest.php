@@ -12,13 +12,11 @@ use Chronhub\Storm\Contracts\Reporter\Reporter;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Queue;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(MessageJob::class)]
 final class MessageJobTest extends UnitTestCase
 {
-    #[Test]
-    public function it_assert_default_properties(): void
+    public function testDefaultInstance(): void
     {
         $job = new MessageJob([]);
 
@@ -31,8 +29,7 @@ final class MessageJobTest extends UnitTestCase
         $this->assertNull($job->backoff);
     }
 
-    #[Test]
-    public function it_set_properties(): void
+    public function testProperties(): void
     {
         $job = new MessageJob(
             [
@@ -58,8 +55,7 @@ final class MessageJobTest extends UnitTestCase
         $this->assertEquals(10, $job->backoff);
     }
 
-    #[Test]
-    public function it_display_name_from_payload_headers_event_type(): void
+    public function testDisplayName(): void
     {
         $job = new MessageJob(
             [
@@ -71,8 +67,7 @@ final class MessageJobTest extends UnitTestCase
         $this->assertEquals(SomeCommand::class, $job->displayName());
     }
 
-    #[Test]
-    public function it_queue_job(): void
+    public function testQueueJob(): void
     {
         $payload = [
             'headers' => [
@@ -93,8 +88,7 @@ final class MessageJobTest extends UnitTestCase
         $job->queue($laravelQueue, $job);
     }
 
-    #[Test]
-    public function it_handle_job(): void
+    public function testHandleJob(): void
     {
         $payload = [
             'headers' => [

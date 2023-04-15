@@ -14,13 +14,11 @@ use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(AggregateCacheFactory::class)]
 final class AggregateCacheFactoryTest extends OrchestraTestCase
 {
-    #[Test]
-    public function it_assert_instance(): void
+    public function testInstance(): void
     {
         $factory = new AggregateCacheFactory();
 
@@ -32,8 +30,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
         $this->assertEquals(10, $aggregateCache->limit);
     }
 
-    #[Test]
-    public function it_test_cache_tag(): void
+    public function testCacheTag(): void
     {
         $factory = new AggregateCacheFactory();
 
@@ -45,8 +42,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
         $this->assertEquals('my_tag', $aggregateCache->tag);
     }
 
-    #[Test]
-    public function it_test_cache_driver(): void
+    public function testCacheDriver(): void
     {
         Cache::expects('store')->with('redis')->andReturn($this->createMock(Repository::class));
 
@@ -56,8 +52,7 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideValuesForNullAggregateCache')]
-    #[Test]
-    public function it_return_null_aggregate_cache(?int $cacheSize): void
+    public function testCreateNullCache(?int $cacheSize): void
     {
         $factory = new AggregateCacheFactory();
 

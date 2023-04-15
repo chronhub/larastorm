@@ -55,8 +55,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_transactional_eventable_instance(string $storeDriver): void
+    public function testCreateTransactionalEventableStore(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -77,8 +76,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_eventable_instance(string $storeDriver): void
+    public function testCreateEventableStore(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -105,8 +103,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_subscribe_to_eventable_instance(string $storeDriver): void
+    public function testSubscribeToStore(string $storeDriver): void
     {
         $noOpStreamSubscriber = new class() implements StreamSubscriber
         {
@@ -155,8 +152,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_standalone_instance(string $storeDriver): void
+    public function testCreateStandaloneInstance(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -176,8 +172,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_transactional_standalone_instance(string $storeDriver): void
+    public function testCreateTransactionalStandaloneStore(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -199,8 +194,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_raise_exception_when_missing_is_transactional_key_in_config_to_create_standalone_instance(string $storeDriver): void
+    public function testExceptionRaisedWithMissingTransactionalKeyConfigToCreateStandaloneStore(string $storeDriver): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Config key is_transactional is required when no stream tracker is provided for chronicler name publish');
@@ -222,8 +216,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_instance_with_tracker_id_resolved_from_container(string $storeDriver): void
+    public function testResolveTrackerThroughIoc(string $storeDriver): void
     {
         $trackerInstance = new TrackTransactionalStream();
 
@@ -248,7 +241,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
 
     #[DataProvider('provideStoreDriver')]
     #[Test]
-    public function it_raise_exception_when_tracker_id_can_not_be_resolved_from_container(string $storeDriver): void
+    public function testExceptionRaisedWhenTrackerIdNotFoundInIoc(string $storeDriver): void
     {
         $this->expectException(EntryNotFoundException::class);
 
@@ -266,8 +259,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideFakeWriteLockForConfig')]
-    #[Test]
-    public function it_create_instance_with_fake_lock_for_pgsql(bool|string $writeLockForConfig): void
+    public function testCreateFakeLockForPgsql(bool|string $writeLockForConfig): void
     {
         $this->setEventStoreConfig([
             'store' => 'pgsql',
@@ -292,8 +284,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideFakeWriteLockForConfig')]
-    #[Test]
-    public function it_return_instance_with_fake_lock_for_mysql(bool|string $writeLockForConfig): void
+    public function testCreateFakeLockForMysql(bool|string $writeLockForConfig): void
     {
         $this->setEventStoreConfig([
             'store' => 'mysql',
@@ -320,8 +311,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_fake_lock_when_write_lock_is_not_defined(string $storeDriver): void
+    public function testCreateFakeLockWhenLockConfigIsNotDefined(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -335,8 +325,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_fake_lock_when_write_lock_is_null(string $storeDriver): void
+    public function testCreateFakeLockWhenLockConfigIsNull(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -351,8 +340,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_instance_with_per_aggregate_stream_persistence(string $storeDriver): void
+    public function testCreatePerAggregateStreamPersistence(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -375,8 +363,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_instance_of_cursor_query_loader_when_query_loader_key_missing(string $storeDriver): void
+    public function testCreateCursorQueryLoaderWhenLoaderConfigIsNotDefined(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -400,8 +387,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_instance_with_lazy_query_loader(string $storeDriver): void
+    public function testCreateLazyQueryLoaderWithDefaultChunk(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -427,8 +413,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
     }
 
     #[DataProvider('provideStoreDriver')]
-    #[Test]
-    public function it_create_instance_with_lazy_query_loader_and_defined_chunk_size(string $storeDriver): void
+    public function testCreateLazyQueryLoaderWithDefinedChunk(string $storeDriver): void
     {
         $this->setEventStoreConfig([
             'store' => $storeDriver,
@@ -452,8 +437,7 @@ final class EventStoreManagerTest extends OrchestraTestCase
         $this->assertEquals(10, $eventLoader->chunkSize);
     }
 
-    #[Test]
-    public function it_raise_exception_when_config_store_is_not_supported(): void
+    public function testExceptionRaisedWhenStoreConfigIsNotSupported(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Connection publish name with factory mongo is not defined');

@@ -8,6 +8,7 @@ use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Providers\ClockServiceProvider;
 use Chronhub\Larastorm\Providers\MessagerServiceProvider;
 use Chronhub\Larastorm\Providers\ProjectorServiceProvider;
+use Chronhub\Larastorm\Support\Console\Edges\ProjectAllStreamCommand;
 use Chronhub\Larastorm\Support\Facade\Chronicle;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
@@ -22,7 +23,9 @@ use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(ProjectAllStreamCommand::class)]
 final class ProjectAllStreamCommandTest extends OrchestraTestCase
 {
     use ProvideBalanceEvents;

@@ -23,9 +23,9 @@ final readonly class EventStreamProvider implements Provider
         $this->tableName = $tableName ?? self::TABLE_NAME;
     }
 
-    public function createStream(string $streamName, ?string $tableName, ?string $category = null): bool
+    public function createStream(string $streamName, ?string $streamTable, ?string $category = null): bool
     {
-        $eventStream = new EventStream($streamName, $tableName, $category);
+        $eventStream = new EventStream($streamName, $streamTable, $category);
 
         return $this->newQuery()->insert($eventStream->jsonSerialize());
     }
@@ -35,7 +35,7 @@ final readonly class EventStreamProvider implements Provider
         return 1 === $this->newQuery()->where('real_stream_name', $streamName)->delete();
     }
 
-    public function filterByStreams(array $streamNames): array
+    public function filterByAscendantStreams(array $streamNames): array
     {
         $toStrings = array_map(function (string|StreamName $streamName): string {
             return $streamName instanceof StreamName ? $streamName->name : $streamName;
@@ -49,7 +49,7 @@ final readonly class EventStreamProvider implements Provider
             ->toArray();
     }
 
-    public function filterByCategories(array $categoryNames): array
+    public function filterByAscendantCategories(array $categoryNames): array
     {
         return $this->newQuery()
             ->whereIn('category', $categoryNames)

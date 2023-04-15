@@ -19,9 +19,7 @@ class EventStoreDatabaseFactory
 {
     protected Container $container;
 
-    public function createStore(Connection $connection,
-                                bool $isTransactional,
-                                array $config): ChroniclerDB
+    public function createStore(Connection $connection, bool $isTransactional, array $config): ChroniclerDB
     {
         $args = [
             $connection,

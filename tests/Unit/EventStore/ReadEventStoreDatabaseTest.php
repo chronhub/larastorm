@@ -212,13 +212,13 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
         $streams = [new StreamName('foo'), new StreamName('bar'), new StreamName('foo_bar')];
 
         $this->eventStreamProvider->expects($this->once())
-            ->method('filterByStreams')
+            ->method('filterByAscendantStreams')
             ->with($streams)
-            ->willReturn(['foo', 'bar']);
+            ->willReturn(['bar', 'foo']);
 
         $filteredStreams = $this->eventStore()->filterStreamNames(...$streams);
 
-        $this->assertEquals([$streams[0], $streams[1]], $filteredStreams);
+        $this->assertEquals([$streams[1], $streams[0]], $filteredStreams);
     }
 
     public function testFilterCategories(): void
@@ -226,13 +226,13 @@ final class ReadEventStoreDatabaseTest extends UnitTestCase
         $categories = ['foo', 'bar', 'foo_bar'];
 
         $this->eventStreamProvider->expects($this->once())
-            ->method('filterByCategories')
+            ->method('filterByAscendantCategories')
             ->with($categories)
-            ->willReturn(['foo', 'bar']);
+            ->willReturn(['bar', 'foo']);
 
         $filteredStreams = $this->eventStore()->filterCategoryNames(...$categories);
 
-        $this->assertEquals([$categories[0], $categories[1]], $filteredStreams);
+        $this->assertEquals([$categories[1], $categories[0]], $filteredStreams);
     }
 
     #[DataProvider('provideBoolean')]

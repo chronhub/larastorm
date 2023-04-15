@@ -113,13 +113,13 @@ class EventStoreDatabase extends AbstractEventStoreDatabase
     {
         return array_map(
             fn (string $streamName): StreamName => new StreamName($streamName),
-            $this->eventStreamProvider->filterByStreams($streamNames)
+            $this->eventStreamProvider->filterByAscendantStreams($streamNames)
         );
     }
 
     public function filterCategoryNames(string ...$categoryNames): array
     {
-        return $this->eventStreamProvider->filterByCategories($categoryNames);
+        return $this->eventStreamProvider->filterByAscendantCategories($categoryNames);
     }
 
     public function hasStream(StreamName $streamName): bool

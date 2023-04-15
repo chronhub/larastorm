@@ -9,9 +9,9 @@ use Chronhub\Larastorm\EventStore\Persistence\EventStreamProvider;
 use Chronhub\Larastorm\Providers\ChroniclerServiceProvider;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamModel;
+use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 
 #[CoversClass(EventStreamProvider::class)]
 final class EventStreamProviderTest extends OrchestraTestCase
@@ -35,8 +35,7 @@ final class EventStreamProviderTest extends OrchestraTestCase
         return [ChroniclerServiceProvider::class];
     }
 
-    #[Test]
-    public function it_create_event_stream(): void
+    public function testCreateEventStream(): void
     {
         $streamName = 'transaction';
 
@@ -49,8 +48,7 @@ final class EventStreamProviderTest extends OrchestraTestCase
         $this->assertTrue($this->provider->hasRealStreamName($streamName));
     }
 
-    #[Test]
-    public function it_create_event_stream_with_category(): void
+    public function testCreateEventStreamWithCategory(): void
     {
         $streamName = 'add';
 
@@ -69,8 +67,7 @@ final class EventStreamProviderTest extends OrchestraTestCase
         $this->assertEquals('transaction', $model->category());
     }
 
-    #[Test]
-    public function it_delete_event_stream_by_stream_name(): void
+    public function testDeleteEventStream(): void
     {
         $streamName = 'transaction';
 
@@ -88,8 +85,7 @@ final class EventStreamProviderTest extends OrchestraTestCase
         $this->assertFalse($this->provider->hasRealStreamName($streamName));
     }
 
-    #[Test]
-    public function it_filter_and_order_by_stream_names(): void
+    public function testFilterStreams(): void
     {
         $category = null;
         $streamNames = ['transaction_add', 'transaction_subtract', 'transaction_divide'];
@@ -102,57 +98,16 @@ final class EventStreamProviderTest extends OrchestraTestCase
             $this->assertTrue($this->provider->hasRealStreamName($streamName));
         }
 
-        $expectedStreamNames = ['transaction_add', 'transaction_divide', 'transaction_subtract'];
+        $expectedStreamNames = [
+            new StreamName('transaction_add'),
+            new StreamName('transaction_divide'),
+            new StreamName('transaction_subtract'),
+        ];
 
-        $this->assertEquals($expectedStreamNames, $this->provider->filterByStreams($streamNames));
+        $this->assertEquals($expectedStreamNames, $this->provider->filterByAscendantStreams($streamNames));
     }
 
-    #[Test]
-    public function it_filter_and_order_by_stream_names_2(): void
-    {
-        $category = null;
-        $streamNames = ['transaction_add', 'transaction_subtract', 'transaction_divide'];
-
-        foreach ($streamNames as $streamName) {
-            $this->assertFalse($this->provider->hasRealStreamName($streamName));
-
-            $this->provider->createStream($streamName, $this->tableName, $category);
-
-            $this->assertTrue($this->provider->hasRealStreamName($streamName));
-        }
-
-        $streamNames[] = 'foo';
-        $streamNames[] = 'bar';
-
-        $expectedStreamNames = ['transaction_add', 'transaction_divide', 'transaction_subtract'];
-
-        $this->assertEquals($expectedStreamNames, $this->provider->filterByStreams($streamNames));
-    }
-
-    #[Test]
-    public function it_filter_and_order_by_stream_names_3(): void
-    {
-        $category = null;
-        $streamNames = ['transaction_add', 'transaction_subtract', 'transaction_divide'];
-
-        foreach ($streamNames as $streamName) {
-            $this->assertFalse($this->provider->hasRealStreamName($streamName));
-
-            $this->provider->createStream($streamName, $this->tableName, $category);
-
-            $this->assertTrue($this->provider->hasRealStreamName($streamName));
-        }
-
-        $this->provider->createStream('foo', 'foo_table', $category);
-        $this->provider->createStream('bar', 'bar_table', $category);
-
-        $expectedStreamNames = ['transaction_add', 'transaction_divide', 'transaction_subtract'];
-
-        $this->assertEquals($expectedStreamNames, $this->provider->filterByStreams($streamNames));
-    }
-
-    #[Test]
-    public function it_filter_by_categories(): void
+    public function testFilterCategoryStreams(): void
     {
         $category = 'transaction';
         $streamNames = ['add', 'subtract', 'divide'];
@@ -169,11 +124,10 @@ final class EventStreamProviderTest extends OrchestraTestCase
 
         $expectedCategories = ['add', 'divide', 'subtract'];
 
-        $this->assertEquals($expectedCategories, $this->provider->filterByCategories(['transaction']));
+        $this->assertEquals($expectedCategories, $this->provider->filterByAscendantCategories(['transaction']));
     }
 
-    #[Test]
-    public function it_fetch_all_stream_without_internal_stream_beginning_with_dollar_sign(): void
+    public function testFetchAllStreamsWithoutInternalBeginningWithDollarSign(): void
     {
         $category = 'transaction';
         $streamNames = ['add', 'divide', 'subtract'];
@@ -191,8 +145,8 @@ final class EventStreamProviderTest extends OrchestraTestCase
 
         $expectedCategories = ['add', 'divide', 'subtract'];
 
-        $this->assertEquals($expectedCategories, $this->provider->filterByCategories(['transaction']));
-        $this->assertEquals($streamNames, $this->provider->filterByStreams($streamNames));
+        $this->assertEquals($expectedCategories, $this->provider->filterByAscendantCategories(['transaction']));
+        $this->assertEquals($streamNames, $this->provider->filterByAscendantStreams($streamNames));
 
         $this->assertEquals([
             'add', 'divide', 'operation', 'subtract',

@@ -38,8 +38,8 @@ final class AggregateCacheFactoryTest extends OrchestraTestCase
 
         $this->assertInstanceOf(AggregateTaggedCache::class, $aggregateCache);
 
-        $this->assertEquals(1000, $aggregateCache->limit);
-        $this->assertEquals('my_tag', $aggregateCache->tag);
+        $this->assertSame(1000, $aggregateCache->limit);
+        $this->assertSame('my_tag', $aggregateCache->tag);
     }
 
     public function testCacheDriver(): void

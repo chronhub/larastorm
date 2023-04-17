@@ -11,21 +11,20 @@ use Chronhub\Larastorm\Tests\UnitTestCase;
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use function get_class;
 
 #[CoversClass(ConnectionQueryScope::class)]
 final class ConnectionProjectionQueryScopeTest extends UnitTestCase
 {
-    public function testFromIncludedPositionInstance(): void
+    public function testInstance(): void
     {
         $scope = new ConnectionQueryScope();
 
-        $this->assertSame(FromIncludedPosition::class, get_class($scope->fromIncludedPosition()));
+        $this->assertSame(FromIncludedPosition::class, $scope->fromIncludedPosition()::class);
 
     }
 
     #[DataProvider('provideLimit')]
-    public function testFromIncludedPositionInstanceWithLimit(int $limit): void
+    public function testWithLimit(int $limit): void
     {
         $scope = new ConnectionQueryScope();
 

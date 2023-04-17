@@ -15,8 +15,7 @@ return static function (RectorConfig $rectorConfig): void {
 
     $rectorConfig->rules([
         InlineConstructorDefaultToPropertyRector::class,
-    ]
-    );
+    ]);
 
     $rectorConfig->sets([
         LevelSetList::UP_TO_PHP_82,

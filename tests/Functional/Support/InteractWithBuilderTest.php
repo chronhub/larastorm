@@ -24,9 +24,9 @@ final class InteractWithBuilderTest extends OrchestraTestCase
 
     public function testQueryWithBuilder(): void
     {
-        $connection = $this->app->make('db')->connection();
+        $connection = $this->app['db']->connection();
 
-        $readModel = $this->readModelInstance($connection);
+        $readModel = $this->newReadModel($connection);
 
         $this->assertFalse($readModel->isInitialized());
 
@@ -54,7 +54,7 @@ final class InteractWithBuilderTest extends OrchestraTestCase
         $this->assertEquals('chronhubgit@gmail.com', $result->email);
     }
 
-    private function readModelInstance(Connection $connection): ReadModel
+    private function newReadModel(Connection $connection): ReadModel
     {
         return new class($connection) extends AbstractReadModelConnection
         {
@@ -62,7 +62,7 @@ final class InteractWithBuilderTest extends OrchestraTestCase
 
             protected function up(): callable
             {
-                return function (Blueprint $table): void {
+                return static function (Blueprint $table): void {
                     $table->id();
                     $table->string('email');
                 };

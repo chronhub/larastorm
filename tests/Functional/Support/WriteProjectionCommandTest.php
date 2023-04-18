@@ -15,12 +15,14 @@ use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Projector\PersistentProjector;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
+use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException as ProjectorException;
 use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Storm\Projector\ProjectionStatus;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
 use Generator;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Testing\PendingCommand;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -32,6 +34,8 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     private ProjectorManagerInterface $projector;
 
     private StreamName $streamName;
+
+    private string $projectionName;
 
     protected function setUp(): void
     {
@@ -53,6 +57,7 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
 
         $this->projector = Project::setDefaultDriver('in_memory')->create('testing');
         $this->streamName = new StreamName('transaction');
+        $this->projectionName = 'subtract';
     }
 
     #[DataProvider('provideOperation')]
@@ -60,35 +65,32 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     {
         $projection = $this->setUpProjection();
 
-        $this->assertEquals('idle', $this->projector->statusOf('transaction'));
+        $this->assertEquals('idle', $this->projector->statusOf($this->projectionName));
 
-        $this->artisan(
-            'projector:write',
-            ['operation' => $operation, 'stream' => 'transaction', 'projector' => 'testing']
-        )
-            ->expectsConfirmation("Are you sure you want to $operation stream transaction", 'yes')
-            ->expectsOutput("Operation $operation on transaction projection successful")
+        $this
+            ->callArtisan(['operation' => $operation, 'projection' => $this->projectionName, 'projector' => 'testing'])
+            ->expectsConfirmation("Are you sure you want to $operation projection $this->projectionName", 'yes')
+            ->expectsOutput("Operation $operation on $this->projectionName projection successful")
+            ->assertExitCode(0)
             ->run();
 
-        $this->assertEquals($status->value, $this->projector->statusOf('transaction'));
+        $this->assertEquals($status->value, $this->projector->statusOf($this->projectionName));
 
         $projection->run(false);
 
         if (str_starts_with($status->value, 'deleting')) {
-            $this->assertFalse($this->projector->exists('transaction'));
+            $this->assertFalse($this->projector->exists($this->projectionName));
         } else {
-            $this->assertEquals('idle', $this->projector->statusOf('transaction'));
+            $this->assertEquals('idle', $this->projector->statusOf($this->projectionName));
         }
     }
 
     #[DataProvider('provideOperation')]
     public function testErrorPrintedWhenProjectionNotFound(string $operation): void
     {
-        $this->artisan(
-            'projector:write',
-            ['operation' => $operation, 'stream' => 'foo', 'projector' => 'testing']
-        )
-            ->expectsOutput('Projection not found with stream foo')
+        $this
+            ->callArtisan(['operation' => $operation, 'projection' => 'foo', 'projector' => 'testing'])
+            ->expectsOutput('Projection not found with name foo')
             ->run();
     }
 
@@ -97,14 +99,12 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     {
         $this->setUpProjection();
 
-        $this->assertEquals('idle', $this->projector->statusOf('transaction'));
+        $this->assertEquals('idle', $this->projector->statusOf($this->projectionName));
 
-        $this->artisan(
-            'projector:write',
-            ['operation' => $operation, 'stream' => 'transaction', 'projector' => 'testing']
-        )
-            ->expectsConfirmation("Are you sure you want to $operation stream transaction")
-            ->expectsOutput("Operation $operation on stream transaction aborted")
+        $this->callArtisan(['operation' => $operation, 'projection' => $this->projectionName, 'projector' => 'testing'])
+            ->expectsConfirmation("Are you sure you want to $operation projection $this->projectionName", 'no')
+            ->expectsOutput("Operation $operation on projection $this->projectionName aborted")
+            ->assertExitCode(1)
             ->run();
     }
 
@@ -114,25 +114,21 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
 
         $this->setUpProjection();
 
-        $this->assertEquals('idle', $this->projector->statusOf('transaction'));
+        $this->assertEquals('idle', $this->projector->statusOf($this->projectionName));
 
-        $this->artisan(
-            'projector:write',
-            ['operation' => 'invalid_op', 'stream' => 'transaction', 'projector' => 'testing']
-        )
+        $this
+            ->callArtisan(['operation' => 'invalid_op', 'projection' => $this->projectionName, 'projector' => 'testing'])
             ->run();
     }
 
     #[DataProvider('provideOperation')]
     public function testExceptionRaisedWithInvalidProjectorName(string $operation): void
     {
-        $this->expectException(\Chronhub\Storm\Projector\Exceptions\InvalidArgumentException::class);
+        $this->expectException(ProjectorException::class);
         $this->expectExceptionMessage('Projector configuration with name not_defined is not defined');
 
-        $this->artisan(
-            'projector:write',
-            ['operation' => $operation, 'stream' => 'transaction', 'projector' => 'not_defined']
-        )
+        $this
+            ->callArtisan(['operation' => $operation, 'projection' => $this->projectionName, 'projector' => 'not_defined'])
             ->run();
     }
 
@@ -140,9 +136,9 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
     {
         $this->app['es.in_memory']->firstCommit(new Stream($this->streamName));
 
-        $this->assertFalse($this->projector->exists($this->streamName->name));
+        $this->assertFalse($this->projector->exists($this->projectionName));
 
-        $projection = $this->projector->emitter($this->streamName->name);
+        $projection = $this->projector->emitter($this->projectionName);
 
         $projection
             ->withQueryFilter($this->projector->queryScope()->fromIncludedPosition())
@@ -171,5 +167,10 @@ final class WriteProjectionCommandTest extends OrchestraTestCase
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];
+    }
+
+    private function callArtisan(array $arguments = []): PendingCommand|int
+    {
+        return $this->artisan('projector:write', $arguments);
     }
 }

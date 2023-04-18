@@ -16,6 +16,7 @@ use Chronhub\Storm\Contracts\Tracker\MessageTracker;
 use Chronhub\Storm\Message\DecorateMessage;
 use Chronhub\Storm\Reporter\DetachMessageListener;
 use Chronhub\Storm\Reporter\DomainType;
+use Chronhub\Storm\Reporter\OnDispatchPriority;
 use Chronhub\Storm\Reporter\ReportCommand;
 use Chronhub\Storm\Reporter\ReportEvent;
 use Chronhub\Storm\Reporter\ReportQuery;
@@ -59,13 +60,15 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
 
         $headers = ['Listener', 'Subscriber class', 'On Event', 'Priority'];
 
+        $dispatchEvent = Reporter::DISPATCH_EVENT;
+
         $rows = [
             [new TableCell($reporterFqn, ['colspan' => 4, 'rowspan' => 1, 'style' => null])],
-            [$genericListener, MakeMessage::class, 'dispatch_event', 100000],
-            [$genericListener, NameReporterService::class, 'dispatch_event', 99999],
-            [$genericListener, DecorateMessage::class, 'dispatch_event', 90000],
-            [$genericListener, HandleRoute::class, 'dispatch_event', 20000],
-            [$genericListener, $consumerFqn, 'dispatch_event', 0],
+            [$genericListener, MakeMessage::class, $dispatchEvent, OnDispatchPriority::MESSAGE_FACTORY->value],
+            [$genericListener, NameReporterService::class, $dispatchEvent, OnDispatchPriority::MESSAGE_FACTORY->value - 1],
+            [$genericListener, DecorateMessage::class, $dispatchEvent, OnDispatchPriority::MESSAGE_DECORATOR->value],
+            [$genericListener, HandleRoute::class, $dispatchEvent, OnDispatchPriority::ROUTE->value],
+            [$genericListener, $consumerFqn, $dispatchEvent, OnDispatchPriority::INVOKE_HANDLER->value],
         ];
 
         $this->artisan('messager:subscribers', ['type' => $name, 'name' => 'default'])
@@ -110,18 +113,21 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
 
         $headers = ['Listener', 'Subscriber class', 'On Event', 'Priority'];
 
+        $dispatchEvent = Reporter::DISPATCH_EVENT;
+        $finalizeEvent = Reporter::FINALIZE_EVENT;
+
         $rows = [
             [new TableCell(ReportEvent::class, ['colspan' => 4, 'rowspan' => 1, 'style' => null])],
-            [$genericListener, MakeMessage::class, 'dispatch_event', 100000],
-            [$genericListener, NameReporterService::class, 'dispatch_event', 99999],
-            [$genericListener, DecorateMessage::class, 'dispatch_event', 90000],
-            [$genericListener, HandleRoute::class, 'dispatch_event', 20000],
-            [$genericListener, $dispatchedEvents::class, 'dispatch_event', 100],
-            [$genericListener, ConsumeEvent::class, 'dispatch_event', 0],
-            [$genericListener, $dispatchedEvents::class, 'dispatch_event', 0],
-            [$genericListener, $dispatchedEvents::class, 'dispatch_event', -100],
-            [$genericListener, $dispatchedEvents::class, 'finalize_event', 0],
-            [$genericListener, $dispatchedEvents::class, 'finalize_event', -100],
+            [$genericListener, MakeMessage::class, $dispatchEvent, OnDispatchPriority::MESSAGE_FACTORY->value],
+            [$genericListener, NameReporterService::class, $dispatchEvent, OnDispatchPriority::MESSAGE_FACTORY->value - 1],
+            [$genericListener, DecorateMessage::class, $dispatchEvent, OnDispatchPriority::MESSAGE_DECORATOR->value],
+            [$genericListener, HandleRoute::class, $dispatchEvent, OnDispatchPriority::ROUTE->value],
+            [$genericListener, $dispatchedEvents::class, $dispatchEvent, 100],
+            [$genericListener, ConsumeEvent::class, $dispatchEvent, OnDispatchPriority::INVOKE_HANDLER->value],
+            [$genericListener, $dispatchedEvents::class, $dispatchEvent, 0],
+            [$genericListener, $dispatchedEvents::class, $dispatchEvent, -100],
+            [$genericListener, $dispatchedEvents::class, $finalizeEvent, 0],
+            [$genericListener, $dispatchedEvents::class, $finalizeEvent, -100],
         ];
 
         $this->artisan('messager:subscribers', ['type' => 'event', 'name' => 'default'])

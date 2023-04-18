@@ -6,55 +6,54 @@ namespace Chronhub\Larastorm\Support\Console;
 
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
-use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Console\Command;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use function count;
 use function json_encode;
 
-#[AsCommand(name: 'projector:read', description: 'read state/positions/status of projection by stream name')]
+#[AsCommand(name: 'projector:read', description: 'read state/positions/status of projection by projection name')]
 final class ReadProjectionCommand extends Command
 {
     protected $signature = 'projector:read 
-                            { field     : available state,status,positions }
-                            { stream    : stream projection name }
-                            { projector : projector name }';
+                            { field      : available state,status,positions }
+                            { projection : projection name }
+                            { projector  : projector name }';
 
     protected $description = 'read state/positions/status of projection by stream name';
 
     public function handle(): int
     {
-        $streamName = (new StreamName($this->argument('stream')))->name;
+        $projectionName = $this->argument('projection');
 
-        $result = $this->processProjection($streamName);
+        $result = $this->processProjection($projectionName);
 
-        $this->displayResult($streamName, $result);
+        $this->displayResult($projectionName, $result);
 
         return self::SUCCESS;
     }
 
-    private function processProjection(string $streamName): array
+    private function processProjection(string $projectionName): array
     {
         $projector = Project::create($this->argument('projector'));
 
-        if (! $projector->exists($streamName)) {
-            throw ProjectionNotFound::withName($streamName);
+        if (! $projector->exists($projectionName)) {
+            throw ProjectionNotFound::withName($projectionName);
         }
 
         return match ($this->fieldArgument()) {
-            'state' => $projector->stateOf($streamName),
-            'status' => [$projector->statusOf($streamName)],
-            'positions' => $projector->streamPositionsOf($streamName),
+            'state' => $projector->stateOf($projectionName),
+            'status' => [$projector->statusOf($projectionName)],
+            'positions' => $projector->streamPositionsOf($projectionName),
             default => throw new InvalidArgumentException('Invalid field '.$this->fieldArgument())
         };
     }
 
-    private function displayResult(string $streamName, array $result): void
+    private function displayResult(string $projectionName, array $result): void
     {
         $displayResult = count($result) === 0 ? 'Empty' : json_encode($result, JSON_THROW_ON_ERROR);
 
-        $this->info("{$this->fieldArgument()} of $streamName projection is: $displayResult");
+        $this->info("{$this->fieldArgument()} of $projectionName projection is: $displayResult");
     }
 
     private function fieldArgument(): string

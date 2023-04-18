@@ -11,6 +11,7 @@ use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Chronicler\InMemory\InMemoryChroniclerFactory;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Stream\StreamName;
+use Illuminate\Testing\PendingCommand;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(CreateEventStreamCommand::class)]
@@ -37,9 +38,11 @@ final class CreateEventStreamCommandTest extends OrchestraTestCase
 
         $this->assertFalse($this->eventStore->hasStream($streamName));
 
-        $this->artisan(
-            'stream:create', ['stream' => $streamName->name, 'chronicler' => 'standalone']
-        )->run();
+        $this
+            ->callArtisan(['stream' => $streamName->name, 'chronicler' => 'standalone'])
+            ->expectsOutput('Stream foo created')
+            ->assertExitCode(0)
+            ->run();
 
         $this->assertTrue($this->eventStore->hasStream($streamName));
     }
@@ -50,18 +53,22 @@ final class CreateEventStreamCommandTest extends OrchestraTestCase
 
         $this->assertFalse($this->eventStore->hasStream($streamName));
 
-        $this->artisan(
-            'stream:create', ['stream' => $streamName->name, 'chronicler' => 'standalone']
-        )
+        $this
+            ->callArtisan(['stream' => $streamName->name, 'chronicler' => 'standalone'])
             ->expectsOutput('Stream foo created')
+            ->assertExitCode(0)
             ->run();
 
         $this->assertTrue($this->eventStore->hasStream($streamName));
 
-        $this->artisan(
-            'stream:create', ['stream' => $streamName->name, 'chronicler' => 'standalone']
-        )
+        $this->callArtisan(['stream' => $streamName->name, 'chronicler' => 'standalone'])
             ->expectsOutput('Stream foo already exists')
+            ->assertExitCode(1)
             ->run();
+    }
+
+    private function callArtisan(array $arguments): PendingCommand|int
+    {
+        return $this->artisan('stream:create', $arguments);
     }
 }

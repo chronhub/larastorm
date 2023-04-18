@@ -22,11 +22,33 @@ final class AbstractReadModelConnectionTest extends OrchestraTestCase
 {
     use RefreshDatabase;
 
-    public function testInsertData(): void
-    {
-        $connection = $this->app->make('db')->connection();
+    private Connection $connection;
 
-        $readModel = $this->readModelInstance($connection);
+    private string $tableName;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->connection = $this->app['db']->connection();
+        $this->tableName = 'read_customer';
+    }
+
+    public function testInitializeReadModel(): void
+    {
+        $readModel = $this->newReadModel();
+
+        $this->assertFalse($readModel->isInitialized());
+        $this->assertFalse($this->connection->getSchemaBuilder()->hasTable($this->tableName));
+
+        $readModel->initialize();
+
+        $this->assertTrue($readModel->isInitialized());
+        $this->assertTrue($this->connection->getSchemaBuilder()->hasTable($this->tableName));
+    }
+
+    public function testPersistReadModel(): void
+    {
+        $readModel = $this->newReadModel();
 
         $this->assertFalse($readModel->isInitialized());
 
@@ -44,17 +66,15 @@ final class AbstractReadModelConnectionTest extends OrchestraTestCase
 
         $readModel->persist();
 
-        $result = $connection->table('read_customer')->find($customerId);
+        $result = $this->connection->table($this->tableName)->find($customerId);
 
         $this->assertEquals($customerId, $result->id);
         $this->assertEquals('chronhubgit@gmail.com', $result->email);
     }
 
-    public function testResetTable(): void
+    public function testResetReadModel(): void
     {
-        $connection = $this->app->make('db')->connection();
-
-        $readModel = $this->readModelInstance($connection);
+        $readModel = $this->newReadModel();
 
         $this->assertFalse($readModel->isInitialized());
 
@@ -72,21 +92,19 @@ final class AbstractReadModelConnectionTest extends OrchestraTestCase
 
         $readModel->persist();
 
-        $result = $connection->table('read_customer')->find($customerId);
+        $result = $this->connection->table($this->tableName)->find($customerId);
 
         $this->assertEquals($customerId, $result->id);
         $this->assertEquals('chronhubgit@gmail.com', $result->email);
 
         $readModel->reset();
 
-        $this->assertEmpty($connection->table('read_customer')->get());
+        $this->assertEmpty($this->connection->table($this->tableName)->get());
     }
 
-    public function testDeleteTable(): void
+    public function testDeleteReadModel(): void
     {
-        $connection = $this->app->make('db')->connection();
-
-        $readModel = $this->readModelInstance($connection);
+        $readModel = $this->newReadModel();
 
         $this->assertFalse($readModel->isInitialized());
 
@@ -104,26 +122,31 @@ final class AbstractReadModelConnectionTest extends OrchestraTestCase
 
         $readModel->persist();
 
-        $result = $connection->table('read_customer')->find($customerId);
+        $result = $this->connection->table($this->tableName)->find($customerId);
 
         $this->assertEquals($customerId, $result->id);
         $this->assertEquals('chronhubgit@gmail.com', $result->email);
 
         $readModel->down();
 
-        $this->assertFalse($connection->getSchemaBuilder()->hasTable('read_customer'));
+        $this->assertFalse($this->connection->getSchemaBuilder()->hasTable($this->tableName));
     }
 
-    private function readModelInstance(Connection $connection): ReadModel
+    private function newReadModel(): ReadModel
     {
-        return new class($connection) extends AbstractReadModelConnection
+        $connection = $this->connection;
+        $tableName = $this->tableName;
+
+        return new class($connection, $tableName) extends AbstractReadModelConnection
         {
+            public function __construct(Connection $connection, private readonly string $tableName)
+            {
+                parent::__construct($connection);
+            }
+
             public function insert(string $uid, string $email): void
             {
-                $this->queryBuilder()->insert([
-                    $this->getKey() => $uid,
-                    'email' => $email,
-                ]);
+                $this->queryBuilder()->insert([$this->getKey() => $uid, 'email' => $email]);
             }
 
             protected function queryBuilder(): Builder
@@ -138,7 +161,7 @@ final class AbstractReadModelConnectionTest extends OrchestraTestCase
 
             protected function up(): callable
             {
-                return function (Blueprint $table): void {
+                return static function (Blueprint $table): void {
                     $table->uuid('id')->primary();
                     $table->string('email');
                 };
@@ -146,7 +169,7 @@ final class AbstractReadModelConnectionTest extends OrchestraTestCase
 
             protected function tableName(): string
             {
-                return 'read_customer';
+                return $this->tableName;
             }
         };
     }

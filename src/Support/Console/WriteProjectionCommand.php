@@ -7,19 +7,18 @@ namespace Chronhub\Larastorm\Support\Console;
 use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
-use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Console\Command;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use function in_array;
 
-#[AsCommand(name: 'projector:write', description: 'write operation on projection by stream name')]
+#[AsCommand(name: 'projector:write', description: 'write operation on projection by projection name')]
 final class WriteProjectionCommand extends Command
 {
     protected $signature = 'projector:write 
-                            { operation : available stop, reset, delete, deleteIncl } 
-                            { stream    : projection name } 
-                            { projector : projector name }';
+                            { operation  : available stop, reset, delete, deleteIncl } 
+                            { projection : projection name } 
+                            { projector  : projector name }';
 
     protected array $operationAvailable = ['stop', 'reset', 'delete', 'deleteIncl'];
 
@@ -27,19 +26,19 @@ final class WriteProjectionCommand extends Command
 
     public function handle(): int
     {
-        $streamName = new StreamName($this->argument('stream'));
+        $projectionName = $this->argument('projection');
 
         $this->projector = Project::create($this->argument('projector'));
 
         $operation = $this->operationArgument();
 
-        if (! $this->confirmOperation($streamName, $operation)) {
+        if (! $this->confirmOperation($projectionName, $operation)) {
             return self::FAILURE;
         }
 
-        $this->processProjection($streamName->name, $operation);
+        $this->processProjection($projectionName, $operation);
 
-        $this->info("Operation {$this->operationArgument()} on $streamName projection successful");
+        $this->info("Operation {$this->operationArgument()} on $projectionName projection successful");
 
         return self::SUCCESS;
     }
@@ -55,20 +54,20 @@ final class WriteProjectionCommand extends Command
         };
     }
 
-    private function confirmOperation(StreamName $streamName, string $operation): bool
+    private function confirmOperation(string $projectionName, string $operation): bool
     {
         try {
-            $projectionStatus = $this->projector->statusOf($streamName->name);
+            $projectionStatus = $this->projector->statusOf($projectionName);
         } catch (ProjectionNotFound) {
-            $this->error("Projection not found with stream $streamName");
+            $this->error("Projection not found with name $projectionName");
 
             return false;
         }
 
-        $this->warn("Status of $streamName projection is $projectionStatus");
+        $this->warn("Status of $projectionName projection is $projectionStatus");
 
-        if (! $this->confirm("Are you sure you want to $operation stream $streamName")) {
-            $this->warn("Operation $operation on stream $streamName aborted");
+        if (! $this->confirm("Are you sure you want to $operation projection $projectionName")) {
+            $this->warn("Operation $operation on projection $projectionName aborted");
 
             return false;
         }

@@ -14,12 +14,14 @@ use Chronhub\Larastorm\Support\Facade\Project;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Contracts\Chronicler\Chronicler;
 use Chronhub\Storm\Contracts\Projector\ProjectorManagerInterface;
+use Chronhub\Storm\Projector\Exceptions\InvalidArgumentException as ProjectorException;
 use Chronhub\Storm\Projector\Exceptions\ProjectionNotFound;
 use Chronhub\Storm\Projector\InMemoryQueryScope;
 use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
 use Generator;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Testing\PendingCommand;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -31,12 +33,11 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
 
     private StreamName $streamName;
 
+    private string $projectionName;
+
     protected function setUp(): void
     {
         parent::setUp();
-
-        $commands = Artisan::all();
-        $this->assertArrayHasKey('projector:read', $commands);
 
         $this->app->singleton(
             'es.in_memory',
@@ -52,19 +53,26 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
 
         $this->projector = Project::setDefaultDriver('in_memory')->create('testing');
         $this->streamName = new StreamName('transaction');
+        $this->projectionName = 'add';
+    }
+
+    public function testCommandIsLoaded(): void
+    {
+        $commands = Artisan::all();
+
+        $this->assertArrayHasKey('projector:read', $commands);
     }
 
     #[DataProvider('provideField')]
     public function testReadProjection(string $field): void
     {
         $this->setUpProjection();
-        $this->assertEquals([], $this->projector->stateOf('transaction'));
+        $this->assertEquals([], $this->projector->stateOf($this->projectionName));
 
-        $this->artisan(
-            'projector:read',
-            ['field' => $field, 'stream' => 'transaction', 'projector' => 'testing']
-        )
-            ->expectsOutputToContain("$field of transaction projection is")
+        $this
+            ->callArtisan(['field' => $field, 'projection' => $this->projectionName, 'projector' => 'testing'])
+            ->expectsOutputToContain("$field of $this->projectionName projection is")
+            ->assertExitCode(0)
             ->run();
     }
 
@@ -73,10 +81,8 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
     {
         $this->expectException(ProjectionNotFound::class);
 
-        $this->artisan(
-            'projector:read',
-            ['field' => $field, 'stream' => 'not_defined', 'projector' => 'testing']
-        )
+        $this
+            ->callArtisan(['field' => $field, 'projection' => 'not_defined', 'projector' => 'testing'])
             ->run();
     }
 
@@ -87,25 +93,21 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
 
         $this->setUpProjection();
 
-        $this->assertEquals('idle', $this->projector->statusOf('transaction'));
+        $this->assertEquals('idle', $this->projector->statusOf($this->projectionName));
 
-        $this->artisan(
-            'projector:read',
-            ['field' => 'invalid_op', 'stream' => 'transaction', 'projector' => 'testing']
-        )
+        $this
+            ->callArtisan(['field' => 'invalid_op', 'projection' => $this->projectionName, 'projector' => 'testing'])
             ->run();
     }
 
     #[DataProvider('provideField')]
     public function testExceptionRaisedWithInvalidProjectorName(string $field): void
     {
-        $this->expectException(\Chronhub\Storm\Projector\Exceptions\InvalidArgumentException::class);
+        $this->expectException(ProjectorException::class);
         $this->expectExceptionMessage('Projector configuration with name not_defined is not defined');
 
-        $this->artisan(
-            'projector:read',
-            ['field' => $field, 'stream' => 'transaction', 'projector' => 'not_defined']
-        )
+        $this
+            ->callArtisan(['field' => $field, 'projection' => $this->projectionName, 'projector' => 'not_defined'])
             ->run();
     }
 
@@ -113,9 +115,9 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
     {
         $this->app['es.in_memory']->firstCommit(new Stream($this->streamName));
 
-        $this->assertFalse($this->projector->exists($this->streamName->name));
+        $this->assertFalse($this->projector->exists($this->projectionName));
 
-        $projection = $this->projector->emitter($this->streamName->name);
+        $projection = $this->projector->emitter($this->projectionName);
 
         $projection
             ->withQueryFilter($this->projector->queryScope()->fromIncludedPosition())
@@ -141,5 +143,10 @@ final class ReadProjectionCommandTest extends OrchestraTestCase
             ChroniclerServiceProvider::class,
             ProjectorServiceProvider::class,
         ];
+    }
+
+    private function callArtisan(array $arguments = []): PendingCommand|int
+    {
+        return $this->artisan('projector:read', $arguments);
     }
 }

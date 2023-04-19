@@ -15,13 +15,13 @@ use Chronhub\Storm\Contracts\Routing\RouteCollection;
 use Chronhub\Storm\Contracts\Serializer\MessageSerializer;
 use Chronhub\Storm\Producer\ProduceMessage;
 use Chronhub\Storm\Producer\ProducerStrategy;
-use Chronhub\Storm\Routing\CommandGroup;
+use Chronhub\Storm\Reporter\DomainType;
+use Chronhub\Storm\Routing\Group;
 use Generator;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 
 #[CoversClass(MessageProducerFactory::class)]
@@ -29,19 +29,17 @@ final class MessageProducerFactoryTest extends UnitTestCase
 {
     private MockObject|RouteCollection $routes;
 
-    /**
-     * @throws Exception
-     */
     protected function setUp(): void
     {
         $this->routes = $this->createMock(RouteCollection::class);
     }
 
-    public function testDefaultInstance(): void
+    #[DataProvider('provideDomainType')]
+    public function testDefaultInstance(DomainType $domainType): void
     {
         $container = $this->createMock(Container::class);
 
-        $group = new CommandGroup('default', $this->routes);
+        $group = new Group($domainType, 'default', $this->routes);
         $group->withStrategy(ProducerStrategy::PER_MESSAGE->value);
 
         $this->assertNull($group->producerId());
@@ -61,14 +59,15 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $this->assertNull($queueOptions);
     }
 
-    public function testInstanceResolvedFromIoc(): void
+    #[DataProvider('provideDomainType')]
+    public function testInstanceResolvedFromIoc(DomainType $domainType): void
     {
         $instance = $this->createMock(MessageProducer::class);
 
         $container = Container::getInstance();
         $container->instance('message_producer.service', $instance);
 
-        $group = new CommandGroup('default', $this->routes);
+        $group = new Group($domainType, 'default', $this->routes);
         $group->withProducerId('message_producer.service');
 
         $factory = new MessageProducerFactory(fn () => $container);
@@ -76,18 +75,19 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $this->assertSame($instance, $factory->createMessageProducer($group));
     }
 
-    public function testInstanceWithDefinedQueueOptions(): void
+    #[DataProvider('provideDomainType')]
+    public function testInstanceWithDefinedQueueOptions(DomainType $domainType): void
     {
         $container = $this->createMock(Container::class);
 
-        $group = new CommandGroup('default', $this->routes);
+        $group = new Group($domainType, 'default', $this->routes);
         $group->withStrategy(ProducerStrategy::ASYNC->value);
         $group->withQueue(['foo' => 'bar']);
 
         $this->assertNull($group->producerId());
         $this->expectMessageQueueResolved($container);
 
-        $factory = new MessageProducerFactory(fn () => $container);
+        $factory = new MessageProducerFactory(static fn () => $container);
         $messageProducer = $factory->createMessageProducer($group);
 
         $this->assertEquals(ProduceMessage::class, $messageProducer::class);
@@ -99,11 +99,12 @@ final class MessageProducerFactoryTest extends UnitTestCase
         $this->assertEquals(['foo' => 'bar'], $queueOptions);
     }
 
-    public function testMessageQueueNotSetWhenProducerStrategyIsSync(): void
+    #[DataProvider('provideDomainType')]
+    public function testMessageQueueNotSetWhenProducerStrategyIsSync(DomainType $domainType): void
     {
         $container = $this->createMock(Container::class);
 
-        $group = new CommandGroup('default', $this->routes);
+        $group = new Group($domainType, 'default', $this->routes);
         $group->withStrategy(ProducerStrategy::SYNC->value);
 
         $container->expects($this->once())
@@ -111,7 +112,7 @@ final class MessageProducerFactoryTest extends UnitTestCase
             ->with(ProducerUnity::class)
             ->willReturn($this->createMock(ProducerUnity::class));
 
-        $factory = new MessageProducerFactory(fn () => $container);
+        $factory = new MessageProducerFactory(static fn () => $container);
 
         $messageProducer = $factory->createMessageProducer($group);
 
@@ -126,12 +127,12 @@ final class MessageProducerFactoryTest extends UnitTestCase
     {
         $container = $this->createMock(Container::class);
 
-        $group = new CommandGroup('default', $this->routes);
+        $group = new Group(DomainType::COMMAND, 'default', $this->routes);
         $group->withStrategy($notSyncStrategy);
 
         $this->expectMessageQueueResolved($container);
 
-        $factory = new MessageProducerFactory(fn () => $container);
+        $factory = new MessageProducerFactory(static fn () => $container);
 
         $messageProducer = $factory->createMessageProducer($group);
 
@@ -147,9 +148,18 @@ final class MessageProducerFactoryTest extends UnitTestCase
         yield [ProducerStrategy::PER_MESSAGE->value];
     }
 
+    public static function provideDomainType(): Generator
+    {
+        yield [DomainType::COMMAND];
+        yield [DomainType::EVENT];
+        yield [DomainType::QUERY];
+
+    }
+
     private function expectMessageQueueResolved(Container|MockObject $container): void
     {
-        $container->expects($this->exactly(3))
+        $container
+            ->expects($this->exactly(3))
             ->method('offsetGet')
             ->willReturnMap(
                 [

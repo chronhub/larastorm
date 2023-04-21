@@ -16,7 +16,6 @@ use Chronhub\Storm\Routing\Group;
 use Chronhub\Storm\Tracker\TrackMessage;
 use Illuminate\Contracts\Container\Container;
 use function is_string;
-use function sprintf;
 
 final readonly class CqrsManager implements ReporterManager
 {
@@ -38,13 +37,13 @@ final readonly class CqrsManager implements ReporterManager
         $groupType = DomainType::tryFrom($type);
 
         if (! $groupType instanceof DomainType) {
-            throw new RoutingViolation(sprintf('Group type %s is invalid', $type));
+            throw new RoutingViolation("Group type $type is invalid");
         }
 
         $group = $this->registrar->get($groupType, $name);
 
         if (! $group instanceof Group) {
-            throw new RoutingViolation(sprintf('Group with type %s and name %s not defined', $type, $name));
+            throw new RoutingViolation("Group with type $type and name $name not defined");
         }
 
         return $this->resolve($group);
@@ -88,7 +87,9 @@ final readonly class CqrsManager implements ReporterManager
             };
         }
 
-        if (is_string($tracker = $group->trackerId())) {
+        $tracker = $group->trackerId();
+
+        if (is_string($tracker)) {
             $tracker = $this->container[$tracker];
         }
 

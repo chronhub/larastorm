@@ -8,5 +8,4 @@ use Chronhub\Storm\Aggregate\AbstractAggregateRepository;
 
 final readonly class DummyExtendedAggregateRepository extends AbstractAggregateRepository
 {
-    //
 }

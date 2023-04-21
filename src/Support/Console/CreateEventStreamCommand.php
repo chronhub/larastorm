@@ -10,7 +10,7 @@ use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 
-#[AsCommand(name: 'stream:create', description: 'create first commit for one stream for single stream strategy')]
+#[AsCommand(name: 'stream:create', description: 'create first commit for one stream with single stream strategy')]
 final class CreateEventStreamCommand extends Command
 {
     protected $signature = 'stream:create

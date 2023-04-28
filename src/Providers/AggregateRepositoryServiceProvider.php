@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Providers;
 
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
-use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
+use Chronhub\Larastorm\Support\Contracts\AggregateRepositoryManager as Manager;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
@@ -26,13 +26,13 @@ class AggregateRepositoryServiceProvider extends ServiceProvider implements Defe
         $this->mergeConfigFrom($this->repositoryPath, 'aggregate');
 
         $this->app->singleton(
-            RepositoryManager::class,
-            fn (Application $app): RepositoryManager => new AggregateRepositoryManager(fn () => $app)
+            Manager::class,
+            fn (Application $app): Manager => new AggregateRepositoryManager(fn () => $app)
         );
     }
 
     public function provides(): array
     {
-        return [RepositoryManager::class];
+        return [Manager::class];
     }
 }

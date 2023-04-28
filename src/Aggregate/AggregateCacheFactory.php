@@ -17,11 +17,12 @@ final class AggregateCacheFactory
      * @param non-empty-string|null $tag
      * @param non-empty-string|null $driver
      */
-    public function createCache(string $aggregateRoot,
-                                ?int $size,
-                                ?string $tag = null,
-                                ?string $driver = null): AggregateCache
-    {
+    public function createCache(
+        string $aggregateRoot,
+        ?int $size,
+        ?string $tag = null,
+        ?string $driver = null
+    ): AggregateCache {
         if ($size === null || $size === 0) {
             return new NullAggregateCache();
         }

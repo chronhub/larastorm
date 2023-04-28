@@ -25,9 +25,9 @@ abstract class AbstractStreamPersistence implements StreamPersistence
     /**
      * @return array{
      *      "event_id": non-empty-string,
-     *      "event_type": non-empty-string,
+     *      "event_type": class-string,
      *      "aggregate_id": non-empty-string,
-     *      "aggregate_type": non-empty-string,
+     *      "aggregate_type": class-string,
      *      "aggregate_version": positive-int,
      *      "headers": non-empty-string,
      *      "content": non-empty-string,

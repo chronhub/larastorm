@@ -20,9 +20,9 @@
     "ext-pcntl": "*"
   },
   "require-dev": {
-    "laravel/pint": "^1.9",
+    "laravel/pint": "^1.10",
     "phpstan/phpstan":"^1.1",
-    "nunomaduro/larastan": "^2.5",
+    "nunomaduro/larastan": "^2.6",
     "orchestra/testbench": "8.*",
     "phpunit/phpunit": "^10.1",
     "roave/security-advisories": "dev-latest",
@@ -61,7 +61,8 @@
         "Chronhub\\Larastorm\\Providers\\ChroniclerServiceProvider",
         "Chronhub\\Larastorm\\Providers\\AggregateRepositoryServiceProvider",
         "Chronhub\\Larastorm\\Providers\\ProjectorServiceProvider",
-        "Chronhub\\Larastorm\\Providers\\LarastormServiceProvider"
+        "Chronhub\\Larastorm\\Providers\\LarastormServiceProvider",
+        "Chronhub\\Larastorm\\Providers\\SnapshotServiceProvider"
       ]
     }
   },

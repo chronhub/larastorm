@@ -88,13 +88,9 @@ final class ChroniclerServiceProviderTest extends OrchestraTestCase
                     ],
                 ],
             ],
-
             'console' => [
                 'load_migration' => true,
-
-                'commands' => [
-                    CreateEventStreamCommand::class,
-                ],
+                'commands' => [CreateEventStreamCommand::class],
             ],
         ], config('chronicler'));
     }

@@ -6,8 +6,8 @@ namespace Chronhub\Larastorm\Tests\Functional\Providers;
 
 use Chronhub\Larastorm\Aggregate\AggregateRepositoryManager;
 use Chronhub\Larastorm\Providers\AggregateRepositoryServiceProvider;
+use Chronhub\Larastorm\Support\Contracts\AggregateRepositoryManager as Manager;
 use Chronhub\Larastorm\Tests\OrchestraTestCase;
-use Chronhub\Storm\Contracts\Aggregate\AggregateRepositoryManager as RepositoryManager;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(AggregateRepositoryServiceProvider::class)]
@@ -21,10 +21,6 @@ class AggregateRepositoryServiceProviderTest extends OrchestraTestCase
                 'event_decorators' => [],
                 'repositories' => [
                     'my_stream_name' => [
-                        'type' => [
-                            'alias' => 'generic',
-                            // 'service' => 'your service id for setter or concrete for extended'
-                        ],
                         'chronicler' => ['connection', 'write'],
                         'strategy' => 'single',
                         'aggregate_type' => [
@@ -35,7 +31,9 @@ class AggregateRepositoryServiceProviderTest extends OrchestraTestCase
                             'size' => 0,
                             'tag' => null,
                             'driver' => null,
-                        ], 'event_decorators' => [],
+                        ],
+                        'event_decorators' => [],
+                        'support_snapshot' => false,
                     ],
                 ],
             ],
@@ -44,15 +42,15 @@ class AggregateRepositoryServiceProviderTest extends OrchestraTestCase
 
     public function testBindings(): void
     {
-        $this->assertTrue($this->app->bound(RepositoryManager::class));
-        $this->assertInstanceOf(AggregateRepositoryManager::class, $this->app[RepositoryManager::class]);
+        $this->assertTrue($this->app->bound(Manager::class));
+        $this->assertInstanceOf(AggregateRepositoryManager::class, $this->app[Manager::class]);
     }
 
     public function testProvides(): void
     {
         $provider = $this->app->getProvider(AggregateRepositoryServiceProvider::class);
 
-        $this->assertEquals([RepositoryManager::class], $provider->provides());
+        $this->assertEquals([Manager::class], $provider->provides());
     }
 
     protected function getPackageProviders($app): array

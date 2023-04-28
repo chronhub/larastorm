@@ -43,20 +43,6 @@ return [
             'my_stream_name' => [
 
                 /**
-                 * Available keys type:
-                 *
-                 *  generic  : will return a generic aggregate repository
-                 *  extended : will return an extended aggregate repository with your fqn class
-                 *
-                 * @see \Chronhub\Storm\Aggregate\AggregateRepository
-                 * @see \Chronhub\Storm\Aggregate\AbstractAggregateRepository
-                 */
-                'type' => [
-                    'alias' => 'generic',
-                    // 'concrete' => 'concrete for extended'
-                ],
-
-                /**
                  * Chronicler use by your aggregate repository
                  *
                  * provide a service id or array member
@@ -107,6 +93,13 @@ return [
                  * merge with event decorators above
                  */
                 'event_decorators' => [],
+
+                /**
+                 * Snapshot support
+                 *
+                 * available connection and in_memory
+                 */
+                'support_snapshot' => false,
             ],
         ],
     ],

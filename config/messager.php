@@ -68,9 +68,9 @@ return [
     */
 
     'decorators' => [
-        \Chronhub\Storm\Message\Decorator\EventId::class,
-        \Chronhub\Storm\Message\Decorator\EventTime::class,
-        \Chronhub\Storm\Message\Decorator\EventType::class,
+        \Chronhub\Storm\Message\EventId::class,
+        \Chronhub\Storm\Message\EventTime::class,
+        \Chronhub\Storm\Message\EventType::class,
     ],
 
     /*

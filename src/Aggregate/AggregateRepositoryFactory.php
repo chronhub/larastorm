@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Aggregate;
 
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
-use Chronhub\Storm\Aggregate\AbstractAggregateRepository;
-use Chronhub\Storm\Aggregate\AggregateRepository;
-use Chronhub\Storm\Contracts\Aggregate\AggregateRepository as Repository;
+use Chronhub\Larastorm\Snapshot\SnapshotStoreManager;
+use Chronhub\Storm\Aggregate\AggregateQuery;
+use Chronhub\Storm\Aggregate\AggregateReleaser;
+use Chronhub\Storm\Aggregate\GenericAggregateRepository;
+use Chronhub\Storm\Contracts\Aggregate\AggregateRepository;
 use Chronhub\Storm\Contracts\Message\MessageDecorator;
 use Chronhub\Storm\Message\ChainMessageDecorator;
+use Chronhub\Storm\Snapshot\AggregateSnapshotQuery;
 use Closure;
 use Illuminate\Contracts\Container\Container;
-use InvalidArgumentException;
+use RuntimeException;
 use function array_map;
 use function array_merge;
-use function is_a;
 use function is_string;
 
 class AggregateRepositoryFactory
@@ -39,17 +41,8 @@ class AggregateRepositoryFactory
         $this->streamProducerFactory = new StreamProducerFactory();
     }
 
-    /**
-     * @param class-string|null $extendedRepository
-     */
-    public function createRepository(string $streamName, array $config, ?string $extendedRepository = null): Repository
+    public function createRepository(string $streamName, array $config): AggregateRepository
     {
-        if ($extendedRepository && ! is_a($extendedRepository, AbstractAggregateRepository::class, true)) {
-            throw new InvalidArgumentException(
-                'Extended repository must be a subclass of '.AbstractAggregateRepository::class
-            );
-        }
-
         $eventStore = $this->eventStoreResolver->resolve($config['chronicler']);
 
         $aggregateType = $this->aggregateTypeFactory->createType($config['aggregate_type']);
@@ -67,12 +60,36 @@ class AggregateRepositoryFactory
 
         $eventDecorators = $this->chainMessageDecorator($config['event_decorators'] ?? []);
 
-        $aggregateRepositoryClass = $extendedRepository ?? AggregateRepository::class;
+        $aggregateQuery = new AggregateQuery($eventStore, $streamProducer, $aggregateType);
 
-        return new $aggregateRepositoryClass($eventStore, $streamProducer, $aggregateCache, $aggregateType, $eventDecorators);
+        $snapshotDriver = $config['use_snapshot'] ?? null;
+        if (is_string($snapshotDriver)) {
+            if (! $this->container->bound(SnapshotStoreManager::class)) {
+                throw new RuntimeException('SnapshotStoreManager not bound in container');
+            }
+
+            $snapshotStoreManager = $this->container[SnapshotStoreManager::class];
+            $snapshotQueryScope = $this->container['config']['snapshot'][$snapshotDriver]['query_scope'];
+
+            $aggregateQuery = new AggregateSnapshotQuery(
+                $aggregateType,
+                $snapshotStoreManager->create($config['use_snapshot']),
+                $this->container[$snapshotQueryScope],
+                $aggregateQuery
+            );
+        }
+
+        return new GenericAggregateRepository(
+            $eventStore,
+            $streamProducer,
+            $aggregateCache,
+            $aggregateType,
+            new AggregateReleaser($eventDecorators),
+            $aggregateQuery,
+        );
     }
 
-    public function chainMessageDecorator(array $repositoryDecorators = []): MessageDecorator
+    protected function chainMessageDecorator(array $repositoryDecorators = []): MessageDecorator
     {
         $messageDecorators = [];
 

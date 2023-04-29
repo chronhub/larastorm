@@ -55,7 +55,7 @@ final class SnapshotStoreManager implements Manager
 
         return match ($name) {
             'in_memory' => new InMemorySnapshotStore(),
-            'connection' => $this->resolveConnectionSnapshotStore($config),
+            'connection' => $this->resolveConnectionSnapshotStore($config['connection']),
             default => throw new RuntimeException("Snapshot name $name unknown"),
         };
     }

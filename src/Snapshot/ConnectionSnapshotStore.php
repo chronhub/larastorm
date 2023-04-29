@@ -45,10 +45,12 @@ final readonly class ConnectionSnapshotStore implements SnapshotStore
         }
 
         if ($mappingTables !== [] && $this->suffix !== null) {
-            $this->mappingTables = array_map(function ($table) {
+            $mappingTables = array_map(function ($table) {
                 return $table.$this->suffix;
             }, $mappingTables);
         }
+
+        $this->mappingTables = $mappingTables;
     }
 
     public function get(string $aggregateType, string $aggregateId): ?Snapshot

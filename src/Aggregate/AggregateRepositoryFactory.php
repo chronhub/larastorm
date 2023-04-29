@@ -6,13 +6,12 @@ namespace Chronhub\Larastorm\Aggregate;
 
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
 use Chronhub\Larastorm\Snapshot\SnapshotStoreManager;
-use Chronhub\Storm\Aggregate\AggregateQuery;
 use Chronhub\Storm\Aggregate\AggregateReleaser;
+use Chronhub\Storm\Aggregate\AggregateSnapshotRepository;
 use Chronhub\Storm\Aggregate\GenericAggregateRepository;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository;
 use Chronhub\Storm\Contracts\Message\MessageDecorator;
 use Chronhub\Storm\Message\ChainMessageDecorator;
-use Chronhub\Storm\Snapshot\AggregateSnapshotQuery;
 use Closure;
 use Illuminate\Contracts\Container\Container;
 use RuntimeException;
@@ -60,8 +59,6 @@ class AggregateRepositoryFactory
 
         $eventDecorators = $this->chainMessageDecorator($config['event_decorators'] ?? []);
 
-        $aggregateQuery = new AggregateQuery($eventStore, $streamProducer, $aggregateType);
-
         $snapshotDriver = $config['use_snapshot'] ?? null;
         if (is_string($snapshotDriver)) {
             if (! $this->container->bound(SnapshotStoreManager::class)) {
@@ -71,11 +68,14 @@ class AggregateRepositoryFactory
             $snapshotStoreManager = $this->container[SnapshotStoreManager::class];
             $snapshotQueryScope = $this->container['config']['snapshot'][$snapshotDriver]['query_scope'];
 
-            $aggregateQuery = new AggregateSnapshotQuery(
+            return new AggregateSnapshotRepository(
+                $eventStore,
+                $streamProducer,
+                $aggregateCache,
                 $aggregateType,
-                $snapshotStoreManager->create($config['use_snapshot']),
+                new AggregateReleaser($eventDecorators),
+                $snapshotStoreManager->create($snapshotDriver),
                 $this->container[$snapshotQueryScope],
-                $aggregateQuery
             );
         }
 
@@ -85,7 +85,6 @@ class AggregateRepositoryFactory
             $aggregateCache,
             $aggregateType,
             new AggregateReleaser($eventDecorators),
-            $aggregateQuery,
         );
     }
 

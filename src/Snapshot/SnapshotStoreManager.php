@@ -67,7 +67,7 @@ final class SnapshotStoreManager implements Manager
             $this->container[$config['serializer']],
             $this->container[SystemClock::class],
             $config['suffix'] ?? null,
-            $config['table_name'],
+            $config['table_name'] ?? null,
             $config['mapping_tables'] ?? []
         );
     }

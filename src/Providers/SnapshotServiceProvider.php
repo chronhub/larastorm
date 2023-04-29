@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Providers;
 
 use Chronhub\Larastorm\Snapshot\SnapshotStoreManager;
-use Chronhub\Larastorm\Support\Contracts\SnapshotStoreManager as Manager;
+use Chronhub\Larastorm\Support\Contracts\SnapshotStoreManager as StoreManager;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
@@ -34,7 +34,7 @@ class SnapshotServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->mergeConfigFrom($this->repositoryPath, 'snapshot');
 
         $this->app->singleton(
-            Manager::class,
+            StoreManager::class,
             fn (Application $app) => new SnapshotStoreManager(fn () => $app)
         );
 
@@ -42,6 +42,6 @@ class SnapshotServiceProvider extends ServiceProvider implements DeferrableProvi
 
     public function provides(): array
     {
-        return [Manager::class];
+        return [StoreManager::class];
     }
 }

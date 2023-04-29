@@ -36,7 +36,7 @@ class SnapshotProjectionServiceFactory
             throw new RuntimeException('Aggregate repository must implement '.AggregateRepositoryWithSnapshotting::class);
         }
 
-        $snapshotStore = $this->snapshotStoreManager->create($projectorName);
+        $snapshotStore = $this->snapshotStoreManager->create('connection');
 
         // todo fetch query scope from snapshot store as it aware of connection too
 
@@ -50,10 +50,9 @@ class SnapshotProjectionServiceFactory
         // todo auto fetch aggregate type with lineage from repository config
         $readModel = new SnapshotReadModel($provider, []);
 
-        $projector = $this->projectorServiceManager->create($streamName);
+        $projector = $this->projectorServiceManager->create($projectorName);
 
-        return $this->projectorServiceManager
-            ->create($streamName)
+        return $projector
             ->readModel($streamName.'_snapshot', $readModel)
             ->withQueryFilter($projector->queryScope()->fromIncludedPosition()) // todo bring limit
             ->fromStreams($streamName)

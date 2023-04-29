@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Aggregate;
 
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
-use Chronhub\Larastorm\Snapshot\SnapshotStoreManager;
+use Chronhub\Larastorm\Support\Contracts\SnapshotStoreManager;
 use Chronhub\Storm\Aggregate\AggregateReleaser;
 use Chronhub\Storm\Aggregate\AggregateSnapshotRepository;
 use Chronhub\Storm\Aggregate\GenericAggregateRepository;

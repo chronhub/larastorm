@@ -11,6 +11,7 @@ use Chronhub\Storm\Snapshot\InMemorySnapshotStore;
 use Closure;
 use Illuminate\Contracts\Container\Container;
 use RuntimeException;
+use function is_array;
 
 final class SnapshotStoreManager implements Manager
 {
@@ -68,7 +69,7 @@ final class SnapshotStoreManager implements Manager
             $this->container[SystemClock::class],
             $config['suffix'] ?? null,
             $config['table_name'] ?? null,
-            $config['mapping_tables'] ?? []
+            is_array($config['mapping_tables']) ? $config['mapping_tables'] : []
         );
     }
 }

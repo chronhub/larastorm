@@ -41,6 +41,7 @@ return [
             // for mapping tables
             'commands' => [
                 \Chronhub\Larastorm\Snapshot\SnapshotMappingTablesMigrationCommand::class,
+                \Chronhub\Larastorm\Snapshot\ProjectSnapshotReadModelCommand::class,
             ],
         ],
     ],

@@ -21,7 +21,6 @@ use Chronhub\Storm\Stream\Stream;
 use Chronhub\Storm\Stream\StreamName;
 use Generator;
 use Illuminate\Database\QueryException;
-use function sprintf;
 
 abstract class EventStoreConnection implements ChroniclerConnection, ChroniclerDecorator
 {
@@ -29,7 +28,7 @@ abstract class EventStoreConnection implements ChroniclerConnection, ChroniclerD
     {
         if ($this->chronicler instanceof ChroniclerDecorator) {
             throw new InvalidArgumentException(
-                sprintf('Chronicle given can not be a decorator: %s', $this->chronicler::class)
+                'Chronicle given can not be a decorator: '.$this->chronicler::class
             );
         }
     }

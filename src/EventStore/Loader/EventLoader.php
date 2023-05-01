@@ -11,7 +11,6 @@ use Chronhub\Storm\Contracts\Chronicler\StreamEventLoader;
 use Chronhub\Storm\Contracts\Serializer\StreamEventSerializer;
 use Chronhub\Storm\Stream\StreamName;
 use Generator;
-use Illuminate\Database\QueryException;
 use stdClass;
 
 final readonly class EventLoader implements StreamEventLoader
@@ -26,30 +25,22 @@ final readonly class EventLoader implements StreamEventLoader
      */
     public function __invoke(iterable $streamEvents, StreamName $streamName): Generator
     {
-        try {
-            $count = 0;
+        $count = 0;
 
-            foreach ($streamEvents as $streamEvent) {
-                if ($streamEvent instanceof stdClass) {
-                    $streamEvent = (array) $streamEvent;
-                }
-
-                yield $this->serializer->deserializePayload($streamEvent);
-
-                $count++;
+        foreach ($streamEvents as $streamEvent) {
+            if ($streamEvent instanceof stdClass) {
+                $streamEvent = (array) $streamEvent;
             }
 
-            if (0 === $count) {
-                throw NoStreamEventReturn::withStreamName($streamName);
-            }
+            yield $this->serializer->deserializePayload($streamEvent);
 
-            return $count;
-        } catch (QueryException $queryException) {
-            if ('00000' !== $queryException->getCode()) {
-                throw StreamNotFound::withStreamName($streamName);
-            }
-
-            throw ConnectionQueryFailure::fromQueryException($queryException);
+            $count++;
         }
+
+        if ($count === 0) {
+            throw NoStreamEventReturn::withStreamName($streamName);
+        }
+
+        return $count;
     }
 }

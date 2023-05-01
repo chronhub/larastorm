@@ -10,6 +10,8 @@ use Chronhub\Storm\Contracts\Clock\SystemClock;
 use Chronhub\Storm\Contracts\Snapshot\SnapshotSerializer;
 use Chronhub\Storm\Contracts\Snapshot\SnapshotStore;
 use Chronhub\Storm\Snapshot\Snapshot;
+use DateTimeImmutable;
+use DateTimeZone;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\QueryException;
@@ -55,25 +57,33 @@ final readonly class ConnectionSnapshotStore implements SnapshotStore
 
     public function get(string $aggregateType, string $aggregateId): ?Snapshot
     {
+        $result = null;
+
         try {
             $result = $this->queryBuilder($aggregateType)
                 ->where('aggregate_type', $aggregateType)
                 ->where('aggregate_id', $aggregateId)
                 ->first();
         } catch (QueryException $queryException) {
-            throw ConnectionQueryFailure::fromQueryException($queryException);
+            if ($queryException->getCode() !== '00000') {
+                throw ConnectionQueryFailure::fromQueryException($queryException);
+            }
         }
 
-        if (! $result instanceof stdClass) {
+        if ($result instanceof stdClass) {
+            $result = (array) $result;
+        }
+
+        if ($result === null || $result === []) {
             return null;
         }
 
         return new Snapshot(
             $aggregateId,
             $aggregateType,
-            $this->deserializeAggregate($result->aggregate_root),
-            (int) $result->last_version,
-            $this->clock->toDateTimeImmutable($result->created_at)
+            $this->deserializeAggregate($result['aggregate_root']),
+            (int) $result['last_version'],
+            new DateTimeImmutable($result['created_at'], new DateTimeZone('UTC')),
         );
     }
 
@@ -86,13 +96,13 @@ final readonly class ConnectionSnapshotStore implements SnapshotStore
         try {
             $this->connection->transaction(function () use ($snapshots): void {
                 foreach ($snapshots as $snapshot) {
-                    $this->deleteByAggregateType($snapshot->aggregateType);
-                }
-
-                $map = $this->normalizeSnapshots($snapshots);
-
-                foreach ($map as $aggregateType => $snapshots) {
-                    $this->queryBuilder($aggregateType)->insert($snapshots);
+                    $this->queryBuilder($snapshot->aggregateType)->updateOrInsert(
+                        [
+                            'aggregate_id' => $snapshot->aggregateId,
+                            'aggregate_type' => $snapshot->aggregateType,
+                        ],
+                        $this->normalizeSnapshot($snapshot)
+                    );
                 }
             });
         } catch (QueryException $queryException) {
@@ -111,28 +121,15 @@ final readonly class ConnectionSnapshotStore implements SnapshotStore
         }
     }
 
-    /**
-     * @param array<Snapshot> $snapshots
-     */
-    private function normalizeSnapshots(array $snapshots): array
+    private function normalizeSnapshot(Snapshot $snapshot): array
     {
-        $map = [];
-
-        foreach ($snapshots as $snapshot) {
-            if (! isset($map[$snapshot->aggregateType])) {
-                $map[$snapshot->aggregateType] = [];
-            }
-
-            $map[$snapshot->aggregateType][] = [
-                'aggregate_id' => $snapshot->aggregateId,
-                'aggregate_type' => $snapshot->aggregateType,
-                'aggregate_root' => $this->snapshotSerializer->serialize($snapshot->aggregateRoot),
-                'last_version' => $snapshot->lastVersion,
-                'created_at' => $this->clock->now()->format($this->clock->getFormat()),
-            ];
-        }
-
-        return $map;
+        return [
+            'aggregate_id' => $snapshot->aggregateId,
+            'aggregate_type' => $snapshot->aggregateType,
+            'aggregate_root' => $this->snapshotSerializer->serialize($snapshot->aggregateRoot),
+            'last_version' => $snapshot->lastVersion,
+            'created_at' => $this->clock->now()->format($this->clock->getFormat()),
+        ];
     }
 
     private function deserializeAggregate($serialized): AggregateRootWithSnapshotting

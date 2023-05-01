@@ -23,7 +23,7 @@ final readonly class MatchAggregateGreaterThanVersion implements QueryFilter
                 ->where('aggregate_id', $this->aggregateId)
                 ->where('aggregate_type', $this->aggregateType)
                 ->where('aggregate_version', '>', $this->aggregateVersion)
-                ->orderBy('version', 'ASC');
+                ->orderBy('aggregate_version', 'ASC');
         };
     }
 }

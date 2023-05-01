@@ -18,7 +18,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\QueryException;
 use function is_callable;
-use function sprintf;
 
 abstract class AbstractEventStoreDatabase implements ChroniclerDB
 {
@@ -77,13 +76,13 @@ abstract class AbstractEventStoreDatabase implements ChroniclerDB
 
     protected function serializeStreamEvents(iterable $streamEvents): array
     {
-        return tap([], function (array &$events) use ($streamEvents) {
-            foreach ($streamEvents as $streamEvent) {
-                $events[] = $this->streamPersistence->serialize($streamEvent);
-            }
+        $events = [];
 
-            return $events;
-        });
+        foreach ($streamEvents as $streamEvent) {
+            $events[] = $this->streamPersistence->serialize($streamEvent);
+        }
+
+        return $events;
     }
 
     /**
@@ -121,7 +120,7 @@ abstract class AbstractEventStoreDatabase implements ChroniclerDB
 
         if (! $created) {
             throw new ConnectionQueryFailure(
-                sprintf('Unable to insert data for stream %s in event stream table', $streamName)
+                "Unable to insert data for stream $streamName in event stream table"
             );
         }
     }

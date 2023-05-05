@@ -52,11 +52,9 @@ class EventStoreDatabase extends AbstractEventStoreDatabase
             throw ConnectionConcurrencyException::failedToAcquireLock();
         }
 
-        try {
-            $this->forWrite($stream->name())->insert($streamEvents);
-        } finally {
-            $this->writeLock->releaseLock($tableName);
-        }
+        $this->forWrite($stream->name())->insert($streamEvents);
+
+        $this->writeLock->releaseLock($tableName);
     }
 
     /**

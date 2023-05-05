@@ -12,7 +12,6 @@ use Closure;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 use function is_string;
-use function sprintf;
 
 final class EventStoreManager implements ChroniclerManager
 {
@@ -88,9 +87,7 @@ final class EventStoreManager implements ChroniclerManager
         $config = $this->app['config']["chronicler.providers.$driver.$name"];
 
         if ($config === null) {
-            throw new InvalidArgumentException(
-                sprintf('Chronicler config %s is not defined', $name)
-            );
+            throw new InvalidArgumentException("Chronicler config $name is not defined");
         }
 
         if (isset($this->customCreators[$name])) {
@@ -113,7 +110,7 @@ final class EventStoreManager implements ChroniclerManager
         }
 
         throw new InvalidArgumentException(
-            sprintf('Chronicler provider with name %s and driver %s is not defined', $name, $driver)
+            "Chronicler provider with name $name and driver $driver is not defined"
         );
     }
 

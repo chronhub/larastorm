@@ -19,7 +19,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Support\Str;
 use function is_bool;
 use function method_exists;
-use function sprintf;
 use function ucfirst;
 
 final class EventStoreConnectionFactory implements ChroniclerFactory
@@ -61,13 +60,13 @@ final class EventStoreConnectionFactory implements ChroniclerFactory
         }
 
         throw new InvalidArgumentException(
-            sprintf('Connection %s name with factory %s is not defined', $name, $driver)
+            "Connection $name name with factory $driver is not defined"
         );
     }
 
     private function createPgsqlDriver(array $config,
-                                       bool $isTransactional,
-                                       ?StreamTracker $streamTracker): ChroniclerConnection|EventableChronicler
+        bool $isTransactional,
+        ?StreamTracker $streamTracker): ChroniclerConnection|EventableChronicler
     {
         /** @var Connection $connection */
         $connection = $this->container['db']->connection('pgsql');
@@ -82,8 +81,8 @@ final class EventStoreConnectionFactory implements ChroniclerFactory
     }
 
     private function createMysqlDriver(array $config,
-                                       bool $isTransactional,
-                                       ?StreamTracker $streamTracker): ChroniclerConnection|EventableChronicler
+        bool $isTransactional,
+        ?StreamTracker $streamTracker): ChroniclerConnection|EventableChronicler
     {
         /** @var Connection $connection */
         $connection = $this->container['db']->connection('mysql');
@@ -113,7 +112,7 @@ final class EventStoreConnectionFactory implements ChroniclerFactory
 
         if (! is_bool($isTransactional)) {
             throw new InvalidArgumentException(
-                sprintf('Config key is_transactional is required when no stream tracker is provided for chronicler name %s', $name)
+                "Config key is_transactional is required when no stream tracker is provided for chronicler name $name"
             );
         }
 

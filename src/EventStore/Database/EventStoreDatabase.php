@@ -13,7 +13,6 @@ use Chronhub\Storm\Stream\StreamName;
 use Generator;
 use Illuminate\Database\QueryException;
 use function array_map;
-use function count;
 
 class EventStoreDatabase extends AbstractEventStoreDatabase
 {
@@ -42,7 +41,7 @@ class EventStoreDatabase extends AbstractEventStoreDatabase
 
         $streamEvents = $this->serializeStreamEvents($stream->events());
 
-        if (count($streamEvents) === 0) {
+        if ($streamEvents === []) {
             return;
         }
 

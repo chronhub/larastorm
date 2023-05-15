@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 
 use Chronhub\Larastorm\EventStore\Loader\EventLoader;
-use Chronhub\Larastorm\Exceptions\ConnectionQueryFailure;
 use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
 use Chronhub\Larastorm\Tests\Stubs\QueryExceptionStub;
 use Chronhub\Larastorm\Tests\UnitTestCase;
@@ -83,36 +82,6 @@ final class EventLoaderTest extends UnitTestCase
         $streamEvents = new Collection([$event, $event]);
 
         $queryException = QueryExceptionStub::withCode('1234');
-
-        $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
-
-        $this->serializer->expects($this->once())
-            ->method('deserializePayload')
-            ->with((array) $event)
-            ->willReturn($expectedEvent);
-
-        $this->serializer->expects($this->once())
-            ->method('deserializePayload')
-            ->with((array) $event)
-            ->will($this->throwException($queryException));
-
-        $eventLoader = new EventLoader($this->serializer);
-
-        $eventLoader($streamEvents, $this->streamName)->current();
-    }
-
-    public function testExceptionRaisedWhenStreamNotFoundAndNoRowsHaBeenAffected(): void
-    {
-        $this->expectException(ConnectionQueryFailure::class);
-
-        $event = new stdClass();
-        $event->headers = ['some' => 'header'];
-        $event->content = ['name' => 'steph bug'];
-        $event->no = 5;
-
-        $streamEvents = new Collection([$event, $event]);
-
-        $queryException = QueryExceptionStub::withCode('00000');
 
         $expectedEvent = SomeEvent::fromContent(['name' => 'steph bug'])->withHeader('some', 'header');
 

@@ -7,7 +7,7 @@ namespace Chronhub\Larastorm\Tests\Unit\EventStore;
 use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Larastorm\Support\Contracts\StreamEventLoaderConnection;
 use Chronhub\Larastorm\Tests\Stubs\Double\SomeEvent;
-use Chronhub\Larastorm\Tests\Stubs\StoreStub;
+use Chronhub\Larastorm\Tests\Stubs\EventStoreStub;
 use Chronhub\Storm\Contracts\Chronicler\EventStreamProvider;
 use Chronhub\Storm\Contracts\Chronicler\WriteLockStrategy;
 use Chronhub\Storm\Contracts\Message\Header;
@@ -81,9 +81,9 @@ trait ProvideTestingStore
         return 4;
     }
 
-    protected function eventStore(?WriteLockStrategy $writeLock = null, ?StreamPersistence $streamPersistence = null): StoreStub
+    protected function eventStore(?WriteLockStrategy $writeLock = null, ?StreamPersistence $streamPersistence = null): EventStoreStub
     {
-        return new StoreStub(
+        return new EventStoreStub(
             $this->connection,
             $streamPersistence ?? $this->streamPersistence,
             $this->eventLoader,

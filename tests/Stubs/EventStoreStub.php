@@ -8,7 +8,7 @@ use Chronhub\Larastorm\EventStore\Database\EventStoreDatabase;
 use Chronhub\Storm\Stream\StreamName;
 use Illuminate\Database\Query\Builder;
 
-final class StoreStub extends EventStoreDatabase
+final class EventStoreStub extends EventStoreDatabase
 {
     public function getBuilderForWrite(StreamName $streamName): Builder
     {

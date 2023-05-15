@@ -6,7 +6,7 @@ namespace Chronhub\Larastorm\Aggregate;
 
 use Chronhub\Larastorm\EventStore\EventStoreResolver;
 use Chronhub\Larastorm\Support\Contracts\SnapshotStoreManager;
-use Chronhub\Storm\Aggregate\AggregateReleaser;
+use Chronhub\Storm\Aggregate\AggregateEventReleaser;
 use Chronhub\Storm\Aggregate\AggregateSnapshotRepository;
 use Chronhub\Storm\Aggregate\GenericAggregateRepository;
 use Chronhub\Storm\Contracts\Aggregate\AggregateRepository;
@@ -73,7 +73,7 @@ class AggregateRepositoryFactory
                 $streamProducer,
                 $aggregateCache,
                 $aggregateType,
-                new AggregateReleaser($eventDecorators),
+                new AggregateEventReleaser($eventDecorators),
                 $snapshotStoreManager->create($snapshotDriver),
                 $this->container[$snapshotQueryScope],
             );
@@ -84,7 +84,7 @@ class AggregateRepositoryFactory
             $streamProducer,
             $aggregateCache,
             $aggregateType,
-            new AggregateReleaser($eventDecorators),
+            new AggregateEventReleaser($eventDecorators),
         );
     }
 

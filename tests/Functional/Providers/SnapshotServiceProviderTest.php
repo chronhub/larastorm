@@ -26,6 +26,7 @@ final class SnapshotServiceProviderTest extends OrchestraTestCase
                     'load_migration' => true,
                     'commands' => [
                         \Chronhub\Larastorm\Snapshot\SnapshotMappingTablesMigrationCommand::class,
+                        \Chronhub\Larastorm\Snapshot\ProjectSnapshotReadModelCommand::class,
                     ],
                 ],
             ],

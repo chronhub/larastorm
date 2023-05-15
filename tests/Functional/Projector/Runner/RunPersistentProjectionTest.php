@@ -56,6 +56,7 @@ final class RunPersistentProjectionTest extends OrchestraTestCase
         $firstEvent = BalanceWasRegistered::withBalance($balanceId)
             ->withHeader(EventHeader::AGGREGATE_VERSION, 1)
             ->withHeader(EventHeader::AGGREGATE_ID, $balanceId->toString())
+            ->withHeader(EventHeader::AGGREGATE_ID_TYPE, $balanceId::class)
             ->withHeader(Header::EVENT_TIME, $this->generateTime());
 
         $this->eventStore->firstCommit(new Stream($streamName, [$firstEvent]));
@@ -117,6 +118,7 @@ final class RunPersistentProjectionTest extends OrchestraTestCase
             $headers = [
                 EventHeader::AGGREGATE_VERSION => $version,
                 EventHeader::AGGREGATE_ID => $balanceId->toString(),
+                EventHeader::AGGREGATE_ID_TYPE => $balanceId::class,
                 Header::EVENT_TIME => $this->generateTime(),
             ];
 

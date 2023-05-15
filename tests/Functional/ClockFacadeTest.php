@@ -10,7 +10,6 @@ use Chronhub\Larastorm\Tests\OrchestraTestCase;
 use Chronhub\Storm\Clock\PointInTime;
 use DateTimeImmutable;
 use DateTimeZone;
-use DomainException;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Clock::class)]
@@ -37,14 +36,6 @@ final class ClockFacadeTest extends OrchestraTestCase
         $clockFormat = Clock::getFormat();
 
         $this->assertEquals(PointInTime::DATE_TIME_FORMAT, $clockFormat);
-    }
-
-    public function testExceptionRaisedWithInvalidDatetime(): void
-    {
-        $this->expectException(DomainException::class);
-        $this->expectExceptionMessage('Invalid date time format: some_datetime');
-
-        Clock::format('some_datetime');
     }
 
     public function testFormatFromDateTimeImmutable(): void

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static DateTimeImmutable now()
+ * @method static string            nowToString()
  * @method static DateTimeImmutable toDateTimeImmutable(string|DateTimeImmutable $pointInTime)
  * @method static string            format(string|DateTimeImmutable $pointInTime)
  * @method static string            getFormat()

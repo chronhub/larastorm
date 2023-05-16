@@ -4,7 +4,8 @@
          cacheDirectory=".phpunit.cache"
          bootstrap="vendor/autoload.php"
          executionOrder="depends,defects"
-         beStrictAboutOutputDuringTests="true" colors="true">
+         beStrictAboutOutputDuringTests="true"
+         colors="true">
   <testsuites>
     <testsuite name="Unit Test">
       <directory>./tests/Unit/</directory>

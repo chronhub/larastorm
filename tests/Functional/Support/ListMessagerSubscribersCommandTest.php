@@ -41,7 +41,7 @@ final class ListMessagerSubscribersCommandTest extends OrchestraTestCase
     {
         parent::setUp();
 
-        $this->assertArrayNotHasKey('subscribers:list', Artisan::all());
+        $this->assertArrayNotHasKey('messager:subscribers', Artisan::all());
 
         Artisan::registerCommand(new ListMessagerSubscribersCommand());
     }

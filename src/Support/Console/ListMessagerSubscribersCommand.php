@@ -10,7 +10,6 @@ use Chronhub\Storm\Contracts\Tracker\Listener;
 use Chronhub\Storm\Tracker\GenericListener;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Laravel\SerializableClosure\Support\ReflectionClosure;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\TableCell;
 use function array_merge;
@@ -35,7 +34,7 @@ final class ListMessagerSubscribersCommand extends Command
         foreach ($messageListeners as $listener) {
             $rows[] = [
                 class_basename($listener),
-                $this->parseCallback($listener->callback()) ?? 'no scope',
+                $listener->origin(),
                 $listener->name(),
                 $listener->priority(),
             ];
@@ -44,13 +43,6 @@ final class ListMessagerSubscribersCommand extends Command
         $this->table($this->tableHeaders, $rows);
 
         return self::SUCCESS;
-    }
-
-    protected function parseCallback(callable $callback): ?string
-    {
-        $closure = new ReflectionClosure($callback);
-
-        return $closure->getClosureScopeClass()?->getName();
     }
 
     /**

@@ -16,6 +16,7 @@ final class StreamProducerFactory
     {
         $streamName = new StreamName($streamName);
 
+        //todo change key names and add single_table
         return match ($strategy) {
             'single' => new SingleStreamPerAggregate($streamName),
             'per_aggregate' => new OneStreamPerAggregate($streamName),

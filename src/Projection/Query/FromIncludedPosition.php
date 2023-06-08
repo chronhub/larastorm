@@ -12,6 +12,10 @@ final class FromIncludedPosition implements ProjectionQueryFilter
 {
     private int $currentPosition = 0;
 
+    public function __construct(public readonly int $limit)
+    {
+    }
+
     public function setCurrentPosition(int $streamPosition): void
     {
         $this->currentPosition = $streamPosition;
@@ -25,10 +29,11 @@ final class FromIncludedPosition implements ProjectionQueryFilter
             throw new InvalidArgumentException("Position must be greater than 0, current is $position");
         }
 
-        return static function (Builder $query) use ($position): void {
+        return function (Builder $query) use ($position): void {
             $query
                 ->where('no', '>=', $position)
-                ->orderBy('no');
+                ->orderBy('no')
+                ->limit($this->limit === 0 ? PHP_INT_MAX : $this->limit);
         };
     }
 }
